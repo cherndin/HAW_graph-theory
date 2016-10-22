@@ -3,6 +3,7 @@ package helper;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.*;
@@ -47,7 +48,7 @@ public class IOGraph {
         BufferedWriter bw = new BufferedWriter(new FileWriter("src/main/resources/output/" + filename + ".gka"));
 
         for (Edge edge : graph.getEachEdge()) {
-            bw.write(edgeToLine(edge,enableName,enableWeight));
+            bw.write(edgeToLine(edge, enableName, enableWeight));
             bw.newLine();
         }
         bw.close();
@@ -59,7 +60,7 @@ public class IOGraph {
      * @throws RuntimeException      Problem with FileChooser
      * @throws FileNotFoundException selected file could not be found
      */
-    @NotNull
+    @Nullable
     public static Graph fromFileWithFileChooser(@NotNull String name) throws RuntimeException, FileNotFoundException {
         JFileChooser fc = new JFileChooser();
         File fileToRead = fc.getSelectedFile();
@@ -68,11 +69,12 @@ public class IOGraph {
         if (state == JFileChooser.APPROVE_OPTION)
             return fromFile(name, fileToRead);
         else
-            throw new RuntimeException("Much Error!");
+            return null;
     }
 
     /**
      * Reads a graph from a .gka file.
+     * <p>
      *
      * @param name       name of the new graph
      * @param fileToRead file to read
@@ -83,56 +85,53 @@ public class IOGraph {
     public static Graph fromFile(@NotNull String name,
                                  @NotNull File fileToRead) throws FileNotFoundException {
         Graph graph = new MultiGraph(name);
-        Scanner scanner = new Scanner(fileToRead,"ISO-8859-1");
-        scanner.useLocale(Locale.GERMANY);
-//        while (scanner.hasNextLine()){
-//            System.out.println(scanner.nextLine());
-//        }
+        Scanner scanner = new Scanner(fileToRead, "ISO-8859-1");
+//        scanner.useLocale(Locale.GERMANY);
         int currentLineNumber = 1;
-        String linePattern = "([\\w[öÖäÄüÜßa-zA-Z]]+)\\p{Blank}(-[->])\\p{Blank}([\\w[öÖäÄüÜßa-zA-Z]]+)(\\p{Blank}([\\w[öÖäÄüÜßa-zA-Z]]*))?(\\p{Blank}:\\p{Blank}+(\\d+))?;";
+        String uml = "[öÖäÄüÜßa-zA-Z0-9]";
+        String ws = "\\p{Blank}*";
+        String linePattern = "(" + uml + "+)" + ws + "(-[->])" + ws + "(" + uml + "+)(" + ws + "\\((" + uml + ")*\\))?(" + ws + ":" + ws + "(\\d+))?"+ws+"?;";
+        //TODO Edges ohne kanten
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             Pattern pattern = Pattern.compile(linePattern);
             Matcher matcher = pattern.matcher(line);
-            if (!matcher.find()){
-                throw new RuntimeException("error at line:" + currentLineNumber);
-            }else {
+
+            if (!matcher.find()) {
+                // Skip empty Lines
+                if (!line.equals(""))
+                    System.err.println(currentLineNumber + ". ERROR: [" +line+"]");
+                else
+                    System.err.println(currentLineNumber + ". is empty");
+            } else {
                 Boolean isDirected = false;
-                String edge ="";
-                String weight="";
+                String edge = "";
+                String weight = "";
                 String node0 = matcher.group(1);
                 String node1 = matcher.group(3);
                 String arrow = matcher.group(2);
 
-                if (matcher.group(5)!=null)
-                    edge = matcher.group(5);
-                if (matcher.group(7)!=null)
-                    weight = matcher.group(7);
-                if (arrow.equals("->"))
-                    isDirected = true;
-                if (graph.getNode(node0)==null)
-                    graph.addNode(node0);
-                if (graph.getNode(node1)==null)
-                    graph.addNode(node1);
+                if (matcher.group(5) != null) edge = matcher.group(5);
+                else edge = node0+node1;
+                if (matcher.group(7) != null) weight = matcher.group(7);
+                if (arrow.equals("->")) isDirected = true;
+                if (graph.getNode(node0) == null) graph.addNode(node0);
+                if (graph.getNode(node1) == null) graph.addNode(node1);
+
                 try {
-                    if (edge.equals(""))
-                        graph.addEdge(node0+node1,node0,node1,isDirected);
-                    else
-                        graph.addEdge(arrow,node0,node1,isDirected);
-                }catch (EdgeRejectedException e){
+                    graph.addEdge(edge, node0, node1, isDirected);
+                    System.err.println(currentLineNumber + ". "+edgeToLine(graph.getEdge(edge),true,false)+" added.");
+                } catch (EdgeRejectedException e) {
                     System.err.println(e);
+                } catch (IdAlreadyInUseException e){
+                    System.err.println(e + "\nEdge will be created with the ID "+node0+node1);
+                    graph.addEdge(node0+node1, node0, node1, isDirected);
+                    System.err.println(currentLineNumber + ". "+edgeToLine(graph.getEdge(node0+node1),true,false)+" added.");
                 }
 
                 if (!weight.equals(""))
-                    graph.setAttribute("weight",Integer.valueOf(weight));
+                    graph.setAttribute("weight", Integer.valueOf(weight));
             }
-
-
-//            Matcher matcher = Pattern
-//            scanner.findInLine(linePattern);
-//            MatchResult result = scanner.match();
-//            for (int i=1; i<=result.groupCount(); i++)
-//                System.out.println(result.group(i));
             currentLineNumber++;
 
         }
@@ -141,26 +140,46 @@ public class IOGraph {
     }
 
     // ====== PRIVATE =======
-
+    /**
+     * Preview of a graph in the terminal
+     * <p>
+     *
+     * @param graph
+     * @param enableName
+     * @param enableWeight
+     */
     private static void preview(@NotNull Graph graph,
                                 @NotNull Boolean enableName,
                                 @NotNull Boolean enableWeight) {
         for (Edge edge : graph.getEachEdge()) {
-            System.out.println(edgeToLine(edge,enableName,enableWeight));
+            System.out.println(edgeToLine(edge, enableName, enableWeight));
         }
     }
 
+    /**
+     * Converts an Edge to String.
+     * <p>
+     *
+     * @param edge
+     * @param enableName
+     * @param enableWeight
+     * @return name node1 [ arrow name node2] [(edge name)] [: edgeweight];
+     */
     private static String edgeToLine(@NotNull Edge edge,
                                      @NotNull Boolean enableName,
-                                     @NotNull Boolean enableWeight){
-        String name = "", weight = "", arrow = " -- ";
-        if (edge.isDirected()) arrow = " -> ";
-        if (enableName) name = " (" + edge.getId() + ")";
+                                     @NotNull Boolean enableWeight) {
+        String name = "";
+        String weight = "";
+        String arrow = " -- ";
+
         if (enableWeight) {
             if (edge.getAttribute("weight") == null)
-                throw new RuntimeException("Edge has no attribute with the key <weight>");
+                throw new IllegalArgumentException("Edge has no attribute with the key <weight>");
             weight = " : " + edge.getAttribute("weight");
         }
+        if (edge.isDirected()) arrow = " -> ";
+        if (enableName) name = " (" + edge.getId() + ")";
+
         return edge.getNode0() + arrow + edge.getNode1() + name + weight + ";";
     }
 
@@ -182,8 +201,9 @@ public class IOGraph {
 //        save(graph, "MyFile", true, true);
 //        graph.addEdge("AB", "A", "B", true);
 
-        Graph graph1 = fromFile("MyGraph",new File("src/main/resources/input/BspGraph/graph03.gka"));
-        graph1.display();
+        Graph graph1 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph10.gka"));
+//        preview(graph1,true,false);
+//        graph1.display();
 //        fromFileWithFileChooser("dfdf");
     }
 
