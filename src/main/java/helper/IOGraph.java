@@ -105,7 +105,7 @@ public class IOGraph {
         int ln = 1;
         String uml = "[öÖäÄüÜßa-zA-Z0-9]";
         String ws = "\\p{Blank}*";
-        String normalEdgePattern = "(" + uml + "+)" + ws + "(-[->])" + ws + "(" + uml + "+)(" + ws + "\\((" + uml + ")*\\))?(" + ws + ":" + ws + "(\\d+))?"+ws+";";
+        String normalEdgePattern = "(" + uml + "+)" + ws + "(-[->])" + ws + "(" + uml + "+)(" + ws + "\\((" + uml + "*)\\))?(" + ws + ":" + ws + "(\\d+))?"+ws+";";
         String singleEdgePatterm = "(" + uml + "+)(" + ws + "\\((" + uml + ")*\\))?(" + ws + ":" + ws + "(\\d+))?"+ws+";";
 
         while (scanner.hasNextLine()) {
