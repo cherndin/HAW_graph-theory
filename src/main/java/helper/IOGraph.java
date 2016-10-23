@@ -106,12 +106,12 @@ public class IOGraph {
         String uml = "[öÖäÄüÜßa-zA-Z0-9]";
         String ws = "\\p{Blank}*";
         String normalEdgePattern = "(" + uml + "+)" + ws + "(-[->])" + ws + "(" + uml + "+)(" + ws + "\\((" + uml + "*)\\))?(" + ws + ":" + ws + "(\\d+))?"+ws+";";
-        String singleEdgePatterm = "(" + uml + "+)(" + ws + "\\((" + uml + ")*\\))?(" + ws + ":" + ws + "(\\d+))?"+ws+";";
+        String singleEdgePattern = "(" + uml + "+)(" + ws + "\\((" + uml + ")*\\))?(" + ws + ":" + ws + "(\\d+))?"+ws+";";
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             Matcher normalMatcher = Pattern.compile(normalEdgePattern).matcher(line);
-            Matcher singleMatcher = Pattern.compile(singleEdgePatterm).matcher(line);
+            Matcher singleMatcher = Pattern.compile(singleEdgePattern).matcher(line);
 
             if (normalMatcher.matches()){ // a -> b (ab) : 1
                 Boolean isDirected = false;
@@ -260,13 +260,15 @@ public class IOGraph {
     // ========== MAIN ===========
 
     public static void main(String[] args) throws Exception {
-        Graph graph = new SingleGraph("Tutorial 1");
+//        Graph graph = new SingleGraph("Tutorial 1");
 //        graph.addNode("A");
 //        graph.addNode("B");
 //        graph.addNode("C");
 //        graph.addEdge("AB", "A", "B", true).setAttribute("weight", 4);
 //        graph.addEdge("BC", "B", "C", false).setAttribute("weight", 5);
 //        graph.addEdge("CA", "C", "A", true).setAttribute("weight", 6);
+//        Graph graph1 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka"));
+//
 //
 //        preview(graph, false, false);
 //        preview(graph, true, false);
@@ -276,26 +278,16 @@ public class IOGraph {
 //        graph.addEdge("AB", "A", "B", true);
 
 
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka")),
-                "graph01");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka")),
-                "graph02");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph03.gka")),
-                "graph03");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph04.gka")),
-                "graph04");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka")),
-                "graph05");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph06.gka")),
-                "graph06");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph07.gka")),
-                "graph07");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph08.gka")),
-                "graph08");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph09.gka")),
-                "graph09");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph10.gka")),
-                "graph10");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka")), "graph01");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka")), "graph02");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph03.gka")), "graph03");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph04.gka")), "graph04");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka")), "graph05");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph06.gka")), "graph06");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph07.gka")), "graph07");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph08.gka")), "graph08");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph09.gka")), "graph09");
+        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph10.gka")), "graph10");
 //        preview(graph1,true,false);
 //        graph1.display();
 //        fromFileWithFileChooser("dfdf");
