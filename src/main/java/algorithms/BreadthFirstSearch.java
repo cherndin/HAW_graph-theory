@@ -4,22 +4,19 @@ import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.Graphs;
+import org.graphstream.graph.implementations.SingleGraph;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by MattX7 on 23.10.2016.
  */
 public class BreadthFirstSearch implements Algorithm {
     //BFS uses Queue data structure
-    private int steps = -1;
+    public int steps = -1;
     private Graph graph;
     private Node source;
     private Node target;
-
 
     public void init(Graph graph) {
         this.graph = graph;
@@ -28,38 +25,24 @@ public class BreadthFirstSearch implements Algorithm {
     }
 
     public void compute() {
-        /*
-         * Man kennzeichne den Knoten s mit 0 und setze i = 0.
-         */
         reset();
-        tag(source, 0);
-        int lvl = 1;
-        List<Node> newTaggedNeighbors;
-        /* Man ermittle alle nichtgekennzeichneten Knoten in G, die zu dem mit i
-         * gekennzeichneten Knoten benachbart sind.
-         *  Falls es derartige Knoten nicht gibt, ist t nicht mit s ¨uber einen Weg
-         * verbunden.
-         * Falls es derartige Knoten gibt, sind sie mit i + 1 zu kennzeichnen.
-        */
-        newTaggedNeighbors = getUntaggedNeighborsAndTagThem(source, lvl);
-        if (!isTargetTagged()) {
-            for (Node node : newTaggedNeighbors) {
-                newTaggedNeighbors.addAll(getUntaggedNeighborsAndTagThem(node, lvl));
-                if (newTaggedNeighbors.isEmpty() && !isTargetTagged()) { // only if t and s could be connected
-                    System.err.println("Target can not be reached!");
-                    break;
-                }
+        LinkedList<Node> queue = new LinkedList<Node>();
+        queue.add(tag(source,-1));
+        while(!queue.isEmpty()){
+            Node node = queue.getFirst();
+            queue.addAll(getUntaggedNeighborsAndTagThem(node));
+            queue.remove(node);
+        }
+        if (isTargetTagged()){
+         steps = target.getAttribute("steps");
+        }
 
-            }
-            lvl++;
-        }else
-            steps = lvl;
     }
 
     private void reset() {
         this.steps = -1;
         for (Node node:graph.getEachNode()){
-            node.setAttribute("BFS",-1);
+            node.setAttribute("steps","-1");
         }
     }
 
@@ -74,32 +57,41 @@ public class BreadthFirstSearch implements Algorithm {
      * @param node
      * @return isEmpty if no neighbors are left.
      */
-    private List<Node> getUntaggedNeighborsAndTagThem(Node node, int lvl) {
-        List<Node> newTaggedNeighbors = new ArrayList<Node>() {
-        };
+    private List<Node> getUntaggedNeighborsAndTagThem(Node node) {
+        List<Node> newTaggedNeighbors = new ArrayList<Node>();
         Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
         while (nodeIterator.hasNext()) {
             Node next = nodeIterator.next();
-            if (next.getAttribute("BFS") == null) {
-                tag(next, lvl);
-                newTaggedNeighbors.add(next);
+            Integer step = Integer.valueOf(node.getAttribute("steps").toString());
+            if (next.getAttribute("steps").toString().equals("-1")) {
+                newTaggedNeighbors.add(
+                        tag(next, Integer.valueOf(node.getAttribute("steps").toString())));
             }
         }
         return newTaggedNeighbors;
     }
 
-    /**
-     * Tags a node.
-     *
-     * @param node
-     * @param lvl
-     */
-    private void tag(Node node, int lvl) {
-        node.setAttribute("BFS", lvl);
+
+    private Node tag(Node node, int steps) {
+        node.setAttribute("steps", steps+1);
+        return node;
     }
 
 
     public boolean isTargetTagged() {
-        return (target.getAttribute("BFS") != null);
+        return (target.getAttribute("steps") != null);
+    }
+
+    public static void main(String[] args) {
+        Graph graph = new SingleGraph("testSave");
+        graph.addNode("1");
+        graph.addNode("2");
+        graph.addNode("3");
+        graph.addNode("4");
+
+        graph.addEdge("12", "1", "2");
+        graph.addEdge("23", "2", "3");
+        graph.addEdge("34", "3", "4");
+        graph.display();
     }
 }

@@ -17,22 +17,24 @@ public class BreadthFirstSearchTest {
     }
 
     @Test
-    public void compute() throws Exception {
-        Graph testGraph = new SingleGraph("testSave");
-        testGraph.addNode("1");
-        testGraph.addNode("2");
-        testGraph.addNode("3");
-        testGraph.addNode("4");
+    public void computeTest() throws Exception {
+        Graph graph = new SingleGraph("testSave");
+        graph.addNode("a");
+        graph.addNode("b");
+        graph.addNode("c");
+        graph.addNode("d");
 
-        testGraph.addEdge("12", "1", "2");
-        testGraph.addEdge("23", "2", "3");
-        testGraph.addEdge("34", "3", "4");
-        testGraph.display();
+        graph.addEdge("ab", "a", "b");
+        graph.addEdge("bc", "b", "c");
+        graph.addEdge("cd", "c", "d");
+//        graph.display();
 
+        BreadthFirstSearch bfs = new BreadthFirstSearch();
+        bfs.init(graph);
+        bfs.setSourceAndTarget(graph.getNode("a"),graph.getNode("d"));
+        bfs.compute();
 
-        BreadthFirstSearch.init(testGraph);
+        assertEquals(bfs.steps, 3); // {shortestWay, anzKanten}
 
-
-        assertEquals({3,3}, shortTraverse(testGraph)); // {shortestWay, anzKanten}
-
+    }
 }
