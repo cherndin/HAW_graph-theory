@@ -1,17 +1,22 @@
 package algorithms;
 
+import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.SingleGraph;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by MattX7 on 23.10.2016.
  */
 public class BreadthFirstSearch implements Algorithm {
+    private static Logger logger = Logger.getLogger(BreadthFirstSearch.class);
+    // TODO Logging
     //BFS uses Queue data structure
     public int steps = -1;
     private Graph graph;
@@ -20,8 +25,6 @@ public class BreadthFirstSearch implements Algorithm {
 
     public void init(Graph graph) {
         this.graph = graph;
-        this.source = graph.getNode(0);
-        this.target = graph.getNode(graph.getEdgeCount() - 1);
     }
 
     public void compute() {

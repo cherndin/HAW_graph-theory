@@ -1,11 +1,14 @@
 package algorithms;
 
+import helper.IOGraph;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Neak on 23.10.2016.
@@ -35,6 +38,10 @@ public class BreadthFirstSearchTest {
         bfs.compute();
 
         assertEquals(bfs.steps, 3); // {shortestWay, anzKanten}
-
+        Graph graph1 = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka"));
+        bfs.init(graph1);
+        bfs.setSourceAndTarget(graph1.getNode("v1"), graph1.getNode("v5"));
+        bfs.compute();
+        assertEquals(bfs.steps, 1);
     }
 }
