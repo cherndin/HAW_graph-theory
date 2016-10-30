@@ -37,17 +37,17 @@ public class BreadthFirstSearch implements Algorithm {
         logger.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph, false, false));
         Queue<Node> queue = new LinkedList<Node>();
         queue.add(tag(source, -1)); // start with source
-        source.setAttribute("ui.class", "marked");
+        source.setAttribute("ui.class", "markBlue");
         while(!queue.isEmpty()){
             Node next = queue.peek();
-            next.setAttribute("ui.class", "actual");
+            next.setAttribute("ui.class", "markRed");
             if (preview) GraphUtil.sleepLong();
             queue.addAll(getUntaggedNeighborsAndTagThem(next));
             if (isTargetTagged()) {
                 steps = target.getAttribute("steps");
                 break;
             }
-            next.setAttribute("ui.class", "marked");
+            next.setAttribute("ui.class", "markBlue");
             logger.debug("queue:" + queue.toString());
             queue.remove(next);
         }
@@ -60,9 +60,16 @@ public class BreadthFirstSearch implements Algorithm {
         if (target.getAttribute("steps").equals(-1))
             throw new IllegalArgumentException("do compute before this method");
         LinkedList<Node> shortestWay = new LinkedList<Node>();
+        for (Node node : graph.getEachNode()) {
+            node.setAttribute("ui.class", "");
+        }
         shortestWay.add(target);
+        target.setAttribute("ui.class", "markRed");
         while (!shortestWay.getLast().getAttribute("steps").equals(0)) { // TODO noch eine Abbruchbedingung
-            shortestWay.add(getShortestNode(shortestWay.getLast()));
+            Node next = getShortestNode(shortestWay.getLast());
+            if (preview) GraphUtil.sleepLong();
+            next.setAttribute("ui.class", "markRed");
+            shortestWay.add(next);
         }
         return shortestWay;
     }
@@ -109,7 +116,7 @@ public class BreadthFirstSearch implements Algorithm {
             if (next.getAttribute("steps").toString().equals("-1")) {
                 newTaggedNeighbors.add(
                         tag(next, Integer.valueOf(node.getAttribute("steps").toString())));
-                next.setAttribute("ui.class", "marked");
+                next.setAttribute("ui.class", "markBlue");
                 if (preview) GraphUtil.sleepShort();
             }
         }
@@ -148,8 +155,9 @@ public class BreadthFirstSearch implements Algorithm {
         BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(graph);
 //        bfs.setSourceAndTarget(graph.getNode("a"),graph.getNode("d"));
-        preview = false;
+        preview = true;
         bfs.compute();
+        GraphUtil.sleepLong();
         System.out.println(bfs.getShortestWay().toString());
         System.out.println("Steps" + bfs.steps);
 

@@ -54,10 +54,10 @@ public class GraphUtil {
             "node {" +
                     "	fill-color: black;" +
                     "}" +
-                    "node.marked {" +
+                    "node.markBlue {" +
                     "	fill-color: blue;" +
                     "}" +
-                    "node.actual {" +
+                    "node.markRed {" +
                     "fill-color: red;" +
                     "}";
 
