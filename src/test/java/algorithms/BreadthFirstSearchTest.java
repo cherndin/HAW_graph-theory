@@ -1,12 +1,9 @@
 package algorithms;
 
-import helper.IOGraph;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,6 +63,7 @@ public class BreadthFirstSearchTest {
         penta.addEdge("ec", "e", "c");
         penta.addEdge("bd", "b", "d");
 
+        BreadthFirstSearch.preview = true;
 
         BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(circle);
@@ -83,9 +81,9 @@ public class BreadthFirstSearchTest {
         bfs3.compute();
 
 
-        assertEquals(bfs.steps, 2);
-        assertEquals(bfs2.steps, 1);
-        assertEquals(bfs3.steps, 2);
+        assertEquals(2, bfs.steps);
+        assertEquals(1, bfs2.steps);
+        assertEquals(2, bfs3.steps);
 
         //assertEquals(bfs.steps, 3); // {shortestWay, anzKanten}
         //Graph graph1 = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka"));

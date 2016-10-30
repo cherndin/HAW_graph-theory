@@ -4,6 +4,7 @@ import helper.GraphUtil;
 import helper.IOGraph;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.jetbrains.annotations.NotNull;
@@ -32,13 +33,13 @@ public class BreadthFirstSearch implements Algorithm {
     public void compute() {
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException();
-        GraphUtil.buildForDisplay(graph).display();
+        if (preview) GraphUtil.buildForDisplay(graph).display();
         reset();
         logger.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph, false, false));
         Queue<Node> queue = new LinkedList<Node>();
         queue.add(tag(source, -1)); // start with source
         source.setAttribute("ui.class", "markBlue");
-        while(!queue.isEmpty()){
+        while (!queue.isEmpty()) {
             Node next = queue.peek();
             next.setAttribute("ui.class", "markRed");
             if (preview) GraphUtil.sleepLong();
@@ -92,6 +93,8 @@ public class BreadthFirstSearch implements Algorithm {
      * @param t target node
      */
     public void setSourceAndTarget(@NotNull Node s, @NotNull Node t) {
+        if (source != null) source.setAttribute("title", "");
+        if (target != null) target.setAttribute("title", "");
         this.source = s;
         this.target = t;
         source.setAttribute("title", "source");
@@ -109,16 +112,21 @@ public class BreadthFirstSearch implements Algorithm {
     @NotNull
     private List<Node> getUntaggedNeighborsAndTagThem(@NotNull Node node) {
         List<Node> newTaggedNeighbors = new ArrayList<Node>();
-        Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
-
-        while (nodeIterator.hasNext()) {
-            Node next = nodeIterator.next();
-            if (next.getAttribute("steps").toString().equals("-1")) {
+        Iterator<Edge> edgeIterator = node.getLeavingEdgeIterator();
+        while (edgeIterator.hasNext()) {
+            Edge nextEdge = edgeIterator.next();
+            Node nextNode;
+            if (node != nextEdge.getNode1())
+                nextNode = nextEdge.getNode1();
+            else
+                nextNode = nextEdge.getNode0();
+            if (nextNode.getAttribute("steps").toString().equals("-1")) {
                 newTaggedNeighbors.add(
-                        tag(next, Integer.valueOf(node.getAttribute("steps").toString())));
-                next.setAttribute("ui.class", "markBlue");
+                        tag(nextNode, Integer.valueOf(node.getAttribute("steps").toString())));
+                nextNode.setAttribute("ui.class", "markBlue");
                 if (preview) GraphUtil.sleepShort();
             }
+
         }
         return newTaggedNeighbors;
     }
@@ -132,6 +140,7 @@ public class BreadthFirstSearch implements Algorithm {
 
     /**
      * tag Node
+     *
      * @param node
      * @param steps
      * @return the node param for inline use
@@ -150,7 +159,7 @@ public class BreadthFirstSearch implements Algorithm {
 
 
     public static void main(String[] args) throws Exception {
-        Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph04.gka"));
+        Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
 
         BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(graph);
