@@ -1,15 +1,15 @@
 package algorithms;
 
+import helper.GraphUtil;
+import helper.IOGraph;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.SingleGraph;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.File;
+import java.util.*;
 
 /**
  * Created by MattX7 on 23.10.2016.
@@ -19,27 +19,39 @@ public class BreadthFirstSearch implements Algorithm {
     // TODO Logging
     //BFS uses Queue data structure
     public int steps = -1;
+    public LinkedList<Node> shortestWay;
     private Graph graph;
     private Node source;
     private Node target;
 
     public void init(Graph graph) {
         this.graph = graph;
+        setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
     }
 
     public void compute() {
+        if (graph == null || source == null || target == null) // have to be set
+            throw new IllegalArgumentException();
+        GraphUtil.buildForDisplay(graph);
+        graph.display();
         reset();
-        LinkedList<Node> queue = new LinkedList<Node>();
-        queue.add(tag(source,-1));
+        logger.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph, false, false));
+        Queue<Node> queue = new LinkedList<Node>();
+        queue.add(tag(source, -1)); // start with source
+        source.setAttribute("ui.class", "marked");
         while(!queue.isEmpty()){
-            Node node = queue.getFirst();
-            queue.addAll(getUntaggedNeighborsAndTagThem(node));
-            queue.remove(node);
+            Node next = queue.peek();
+            next.setAttribute("ui.class", "actual");
+            GraphUtil.sleepLong();
+            queue.addAll(getUntaggedNeighborsAndTagThem(next));
+            if (isTargetTagged()) {
+                steps = target.getAttribute("steps");
+                break;
+            }
+            next.setAttribute("ui.class", "marked");
+            logger.debug("queue:" + queue.toString());
+            queue.remove(next);
         }
-        if (isTargetTagged()){
-         steps = target.getAttribute("steps");
-        }
-
     }
 
     private void reset() {
@@ -47,54 +59,71 @@ public class BreadthFirstSearch implements Algorithm {
         for (Node node:graph.getEachNode()){
             node.setAttribute("steps","-1");
         }
-    }
-
-    public void setSourceAndTarget(Node s, Node t) {
-        this.source = s;
-        this.target = t;
+        shortestWay = null;
     }
 
     /**
-     * All untagged nodes that ar neighbors.
+     * Sets source and target before compute()
+     *
+     * @param s source node
+     * @param t target node
+     */
+    public void setSourceAndTarget(@NotNull Node s, @NotNull Node t) {
+        this.source = s;
+        this.target = t;
+        source.setAttribute("title", "source");
+        target.setAttribute("title", "target");
+    }
+
+    /**
+     * All untagged shortestWay that ar neighbors.
      *
      * @param node
      * @return isEmpty if no neighbors are left.
      */
-    private List<Node> getUntaggedNeighborsAndTagThem(Node node) {
+    @NotNull
+    private List<Node> getUntaggedNeighborsAndTagThem(@NotNull Node node) {
         List<Node> newTaggedNeighbors = new ArrayList<Node>();
         Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
+
         while (nodeIterator.hasNext()) {
             Node next = nodeIterator.next();
-            Integer step = Integer.valueOf(node.getAttribute("steps").toString());
             if (next.getAttribute("steps").toString().equals("-1")) {
                 newTaggedNeighbors.add(
                         tag(next, Integer.valueOf(node.getAttribute("steps").toString())));
+                next.setAttribute("ui.class", "marked");
+                GraphUtil.sleepShort();
             }
         }
         return newTaggedNeighbors;
     }
 
-
-    private Node tag(Node node, int steps) {
+    /**
+     * tag Node
+     *
+     * @param node
+     * @param steps
+     * @return the node param for inline use
+     */
+    @NotNull
+    private Node tag(@NotNull Node node, @NotNull int steps) {
         node.setAttribute("steps", steps+1);
         return node;
     }
 
-
-    public boolean isTargetTagged() {
-        return (target.getAttribute("steps") != null);
+    @NotNull
+    private boolean isTargetTagged() {
+        return (!target.getAttribute("steps").equals("-1"));
     }
 
-    public static void main(String[] args) {
-        Graph graph = new SingleGraph("testSave");
-        graph.addNode("1");
-        graph.addNode("2");
-        graph.addNode("3");
-        graph.addNode("4");
 
-        graph.addEdge("12", "1", "2");
-        graph.addEdge("23", "2", "3");
-        graph.addEdge("34", "3", "4");
-        graph.display();
+    public static void main(String[] args) throws Exception {
+        Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph04.gka"));
+
+        BreadthFirstSearch bfs = new BreadthFirstSearch();
+        bfs.init(graph);
+//        bfs.setSourceAndTarget(graph.getNode("a"),graph.getNode("d"));
+        bfs.compute();
+
     }
 }

@@ -42,7 +42,7 @@ public class IOGraph {
         for (Edge edge : graph.getEachEdge()) {
             if (edge.getAttribute("weight") != null)
                 enableWeight = true;
-            bw.write(edgeToLine(edge, true, enableWeight));
+            bw.write(GraphUtil.edgeToLine(edge, true, enableWeight));
             bw.newLine();
             enableWeight = false;
         }
@@ -65,7 +65,7 @@ public class IOGraph {
         BufferedWriter bw = new BufferedWriter(new FileWriter("src/main/resources/output/" + filename + ".gka"));
 
         for (Edge edge : graph.getEachEdge()) {
-            bw.write(edgeToLine(edge, enableName, enableWeight));
+            bw.write(GraphUtil.edgeToLine(edge, enableName, enableWeight));
             bw.newLine();
         }
         bw.close();
@@ -108,38 +108,36 @@ public class IOGraph {
         int ln = 1;
         String uml = "[öÖäÄüÜßa-zA-Z0-9]";
         String ws = "\\p{Blank}*";
-        String normalEdgePattern = "(" + uml + "+)(" + ws + "(-[->])" + ws + "(" + uml + "+))?(" + ws + "\\((" + uml + "*)\\))?(" + ws + ":" + ws + "(\\d+))?" + ws + ";";
-        String singleEdgePattern = "(" + uml + "+)(" + ws + "\\((" + uml + ")*\\))?(" + ws + ":" + ws + "(\\d+))?" + ws + ";";
+        String edgePattern = "(" + uml + "+)(" + ws + "(-[->])" + ws + "(" + uml + "+))?(" + ws + "\\((" + uml + "*)\\))?(" + ws + ":" + ws + "(\\d+))?" + ws + ";";
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            Matcher linePattern = Pattern.compile(normalEdgePattern).matcher(line);
+            Matcher lineMatcher = Pattern.compile(edgePattern).matcher(line);
 
-            if (linePattern.matches()) {
-
+            if (lineMatcher.matches()) {
                 Boolean isDirected = false;
                 String edgeID = "", edgeWeight = "", arrow = "", node1 = ""; // maybe null
-                String node0 = linePattern.group(1);
+                String node0 = lineMatcher.group(1);
                 createNodeIfDoestExist(graph, node0); // TODO delete if exception got thrown
 
-                // NORMAL EDGE with two different nodes
-                if (linePattern.group(3) != null && linePattern.group(4) != null) {
-                    arrow = linePattern.group(3);
-                    node1 = linePattern.group(4);
+                // NORMAL EDGE with two different shortestWay
+                if (lineMatcher.group(3) != null && lineMatcher.group(4) != null) {
+                    arrow = lineMatcher.group(3);
+                    node1 = lineMatcher.group(4);
                     createNodeIfDoestExist(graph, node1);
 
-                    if (linePattern.group(6) != null) {
-                        edgeID = linePattern.group(6);
+                    if (lineMatcher.group(6) != null) {
+                        edgeID = lineMatcher.group(6);
                         if (graph.getEdge(edgeID) != null) { // if edgeID does already exists
                             logger.info("Edge '" + edgeID + "' does already exists. Will be renamed to " + node0 + "_to_" + node1);
                             edgeID = node0 + "_to_" + node1;
                         }
                     } else
                         edgeID = node0 + "_to_" + node1;
-                    if (linePattern.group(8) != null) edgeWeight = linePattern.group(8);
+                    if (lineMatcher.group(8) != null) edgeWeight = lineMatcher.group(8);
                     if (arrow.equals("->")) isDirected = true;
                 } else { // SINGLE NODE OR LOOP
-                    if (linePattern.group(6) != null) { // edgeID is given so we create a node with loop
+                    if (lineMatcher.group(6) != null) { // edgeID is given so we create a node with loop
                         node1 = node0;
                     } else {
                         logger.debug(ln + ". single node " + node0 + " added");
@@ -161,6 +159,16 @@ public class IOGraph {
         return graph;
     }
 
+    /**
+     * extended display
+     *
+     * @param graph
+     */
+    public static void display(Graph graph) {
+        GraphUtil.buildForDisplay(graph);
+        graph.display();
+    }
+
     // ====== PRIVATE =======
 
 
@@ -176,35 +184,8 @@ public class IOGraph {
                                 @NotNull Boolean enableName,
                                 @NotNull Boolean enableWeight) {
         for (Edge edge : graph.getEachEdge()) {
-            System.out.println(edgeToLine(edge, enableName, enableWeight));
+            System.out.println(GraphUtil.edgeToLine(edge, enableName, enableWeight));
         }
-    }
-
-    /**
-     * Converts an Edge to String.
-     * <p>
-     *
-     * @param edge         edge we wanna create.
-     * @param enableName   name should be added?
-     * @param enableWeight weight should be added?
-     * @return name node1 [ arrow name node2] [(edge name)] [: edgeweight];
-     */
-    private static String edgeToLine(@NotNull Edge edge,
-                                     @NotNull Boolean enableName,
-                                     @NotNull Boolean enableWeight) {
-        String name = "";
-        String weight = "";
-        String arrow = " -- ";
-
-        if (enableWeight) {
-            if (edge.getAttribute("weight") == null)
-                throw new IllegalArgumentException("Edge has no attribute with the key <weight>");
-            weight = " : " + edge.getAttribute("weight");
-        }
-        if (edge.isDirected()) arrow = " -> ";
-        if (enableName) name = " (" + edge.getId() + ")";
-
-        return edge.getNode0() + arrow + edge.getNode1() + name + weight + ";";
     }
 
     /**
@@ -230,11 +211,11 @@ public class IOGraph {
         try {
             if (node0.equals(node1)) // loop
                 loop = "creating loop... ";
-            if (weight.equals(""))
+            if (weight.equals("")) // without edgeWeight
                 graph.addEdge(edge, node0, node1, isDirected);
-            else
+            else // normal case
                 graph.addEdge(edge, node0, node1, isDirected).setAttribute("weight", Integer.valueOf(weight));
-            logger.debug(ln + ". " + loop + edgeToLine(graph.getEdge(edge), true, false) + " added.");
+            logger.debug(ln + ". " + loop + GraphUtil.edgeToLine(graph.getEdge(edge), true, false) + " added.");
         } catch (EdgeRejectedException e) {
             System.err.println(e);
         }
@@ -254,14 +235,8 @@ public class IOGraph {
     // ========== MAIN ===========
 
     public static void main(String[] args) throws Exception {
-//        Graph graph = new SingleGraph("Tutorial 1");
-//        graph.addNode("A");
-//        graph.addNode("B");
-//        graph.addNode("C");
-//        graph.addEdge("AB", "A", "B", true).setAttribute("weight", 4);
-//        graph.addEdge("BC", "B", "C", false).setAttribute("weight", 5);
-//        graph.addEdge("CA", "C", "A", true).setAttribute("weight", 6);
-//        Graph graph1 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka"));
+        Graph graph1 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
+        display(graph1);
 //
 //
 //        preview(graph, false, false);
@@ -272,16 +247,16 @@ public class IOGraph {
 //        graph.addEdge("AB", "A", "B", true);
 
 
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka")), "graph01");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka")), "graph02");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph03.gka")), "graph03");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph04.gka")), "graph04");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka")), "graph05");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph06.gka")), "graph06");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph07.gka")), "graph07");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph08.gka")), "graph08");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph09.gka")), "graph09");
-        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph10.gka")), "graph10");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka")), "graph01");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka")), "graph02");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph03.gka")), "graph03");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph04.gka")), "graph04");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka")), "graph05");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph06.gka")), "graph06");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph07.gka")), "graph07");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph08.gka")), "graph08");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph09.gka")), "graph09");
+//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph10.gka")), "graph10");
 //        preview(graph1,true,false);
 //        fromFileWithFileChooser("dfdf");
     }
