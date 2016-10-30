@@ -17,9 +17,8 @@ import java.util.*;
 public class BreadthFirstSearch implements Algorithm {
     private static Logger logger = Logger.getLogger(BreadthFirstSearch.class);
     // TODO Logging
-    //BFS uses Queue data structure
+    // TODO with directed edges
     public int steps = -1;
-    public LinkedList<Node> shortestWay;
     private Graph graph;
     private Node source;
     private Node target;
@@ -52,14 +51,31 @@ public class BreadthFirstSearch implements Algorithm {
             logger.debug("queue:" + queue.toString());
             queue.remove(next);
         }
+        if (!isTargetTagged()) {
+            logger.error("Target not found!");
+        }
     }
 
-    private void reset() {
-        this.steps = -1;
-        for (Node node:graph.getEachNode()){
-            node.setAttribute("steps","-1");
+    public List<Node> getShortestWay() {
+        if (steps == -1)
+            throw new IllegalArgumentException("do compute before");
+        LinkedList<Node> shortestWay = new LinkedList<Node>();
+        shortestWay.add(target);
+        while (!shortestWay.getLast().getAttribute("steps").equals("0")) { // TODO noch eine Abbruchbedingung
+            shortestWay.add(getShortestNode(shortestWay.getLast()));
         }
-        shortestWay = null;
+        return shortestWay;
+    }
+
+    private Node getShortestNode(Node node) {
+        Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
+        while (nodeIterator.hasNext()) {
+            Node next = nodeIterator.next();
+            if (next.getAttribute("steps").equals(node.getAttribute("steps"))) {
+                return next;
+            }
+        }
+        return null;
     }
 
     /**
@@ -74,6 +90,8 @@ public class BreadthFirstSearch implements Algorithm {
         source.setAttribute("title", "source");
         target.setAttribute("title", "target");
     }
+
+    // ====== PRIVATE =========
 
     /**
      * All untagged shortestWay that ar neighbors.
@@ -98,6 +116,13 @@ public class BreadthFirstSearch implements Algorithm {
         return newTaggedNeighbors;
     }
 
+    private void reset() {
+        this.steps = -1;
+        for (Node node : graph.getEachNode()) {
+            node.setAttribute("steps", "-1");
+        }
+    }
+
     /**
      * tag Node
      *
@@ -106,13 +131,14 @@ public class BreadthFirstSearch implements Algorithm {
      * @return the node param for inline use
      */
     @NotNull
-    private Node tag(@NotNull Node node, @NotNull int steps) {
+    private Node tag(@NotNull Node node, @NotNull Integer steps) {
         node.setAttribute("steps", steps+1);
+        node.setAttribute("ui.label", node.getAttribute("ui.label") + " | " + (steps + 1) + " |");
         return node;
     }
 
     @NotNull
-    private boolean isTargetTagged() {
+    private Boolean isTargetTagged() {
         return (!target.getAttribute("steps").equals("-1"));
     }
 
