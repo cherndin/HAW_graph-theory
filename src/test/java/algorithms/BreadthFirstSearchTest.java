@@ -21,27 +21,79 @@ public class BreadthFirstSearchTest {
 
     @Test
     public void computeTest() throws Exception {
-        Graph graph = new SingleGraph("testSave");
-        graph.addNode("a");
-        graph.addNode("b");
-        graph.addNode("c");
-        graph.addNode("d");
+        //Ein Kreis Graph
+        Graph circle = new SingleGraph("circle");
+        circle.addNode("a");
+        circle.addNode("b");
+        circle.addNode("c");
+        circle.addNode("d");
 
-        graph.addEdge("ab", "a", "b");
-        graph.addEdge("bc", "b", "c");
-        graph.addEdge("cd", "c", "d");
-//        graph.display();
+        circle.addEdge("ab", "a", "b");
+        circle.addEdge("bc", "b", "c");
+        circle.addEdge("cd", "c", "d");
+        circle.addEdge("da", "d", "a");
+
+        //Ein Pentagram with Circle Graph
+        Graph pentaCircle = new SingleGraph("pentaCircle");
+        pentaCircle.addNode("a");
+        pentaCircle.addNode("b");
+        pentaCircle.addNode("c");
+        pentaCircle.addNode("d");
+        pentaCircle.addNode("e");
+
+        pentaCircle.addEdge("ab", "a", "b");
+        pentaCircle.addEdge("ac", "a", "c");
+        pentaCircle.addEdge("ae", "a", "e");
+        pentaCircle.addEdge("ad", "a", "d");
+        pentaCircle.addEdge("bd", "b", "d");
+        pentaCircle.addEdge("bc", "b", "c");
+        pentaCircle.addEdge("be", "b", "e");
+        pentaCircle.addEdge("ed", "e", "d");
+        pentaCircle.addEdge("ec", "e", "c");
+        pentaCircle.addEdge("cd", "c", "d");
+
+        //Ein Pentagram Graph
+        Graph penta = new SingleGraph("pentaCircle");
+        penta.addNode("a");
+        penta.addNode("b");
+        penta.addNode("c");
+        penta.addNode("d");
+        penta.addNode("e");
+
+        penta.addEdge("ab", "a", "b");
+        penta.addEdge("ac", "a", "c");
+        penta.addEdge("de", "d", "e");
+        penta.addEdge("ec", "e", "c");
+        penta.addEdge("bd", "b", "d");
+
 
         BreadthFirstSearch bfs = new BreadthFirstSearch();
-        bfs.init(graph);
-        bfs.setSourceAndTarget(graph.getNode("a"),graph.getNode("d"));
+        bfs.init(circle);
+        bfs.setSourceAndTarget(circle.getNode("a"),circle.getNode("c"));
         bfs.compute();
 
-        assertEquals(bfs.steps, 3); // {shortestWay, anzKanten}
-        Graph graph1 = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka"));
-        bfs.init(graph1);
-        bfs.setSourceAndTarget(graph1.getNode("v1"), graph1.getNode("v5"));
-        bfs.compute();
-        assertEquals(bfs.steps, 1);
+        BreadthFirstSearch bfs2 = new BreadthFirstSearch();
+        bfs2.init(pentaCircle);
+        bfs2.setSourceAndTarget(pentaCircle.getNode("a"),pentaCircle.getNode("c"));
+        bfs2.compute();
+
+        BreadthFirstSearch bfs3 = new BreadthFirstSearch();
+        bfs3.init(penta);
+        bfs3.setSourceAndTarget(penta.getNode("a"),penta.getNode("e"));
+        bfs3.compute();
+
+
+        assertEquals(bfs.steps, 2);
+        assertEquals(bfs2.steps, 1);
+        assertEquals(bfs3.steps, 2);
+
+        //assertEquals(bfs.steps, 3); // {shortestWay, anzKanten}
+        //Graph graph1 = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka"));
+        //bfs.init(graph1);
+        //bfs.setSourceAndTarget(graph1.getNode("v1"), graph1.getNode("v5"));
+        //bfs.compute();
+        //assertEquals(bfs.steps, 1);
+
+
     }
 }
