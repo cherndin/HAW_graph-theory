@@ -16,8 +16,9 @@ public class GraphUtil {
      * build with CSS
      *
      * @param graph
+     * @return graph for inline use
      */
-    public static void buildForDisplay(Graph graph) {
+    public static Graph buildForDisplay(Graph graph) {
         graph.addAttribute("ui.stylesheet", styleSheet);
         graph.setAutoCreate(true);
         graph.setStrict(false);
@@ -27,6 +28,7 @@ public class GraphUtil {
             else
                 node.addAttribute("ui.label", node.getId());
         }
+        return graph;
     }
 
     /**

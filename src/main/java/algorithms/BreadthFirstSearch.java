@@ -18,6 +18,7 @@ public class BreadthFirstSearch implements Algorithm {
     private static Logger logger = Logger.getLogger(BreadthFirstSearch.class);
     // TODO Logging
     // TODO with directed edges
+    public static boolean preview = true;
     public int steps = -1;
     private Graph graph;
     private Node source;
@@ -31,8 +32,7 @@ public class BreadthFirstSearch implements Algorithm {
     public void compute() {
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException();
-        GraphUtil.buildForDisplay(graph);
-        graph.display();
+        GraphUtil.buildForDisplay(graph).display();
         reset();
         logger.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph, false, false));
         Queue<Node> queue = new LinkedList<Node>();
@@ -41,7 +41,7 @@ public class BreadthFirstSearch implements Algorithm {
         while(!queue.isEmpty()){
             Node next = queue.peek();
             next.setAttribute("ui.class", "actual");
-            GraphUtil.sleepLong();
+            if (preview) GraphUtil.sleepLong();
             queue.addAll(getUntaggedNeighborsAndTagThem(next));
             if (isTargetTagged()) {
                 steps = target.getAttribute("steps");
@@ -57,11 +57,11 @@ public class BreadthFirstSearch implements Algorithm {
     }
 
     public List<Node> getShortestWay() {
-        if (steps == -1)
-            throw new IllegalArgumentException("do compute before");
+        if (target.getAttribute("steps").equals(-1))
+            throw new IllegalArgumentException("do compute before this method");
         LinkedList<Node> shortestWay = new LinkedList<Node>();
         shortestWay.add(target);
-        while (!shortestWay.getLast().getAttribute("steps").equals("0")) { // TODO noch eine Abbruchbedingung
+        while (!shortestWay.getLast().getAttribute("steps").equals(0)) { // TODO noch eine Abbruchbedingung
             shortestWay.add(getShortestNode(shortestWay.getLast()));
         }
         return shortestWay;
@@ -71,7 +71,7 @@ public class BreadthFirstSearch implements Algorithm {
         Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
         while (nodeIterator.hasNext()) {
             Node next = nodeIterator.next();
-            if (next.getAttribute("steps").equals(node.getAttribute("steps"))) {
+            if (next.getAttribute("steps").equals((((Integer) node.getAttribute("steps")) - 1))) {
                 return next;
             }
         }
@@ -110,7 +110,7 @@ public class BreadthFirstSearch implements Algorithm {
                 newTaggedNeighbors.add(
                         tag(next, Integer.valueOf(node.getAttribute("steps").toString())));
                 next.setAttribute("ui.class", "marked");
-                GraphUtil.sleepShort();
+                if (preview) GraphUtil.sleepShort();
             }
         }
         return newTaggedNeighbors;
@@ -119,27 +119,26 @@ public class BreadthFirstSearch implements Algorithm {
     private void reset() {
         this.steps = -1;
         for (Node node : graph.getEachNode()) {
-            node.setAttribute("steps", "-1");
+            node.setAttribute("steps", -1);
         }
     }
 
     /**
      * tag Node
-     *
      * @param node
      * @param steps
      * @return the node param for inline use
      */
     @NotNull
     private Node tag(@NotNull Node node, @NotNull Integer steps) {
-        node.setAttribute("steps", steps+1);
+        node.setAttribute("steps", steps + 1);
         node.setAttribute("ui.label", node.getAttribute("ui.label") + " | " + (steps + 1) + " |");
         return node;
     }
 
     @NotNull
     private Boolean isTargetTagged() {
-        return (!target.getAttribute("steps").equals("-1"));
+        return (!target.getAttribute("steps").equals(-1));
     }
 
 
@@ -149,7 +148,10 @@ public class BreadthFirstSearch implements Algorithm {
         BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(graph);
 //        bfs.setSourceAndTarget(graph.getNode("a"),graph.getNode("d"));
+        preview = false;
         bfs.compute();
+        System.out.println(bfs.getShortestWay().toString());
+        System.out.println("Steps" + bfs.steps);
 
     }
 }
