@@ -35,6 +35,24 @@ public class IOGraph {
 
     // ===== PUBLIC =====
 
+    /**
+     * Saves graph in a .gka file.
+     * GraphID will be the name of the file.
+     *
+     * @param graph
+     * @throws IOException
+     */
+    public static void save(@NotNull Graph graph) throws IOException {
+        save(graph, graph.getId());
+    }
+
+    /**
+     * Saves graph in a .gka file
+     *
+     * @param graph
+     * @param filename
+     * @throws IOException
+     */
     public static void save(@NotNull Graph graph,
                             @NotNull String filename) throws IOException {
         BufferedWriter bw = new BufferedWriter(new FileWriter("src/main/resources/output/" + filename + ".gka"));
@@ -103,10 +121,10 @@ public class IOGraph {
     public static Graph fromFile(@NotNull String name,
                                  @NotNull File fileToRead) throws FileNotFoundException {
         Graph graph = new MultiGraph(name);
-        Scanner scanner = new Scanner(fileToRead, "ISO-8859-1");
+        Scanner scanner = new Scanner(fileToRead);
 //        scanner.useLocale(Locale.GERMANY);
         int ln = 1;
-        String uml = "[öÖäÄüÜßa-zA-Z0-9]";
+        String uml = "[_öÖäÄüÜßa-zA-Z0-9]";
         String ws = "\\p{Blank}*";
         String edgePattern = "(" + uml + "+)(" + ws + "(-[->])" + ws + "(" + uml + "+))?(" + ws + "\\((" + uml + "*)\\))?(" + ws + ":" + ws + "(\\d+))?" + ws + ";";
 
@@ -237,28 +255,9 @@ public class IOGraph {
     public static void main(String[] args) throws Exception {
         Graph graph1 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
         display(graph1);
-//
-//
-//        preview(graph, false, false);
-//        preview(graph, true, false);
-//        preview(graph, false, true);
-//        preview(graph, true, true);
-//        save(graph, "MyFile", true, true);
-//        graph.addEdge("AB", "A", "B", true);
 
-
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka")), "graph01");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka")), "graph02");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph03.gka")), "graph03");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph04.gka")), "graph04");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka")), "graph05");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph06.gka")), "graph06");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph07.gka")), "graph07");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph08.gka")), "graph08");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph09.gka")), "graph09");
-//        save(fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph10.gka")), "graph10");
-//        preview(graph1,true,false);
-//        fromFileWithFileChooser("dfdf");
+//        Graph graph2 = fromFileWithFileChooser("MyGraph2");
+//        display(graph2);
     }
 
 }
