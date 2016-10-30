@@ -17,8 +17,6 @@ import java.util.*;
  */
 public class BreadthFirstSearch implements Algorithm {
     private static Logger logger = Logger.getLogger(BreadthFirstSearch.class);
-    // TODO Logging
-    // TODO with directed edges
     public static boolean preview = true;
     public int steps = -1;
     private Graph graph;
@@ -42,7 +40,7 @@ public class BreadthFirstSearch implements Algorithm {
         while (!queue.isEmpty()) {
             Node next = queue.peek();
             next.setAttribute("ui.class", "markRed");
-            if (preview) GraphUtil.sleepLong();
+            if (preview) GraphUtil.sleepShort();
             queue.addAll(getUntaggedNeighborsAndTagThem(next));
             if (isTargetTagged()) {
                 steps = target.getAttribute("steps");
@@ -68,7 +66,7 @@ public class BreadthFirstSearch implements Algorithm {
         target.setAttribute("ui.class", "markRed");
         while (!shortestWay.getLast().getAttribute("steps").equals(0)) { // TODO noch eine Abbruchbedingung
             Node next = getShortestNode(shortestWay.getLast());
-            if (preview) GraphUtil.sleepLong();
+            if (preview) GraphUtil.sleepShort();
             next.setAttribute("ui.class", "markRed");
             shortestWay.add(next);
         }
@@ -159,7 +157,7 @@ public class BreadthFirstSearch implements Algorithm {
 
 
     public static void main(String[] args) throws Exception {
-        Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
+        Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka"));
 
         BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(graph);
