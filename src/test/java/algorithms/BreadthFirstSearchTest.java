@@ -63,8 +63,8 @@ public class BreadthFirstSearchTest {
         penta.addEdge("ec", "e", "c");
         penta.addEdge("bd", "b", "d");
 
-        BreadthFirstSearch.preview = true;
-
+        BreadthFirstSearch.preview = false;
+        // TODO Mit großem Graph testen
         BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(circle);
         bfs.setSourceAndTarget(circle.getNode("a"),circle.getNode("c"));
@@ -80,7 +80,6 @@ public class BreadthFirstSearchTest {
         bfs3.setSourceAndTarget(penta.getNode("a"),penta.getNode("e"));
         bfs3.compute();
 
-
         assertEquals(2, bfs.steps);
         assertEquals(1, bfs2.steps);
         assertEquals(2, bfs3.steps);
@@ -91,7 +90,22 @@ public class BreadthFirstSearchTest {
         //bfs.setSourceAndTarget(graph1.getNode("v1"), graph1.getNode("v5"));
         //bfs.compute();
         //assertEquals(bfs.steps, 1);
+    }
 
-
+    @Test
+    public void bigGraphTest() throws Exception {
+        int edges = 100;
+        Graph bigGraph = new SingleGraph("bigGraph");
+        bigGraph.addNode("0");
+        for (int i = 1; i <= edges; i++) {
+            bigGraph.addNode("" + i);
+            bigGraph.addEdge("" + (i - 1) + i, "" + (i - 1), "" + i);
+        }
+        BreadthFirstSearch.preview = false;
+        BreadthFirstSearch bfs = new BreadthFirstSearch();
+        bfs.init(bigGraph);
+        bfs.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
+        bfs.compute();
+        assertEquals(100, bfs.steps);
     }
 }
