@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
  * name node1 [ -- name node2] [(edge name)] [: edgeweight]; <br>
  */
 public class IOGraph {
+    public static boolean throwExc = false;
     private static Logger logger = Logger.getLogger(IOGraph.class);
 
     /* Class should not be an instance
@@ -166,7 +167,7 @@ public class IOGraph {
             } else {
                 if (!line.equals("")) { // big big Error
                     logger.error(ln + ". ERROR: [" + line + "]");
-//                    throw new IllegalArgumentException("Wrong line format at line "+ln);
+                    if (throwExc) throw new IllegalArgumentException("Wrong line format at line " + ln);
                 } else // Skip empty Lines
                     logger.debug(ln + ". is empty");
             }
@@ -253,8 +254,30 @@ public class IOGraph {
     // ========== MAIN ===========
 
     public static void main(String[] args) throws Exception {
-        Graph graph1 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
-        display(graph1);
+//        throwExc = false;
+//        Graph graph1 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph09.gka"));
+//        display(graph1);
+
+        Graph pentaCircle = new MultiGraph("pentaCircle");
+        pentaCircle.addNode("a");
+        pentaCircle.addNode("b");
+        pentaCircle.addNode("c");
+        pentaCircle.addNode("d");
+        pentaCircle.addNode("e");
+
+        pentaCircle.addEdge("ab", "a", "b");
+        pentaCircle.addEdge("ac", "a", "c");
+        pentaCircle.addEdge("ae", "a", "e");
+        pentaCircle.addEdge("ad", "a", "d");
+        pentaCircle.addEdge("bd", "b", "d");
+        pentaCircle.addEdge("bc", "b", "c");
+        pentaCircle.addEdge("be", "b", "e");
+        pentaCircle.addEdge("ed", "e", "d");
+        pentaCircle.addEdge("ec", "e", "c");
+        pentaCircle.addEdge("cd", "c", "d");
+        save(pentaCircle);
+        Graph pentaCircle2 = fromFile("pentaCircle2", new File("src/main/resources/output/pentaCircle.gka"));
+        display(pentaCircle2);
 
 //        Graph graph2 = fromFileWithFileChooser("MyGraph2");
 //        display(graph2);

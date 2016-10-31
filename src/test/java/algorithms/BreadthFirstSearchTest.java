@@ -64,7 +64,7 @@ public class BreadthFirstSearchTest {
         penta.addEdge("bd", "b", "d");
 
         BreadthFirstSearch.preview = false;
-        // TODO Mit großem Graph testen
+
         BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(circle);
         bfs.setSourceAndTarget(circle.getNode("a"),circle.getNode("c"));
@@ -81,8 +81,11 @@ public class BreadthFirstSearchTest {
         bfs3.compute();
 
         assertEquals(2, bfs.steps);
+        assertEquals("[c, b, a]", bfs.getShortestWay().toString());
         assertEquals(1, bfs2.steps);
+        assertEquals("[c, a]", bfs2.getShortestWay().toString());
         assertEquals(2, bfs3.steps);
+        assertEquals("[e, c, a]", bfs3.getShortestWay().toString());
 
         //assertEquals(bfs.steps, 3); // {shortestWay, anzKanten}
         //Graph graph1 = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka"));
@@ -94,7 +97,7 @@ public class BreadthFirstSearchTest {
 
     @Test
     public void bigGraphTest() throws Exception {
-        int edges = 100;
+        int edges = 1000;
         Graph bigGraph = new SingleGraph("bigGraph");
         bigGraph.addNode("0");
         for (int i = 1; i <= edges; i++) {
@@ -106,6 +109,6 @@ public class BreadthFirstSearchTest {
         bfs.init(bigGraph);
         bfs.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
         bfs.compute();
-        assertEquals(100, bfs.steps);
+        assertEquals(edges, bfs.steps);
     }
 }
