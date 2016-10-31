@@ -40,7 +40,7 @@ public class BreadthFirstSearch implements Algorithm {
         while (!queue.isEmpty()) {
             Node next = queue.peek();
             next.setAttribute("ui.class", "markRed");
-            if (preview) GraphUtil.sleepShort();
+            if (preview) GraphUtil.sleepLong();
             queue.addAll(getUntaggedNeighborsAndTagThem(next));
             if (isTargetTagged()) {
                 steps = target.getAttribute("steps");
@@ -52,7 +52,8 @@ public class BreadthFirstSearch implements Algorithm {
         }
         if (!isTargetTagged()) {
             logger.error("Target not found!");
-        }
+        } else
+            logger.info("Target found!");
     }
 
     public List<Node> getShortestWay() {
@@ -157,7 +158,7 @@ public class BreadthFirstSearch implements Algorithm {
 
 
     public static void main(String[] args) throws Exception {
-        Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph01.gka"));
+        Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
 
         BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(graph);

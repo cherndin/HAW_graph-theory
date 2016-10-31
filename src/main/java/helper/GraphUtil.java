@@ -23,6 +23,7 @@ public class GraphUtil {
         graph.setAutoCreate(true);
         graph.setStrict(false);
         for (Node node : graph) {
+            node.addAttribute("ui.size", "2gu");
             if (node.hasAttribute("title"))
                 node.addAttribute("ui.label", node.getAttribute("title") + "[" + node.getId() + "]");
             else
@@ -35,7 +36,7 @@ public class GraphUtil {
      * Thread.sleep
      */
     public static void sleepLong() {
-        sleep(5000);
+        sleep(3000);
     }
 
     public static void sleepShort() {
@@ -51,8 +52,17 @@ public class GraphUtil {
 
 
     public static String styleSheet =
-            "node {" +
+            "graph {" +
+                    "   text-style:bold;" +
+                    "}" +
+                    "node {" +
+                    "   size: 13px;" +
+                    "   shape: circle;" +
+                    "	fill-mode: plain;" +
                     "	fill-color: black;" +
+                    "	stroke-mode: plain;" +
+                    "   stroke-color: black;" +
+                    "   stroke-width: 2px;" +
                     "}" +
                     "node.markBlue {" +
                     "	fill-color: blue;" +
@@ -94,7 +104,7 @@ public class GraphUtil {
                                        @NotNull Boolean enableWeight) {
         String string = "";
         for (Edge edge : graph.getEachEdge()) {
-            string = string + "\n" + edgeToLine(edge, enableName, enableWeight);
+            string = string + " " + edgeToLine(edge, enableName, enableWeight);
         }
         return string;
     }

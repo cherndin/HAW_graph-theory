@@ -121,9 +121,9 @@ public class IOGraph {
     @NotNull
     public static Graph fromFile(@NotNull String name,
                                  @NotNull File fileToRead) throws FileNotFoundException {
+        logger.info("=== Creating graph from " + fileToRead.getName() + " ===");
         Graph graph = new MultiGraph(name);
-        Scanner scanner = new Scanner(fileToRead);
-//        scanner.useLocale(Locale.GERMANY);
+        Scanner scanner = new Scanner(fileToRead, "utf-8");
         int ln = 1;
         String uml = "[_öÖäÄüÜßa-zA-Z0-9]";
         String ws = "\\p{Blank}*";
@@ -135,11 +135,11 @@ public class IOGraph {
 
             if (lineMatcher.matches()) {
                 Boolean isDirected = false;
-                String edgeID = "", edgeWeight = "", arrow = "", node1 = ""; // maybe null
-                String node0 = lineMatcher.group(1);
+                String edgeID = "", edgeWeight = "", arrow = "", node1 = ""; // Nullable
+                String node0 = lineMatcher.group(1); // NotNull
                 createNodeIfDoestExist(graph, node0); // TODO delete if exception got thrown
 
-                // NORMAL EDGE with two different shortestWay
+                // NORMAL EDGE with two different edges
                 if (lineMatcher.group(3) != null && lineMatcher.group(4) != null) {
                     arrow = lineMatcher.group(3);
                     node1 = lineMatcher.group(4);
@@ -167,14 +167,15 @@ public class IOGraph {
             } else {
                 if (!line.equals("")) { // big big Error
                     logger.error(ln + ". ERROR: [" + line + "]");
-                    if (throwExc) throw new IllegalArgumentException("Wrong line format at line " + ln);
+                    if (throwExc)
+                        throw new IllegalArgumentException("Wrong line format at line " + ln);
                 } else // Skip empty Lines
                     logger.debug(ln + ". is empty");
             }
             ln++;
         }
         scanner.close();
-        logger.info(graph.getId() + " created from " + fileToRead.getName());
+        logger.info(graph.getId() + " created from " + fileToRead.getName() + "\n");
         return graph;
     }
 
@@ -228,13 +229,11 @@ public class IOGraph {
                                 @NotNull Integer ln) {
         String loop = "";
         try {
-            if (node0.equals(node1)) // loop
-                loop = "creating loop... ";
             if (weight.equals("")) // without edgeWeight
                 graph.addEdge(edge, node0, node1, isDirected);
             else // normal case
                 graph.addEdge(edge, node0, node1, isDirected).setAttribute("weight", Integer.valueOf(weight));
-            logger.debug(ln + ". " + loop + GraphUtil.edgeToLine(graph.getEdge(edge), true, false) + " added.");
+            logger.debug(ln + ". " + GraphUtil.edgeToLine(graph.getEdge(edge), true, false) + " added.");
         } catch (EdgeRejectedException e) {
             System.err.println(e);
         }
