@@ -137,15 +137,15 @@ public class IOGraph {
                 Boolean isDirected = false;
                 String edgeID = "", edgeWeight = "", arrow = "", node1 = ""; // Nullable
                 String node0 = lineMatcher.group(1); // NotNull
-                createNodeIfDoestExist(graph, node0); // TODO delete if exception got thrown
+                createNodeIfDoesntExist(graph, node0);
 
                 // NORMAL EDGE with two different edges
                 if (lineMatcher.group(3) != null && lineMatcher.group(4) != null) {
                     arrow = lineMatcher.group(3);
                     node1 = lineMatcher.group(4);
-                    createNodeIfDoestExist(graph, node1);
+                    createNodeIfDoesntExist(graph, node1);
 
-                    if (lineMatcher.group(6) != null) {
+                    if (lineMatcher.group(6) != null) { // edgeID set?
                         edgeID = lineMatcher.group(6);
                         if (graph.getEdge(edgeID) != null) { // if edgeID does already exists
                             logger.info("Edge '" + edgeID + "' does already exists. Will be renamed to " + node0 + "_to_" + node1);
@@ -246,7 +246,7 @@ public class IOGraph {
      * @param graph
      * @param node0
      */
-    private static void createNodeIfDoestExist(Graph graph, String node0) {
+    private static void createNodeIfDoesntExist(Graph graph, String node0) {
         if (graph.getNode(node0) == null) graph.addNode(node0);
     }
 
