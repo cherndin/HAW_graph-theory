@@ -87,12 +87,12 @@ public class BreadthFirstSearchTest {
         assertEquals(2, bfs3.steps);
         assertEquals("[e, c, a]", bfs3.getShortestWay().toString());
 
-        //assertEquals(bfs.steps, 3); // {shortestWay, anzKanten}
+        //assertEquals(bfs.sumWeight, 3); // {shortestWay, anzKanten}
         //Graph graph1 = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka"));
         //bfs.init(graph1);
         //bfs.setSourceAndTarget(graph1.getNode("v1"), graph1.getNode("v5"));
         //bfs.compute();
-        //assertEquals(bfs.steps, 1);
+        //assertEquals(bfs.sumWeight, 1);
     }
 
     @Test
