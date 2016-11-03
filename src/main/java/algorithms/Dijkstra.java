@@ -118,7 +118,7 @@ public class Dijkstra implements Algorithm {
                 node.addAttribute("Predecessor", 0);
                 nodes.add(node);
             } else {
-                source.setAttribute("Distance", 0);
+                source.setAttribute("Distance", 0.0);
                 source.setAttribute("OK", true);
                 source.setAttribute("Predecessor", source);
             }
@@ -129,14 +129,15 @@ public class Dijkstra implements Algorithm {
     /**
      * Sets source and target before compute()
      *
-     * @param s source node
-     * @param t target node
+     * @param source source node
+     * @param target target node
      */
-    public void setSourceAndTarget(@NotNull Node s, @NotNull Node t) {
-        if (source != null) source.setAttribute("title", "");
-        if (target != null) target.setAttribute("title", "");
-        this.source = s;
-        this.target = t;
+    public void setSourceAndTarget(@NotNull Node source,
+                                   @NotNull Node target) {
+        source.setAttribute("title", "");
+        target.setAttribute("title", "");
+        this.source = source;
+        this.target = target;
         source.setAttribute("title", "source");
         target.setAttribute("title", "target");
     }

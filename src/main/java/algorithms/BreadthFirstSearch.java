@@ -93,7 +93,8 @@ public class BreadthFirstSearch implements Algorithm {
      * @param s source node
      * @param t target node
      */
-    public void setSourceAndTarget(@NotNull Node s, @NotNull Node t) {
+    public void setSourceAndTarget(@NotNull Node s,
+                                   @NotNull Node t) {
         if (source != null) source.setAttribute("title", "");
         if (target != null) target.setAttribute("title", "");
         this.source = s;
