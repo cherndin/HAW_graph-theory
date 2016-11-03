@@ -117,7 +117,7 @@ public class Dijkstra implements Algorithm {
             if (!node.equals(source)) {
                 node.addAttribute("Distance", Double.POSITIVE_INFINITY);
                 node.addAttribute("OK", false);
-                node.addAttribute("Predecessor", null);
+                node.addAttribute("Predecessor", 0);
                 nodes.add(node);
             } else {
                 source.setAttribute("Distance", 0);
