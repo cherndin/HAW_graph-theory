@@ -8,6 +8,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -66,7 +67,7 @@ public class BreadthFirstSearch implements Algorithm {
         shortestWay.add(target);
         target.setAttribute("ui.class", "markRed");
         while (!shortestWay.getLast().getAttribute("steps").equals(0)) { // TODO noch eine Abbruchbedingung
-            Node next = getShortestNode(shortestWay.getLast());
+            Node next = getShortestNode(shortestWay.getLast()); // TODO Nullable
             if (preview) GraphUtil.sleepShort();
             next.setAttribute("ui.class", "markRed");
             shortestWay.add(next);
@@ -74,6 +75,7 @@ public class BreadthFirstSearch implements Algorithm {
         return shortestWay;
     }
 
+    @Nullable
     private Node getShortestNode(Node node) {
         Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
         while (nodeIterator.hasNext()) {

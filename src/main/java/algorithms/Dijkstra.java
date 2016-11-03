@@ -26,25 +26,27 @@ public class Dijkstra implements Algorithm {
     private Node target;
     private LinkedList<Node> nodes;
 
+    /**
+     * Initialisation
+     *
+     * @param graph
+     */
     public void init(Graph graph) {
         this.graph = graph;
         setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         nodes = new LinkedList<Node>();
     }
 
+    /**
+     * starts the algorithm
+     */
     public void compute() {
-        logger.debug("Starting Dijskra with " + GraphUtil.graphToString(graph, false, false));
+        logger.debug("Starting Dijkstra with " + GraphUtil.graphToString(graph, false, false));
 
         // Preconditions
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException();
-
-        boolean hasWeight = true;
-        for (Edge edge : graph.getEachEdge()) {
-            if (!edge.hasAttribute("weight"))  //Check if all Edges have the weight attribute
-                hasWeight = false;
-        }
-        if (!hasWeight)
+        if (haveWeights())
             throw new IllegalArgumentException();
 
         // Implementation
@@ -60,9 +62,15 @@ public class Dijkstra implements Algorithm {
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             calcNewDistance(currentNode);
         }
+
         reset();
     }
 
+    /**
+     * Returns the shortest Path from the Source to the Target
+     *
+     * @return the shortest Path from the Source to the Target
+     */
     public List<Node> getShortestPath() {
         return null;
     }
@@ -92,6 +100,15 @@ public class Dijkstra implements Algorithm {
             min = cur;
         }
         return min;
+    }
+
+    private boolean haveWeights() {
+        boolean hasWeight = true;
+        for (Edge edge : graph.getEachEdge()) {
+            if (!edge.hasAttribute("weight"))
+                hasWeight = false;
+        }
+        return hasWeight;
     }
 
 
