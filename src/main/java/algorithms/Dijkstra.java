@@ -96,8 +96,8 @@ public class Dijkstra implements Algorithm {
     private Node withMinDistance() {
         Node min = nodes.getFirst();
         for (Node cur : nodes) {
-            if (((Double) cur.getAttribute("Distance") < ((Double) min.getAttribute("Distance")))) ;
-            min = cur;
+            if (((Double) cur.getAttribute("Distance") < ((Double) min.getAttribute("Distance"))))
+                min = cur;
         }
         return min;
     }
@@ -115,9 +115,9 @@ public class Dijkstra implements Algorithm {
     private void setUp() {
         for (Node node : graph.getEachNode()) {
             if (!node.equals(source)) {
-                node.setAttribute("Distance", Double.POSITIVE_INFINITY);
-                node.setAttribute("OK", false);
-                node.setAttribute("Predecessor", null);
+                node.addAttribute("Distance", Double.POSITIVE_INFINITY);
+                node.addAttribute("OK", false);
+                node.addAttribute("Predecessor", null);
                 nodes.add(node);
             } else {
                 source.setAttribute("Distance", 0);
