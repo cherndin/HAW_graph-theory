@@ -62,10 +62,6 @@ public class Dijkstra implements Algorithm {
         }
 
         reset();
-        if (!isTargetTagged()) {
-            logger.error("Target not found!");
-        } else
-            logger.info("Target found!");
     }
 
     private void calcNewDistance(Node current) {
@@ -137,26 +133,6 @@ public class Dijkstra implements Algorithm {
         source.removeAttribute("title");
         target.removeAttribute("title");
     }
-
-    /**
-     * tag Node
-     *
-     * @param node
-     * @param steps
-     * @return the node param for inline use
-     */
-    @NotNull
-    private Node tag(@NotNull Node node, @NotNull Integer steps) {
-        node.setAttribute("sumWeight", steps + 1);
-        node.setAttribute("ui.label", node.getAttribute("ui.label") + " | " + (steps + 1) + " |");
-        return node;
-    }
-
-    @NotNull
-    private Boolean isTargetTagged() {
-        return (!target.getAttribute("sumWeight").equals(-1));
-    }
-
 
     public static void main(String[] args) throws Exception {
 
