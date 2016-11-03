@@ -8,7 +8,6 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,19 +77,18 @@ public class Dijkstra implements Algorithm {
     // === private ===
 
     private void calcNewDistance(Node current) {
-        ArrayList<Node> neighbors = new ArrayList<Node>();
-        // TODO Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
-
+        // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
         Iterator<Node> neighborNodeIterator = current.getNeighborNodeIterator();
         while (neighborNodeIterator.hasNext()) {
             Node next = neighborNodeIterator.next();
-            // TODO Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
+            // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             Double newD = ((Double) next.getAttribute("Distance")) + ((Double) current.getAttribute("Distance"));
-            if (newD < (Double) next.getAttribute("Distance"))
+            if (((Boolean) next.getAttribute("OK")) &&
+                    (newD < (Double) next.getAttribute("Distance"))) {
                 next.setAttribute("Distance", newD);
+                next.setAttribute("Predecessor", current);
+            }
         }
-
-
     }
 
     private Node withMinDistance() {
