@@ -37,7 +37,7 @@ public class Dijkstra implements Algorithm {
             throw new IllegalArgumentException();
         boolean hasWeight = true;
         for (Edge edge : graph.getEachEdge()) {
-            if (!edge.hasAttribute("weight"))
+            if (!edge.hasAttribute("weight"))  //Check if all Edges have the weight attribut
                 hasWeight = false;
         }
         if (!hasWeight)
