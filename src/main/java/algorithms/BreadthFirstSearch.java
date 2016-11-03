@@ -56,7 +56,7 @@ public class BreadthFirstSearch implements Algorithm {
             logger.info("Target found!");
     }
 
-    public List<Node> getShortestWay() {
+    public List<Node> getShortestPath() {
         if (target.getAttribute("steps").equals(-1))
             throw new IllegalArgumentException("do compute before this method");
         LinkedList<Node> shortestWay = new LinkedList<Node>();
@@ -166,7 +166,7 @@ public class BreadthFirstSearch implements Algorithm {
         preview = true;
         bfs.compute();
         GraphUtil.sleepLong();
-        System.out.println(bfs.getShortestWay().toString());
+        System.out.println(bfs.getShortestPath().toString());
         System.out.println("Steps" + bfs.steps);
 
     }

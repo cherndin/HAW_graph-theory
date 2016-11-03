@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by MattX7 on 03.11.2016.
@@ -19,11 +20,11 @@ public class Dijkstra implements Algorithm {
     private static Logger logger = Logger.getLogger(Dijkstra.class);
 
     public static boolean preview = true;
+    public int steps = -1;
     private Graph graph;
     private Node source;
     private Node target;
     private LinkedList<Node> nodes;
-
 
     public void init(Graph graph) {
         this.graph = graph;
@@ -32,12 +33,15 @@ public class Dijkstra implements Algorithm {
     }
 
     public void compute() {
+        logger.debug("Starting Dijskra with " + GraphUtil.graphToString(graph, false, false));
+
         // Preconditions
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException();
+
         boolean hasWeight = true;
         for (Edge edge : graph.getEachEdge()) {
-            if (!edge.hasAttribute("weight"))  //Check if all Edges have the weight attribut
+            if (!edge.hasAttribute("weight"))  //Check if all Edges have the weight attribute
                 hasWeight = false;
         }
         if (!hasWeight)
@@ -48,25 +52,25 @@ public class Dijkstra implements Algorithm {
         logger.debug("Starting Dijkstra with graph:" + GraphUtil.graphToString(graph, false, false));
         setUp();
         while (!nodes.isEmpty()) {
-
             // Knoten mit minimaler Distanz auswählen
             Node currentNode = withMinDistance();
             // speichere, dass dieser Knoten schon besucht wurde.
             nodes.remove(currentNode);
             // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
-
             calcNewDistance(currentNode);
-
-
         }
-
         reset();
     }
 
+    public List<Node> getShortestPath() {
+        return null;
+    }
+
+    // === private ===
+
     private void calcNewDistance(Node current) {
         ArrayList<Node> neighbors = new ArrayList<Node>();
-
         // TODO Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
 
         Iterator<Node> neighborNodeIterator = current.getNeighborNodeIterator();
