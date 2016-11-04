@@ -13,6 +13,8 @@ import static org.junit.Assert.assertEquals;
 public class DijkstraTest {
     private Graph graph;
 
+    // TODO Testen Sie für graph3 in graph3.gka dabei Floyd-Warshall gegen Dijkstra und geben Sie den k¨urzesten Weg, sowie die Anzahl der Zugriffe auf den Graphen an
+
     @Before
     public void setUp() throws Exception {
         // Graph aus den Folien
@@ -65,7 +67,24 @@ public class DijkstraTest {
         dijk.compute();
 
         assertEquals(new Double(6), dijk.distance);
-// TODO       assertEquals("[v1, v6, v3, v4]", dijk.getShortestPath().toString());
+        // TODO assertEquals("[v1, v6, v3, v4]", dijk.getShortestPath().toString());
     }
 
+    @Test
+    public void bigGraphTest() throws Exception {
+        int edges = 1000; // TODO 100 Knoten und etwa 2500 Kanten.
+        // TODO Lassen Sie bitte beide Algorithmen auf dem Graphen BIG, die k¨urzestenWege berechnen und vergleichen diese.
+        Graph bigGraph = new SingleGraph("bigGraph");
+        bigGraph.addNode("0");
+        for (int i = 1; i <= edges; i++) {
+            bigGraph.addNode("" + i);
+            bigGraph.addEdge("" + (i - 1) + i, "" + (i - 1), "" + i).addAttribute("weight", 1.0);
+        }
+        Dijkstra.preview = false;
+        Dijkstra dijk = new Dijkstra();
+        dijk.init(bigGraph);
+        dijk.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
+        dijk.compute();
+        assertEquals(new Double(edges), dijk.distance);
+    }
 }

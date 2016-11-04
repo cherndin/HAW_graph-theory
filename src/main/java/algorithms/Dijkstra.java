@@ -52,7 +52,6 @@ public class Dijkstra implements Algorithm {
         setUp(); // Attribute setzen und mit Standartwerten belegen
         calcNewDistance(source);
         while (!uncheckedNodes.isEmpty()) {
-            logger.debug(uncheckedNodes.toString());
             // Knoten mit minimaler Distanz auswählen
             Node currentNode = withMinDistance();
             // speichere, dass dieser Knoten schon besucht wurde.
