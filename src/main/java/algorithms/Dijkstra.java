@@ -6,6 +6,7 @@ import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -50,8 +51,10 @@ public class Dijkstra implements Algorithm {
         // Implementation
         if (preview) GraphUtil.buildForDisplay(graph).display(); // TODO visualisierung des algos
         setUp(); // Attribute setzen und mit Standartwerten belegen
+
         calcNewDistance(source);
         while (!uncheckedNodes.isEmpty()) {
+            logger.debug(uncheckedNodes.toString());
             // Knoten mit minimaler Distanz auswählen
             Node currentNode = withMinDistance();
             // speichere, dass dieser Knoten schon besucht wurde.
@@ -82,8 +85,10 @@ public class Dijkstra implements Algorithm {
      */
     public void setSourceAndTarget(@NotNull Node source,
                                    @NotNull Node target) {
-        source.setAttribute("title", "");
-        target.setAttribute("title", "");
+        if (this.source != null && this.source.hasAttribute("title"))
+            this.source.removeAttribute("title");
+        if (this.target != null && this.target.hasAttribute("title"))
+            this.target.removeAttribute("title");
         this.source = source;
         this.target = target;
         source.setAttribute("title", "source");
@@ -92,24 +97,62 @@ public class Dijkstra implements Algorithm {
 
     // === PRIVATE ===
 
-    private void calcNewDistance(Node currNode) {
+    private void setUp() {
+        for (Node node : graph) {
+            if (!node.equals(source)) {
+                node.addAttribute("Distance", Double.POSITIVE_INFINITY);
+                node.addAttribute("OK", false);
+                node.addAttribute("Predecessor", 0);
+                uncheckedNodes.add(node); // add all nodes
+                logger.debug(node.getId() + " | Dist.: Inf. | OK: false | Pred.: 0");
+                if (preview) updateLabel(node);
+            } else {
+                source.addAttribute("Distance", 0.0);
+                source.addAttribute("OK", true);
+                source.addAttribute("Predecessor", source);
+                logger.debug(source.getId() + " | Dist.: 0 | OK: true | Pred.: " + source.getId());
+            }
+        } // TODO unterschied set und add Attribut
+        for (Edge edge : graph.getEachEdge()) {
+            edge.addAttribute("ui.label", edge.getAttribute("weight"));
+        }
+
+    }
+
+    private void calcNewDistance(@NotNull Node currNode) {
         // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
         Iterator<Edge> leavingEdgeIterator = currNode.getLeavingEdgeIterator();
+        if (preview) currNode.setAttribute("ui.class", "markRed");
+        GraphUtil.sleepLong();
         while (leavingEdgeIterator.hasNext()) {
             Edge leavingEdge = leavingEdgeIterator.next();
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             Double newDist = ((Double) currNode.getAttribute("Distance")) + ((Double) leavingEdge.getAttribute("weight"));
             Node nodeFromLeavingEdge = getRightNode(currNode, leavingEdge); // TODO ist das notwendig?
 
+            if (preview) nodeFromLeavingEdge.setAttribute("ui.class", "markBlue");
             if (!((Boolean) nodeFromLeavingEdge.getAttribute("OK")) &&
                     (newDist < (Double) nodeFromLeavingEdge.getAttribute("Distance"))) {
                 nodeFromLeavingEdge.setAttribute("Distance", newDist);
                 nodeFromLeavingEdge.setAttribute("Predecessor", currNode);
+                if (preview) updateLabel(nodeFromLeavingEdge);
             }
+            GraphUtil.sleepLong();
+            if (preview) nodeFromLeavingEdge.setAttribute("ui.class", "");
         }
+        currNode.setAttribute("ui.class", "");
     }
 
-    private Node getRightNode(Node currNode, Edge leavingEdge) {
+    private void updateLabel(Node node) {
+        node.setAttribute("ui.label", node.getId()
+                + " | Dist.: " + node.getAttribute("Distance")
+                + " | OK.: " + node.getAttribute("OK")
+                + " | Pred..: " + node.getAttribute("Predecessor")
+        );
+    }
+
+    @NotNull
+    private Node getRightNode(@NotNull Node currNode, @NotNull Edge leavingEdge) {
         Node node;
         if (leavingEdge.getNode1().equals(currNode))
             node = leavingEdge.getNode0();
@@ -118,6 +161,7 @@ public class Dijkstra implements Algorithm {
         return node;
     }
 
+    @NotNull
     private Node withMinDistance() {
         Node min = uncheckedNodes.getFirst();
         for (Node cur : uncheckedNodes) {
@@ -127,32 +171,14 @@ public class Dijkstra implements Algorithm {
         return min;
     }
 
-    private boolean hasWeights(Graph graph) {
+    @NotNull
+    private Boolean hasWeights(@NotNull Graph graph) {
         boolean hasWeight = true;
         for (Edge edge : graph.getEachEdge()) {
             if (!edge.hasAttribute("weight"))
                 hasWeight = false;
         }
         return hasWeight;
-    }
-
-
-    private void setUp() {
-        for (Node node : graph.getEachNode()) {
-            if (!node.equals(source)) {
-                node.addAttribute("Distance", Double.POSITIVE_INFINITY);
-                node.addAttribute("OK", false);
-                node.addAttribute("Predecessor", 0);
-                uncheckedNodes.add(node); // add all nodes
-                logger.debug(node.getId() + " | Dist.: Inf. | OK: false | Pred.: 0");
-            } else {
-                source.setAttribute("Distance", 0.0);
-                source.setAttribute("OK", true);
-                source.setAttribute("Predecessor", source);
-                logger.debug(source.getId() + " | Dist.: 0 | OK: true | Pred.: " + source.getId());
-            }
-        }
-
     }
 
     private void reset() {
@@ -168,6 +194,33 @@ public class Dijkstra implements Algorithm {
     // === MAIN ===
 
     public static void main(String[] args) throws Exception {
+// Graph aus den Folien
+        // 02_GKA-Optimale Wege.pdf Folie 2 und 6
+        Graph graph = new SingleGraph("graph");
 
+        graph.addNode("v1");
+        graph.addNode("v2");
+        graph.addNode("v3");
+        graph.addNode("v4");
+        graph.addNode("v5");
+        graph.addNode("v6");
+
+        graph.addEdge("v1v2", "v1", "v2").addAttribute("weight", 1.0);
+        graph.addEdge("v1v6", "v1", "v6").addAttribute("weight", 3.0);
+        graph.addEdge("v2v3", "v2", "v3").addAttribute("weight", 5.0);
+        graph.addEdge("v2v5", "v2", "v5").addAttribute("weight", 2.0);
+        graph.addEdge("v2v6", "v2", "v6").addAttribute("weight", 3.0);
+
+        graph.addEdge("v3v6", "v3", "v6").addAttribute("weight", 2.0);
+        graph.addEdge("v3v5", "v3", "v5").addAttribute("weight", 2.0);
+        graph.addEdge("v3v4", "v3", "v4").addAttribute("weight", 1.0);
+        graph.addEdge("v5v4", "v5", "v4").addAttribute("weight", 3.0);
+        graph.addEdge("v5v6", "v5", "v6").addAttribute("weight", 1.0);
+
+        Dijkstra.preview = true;
+        Dijkstra dijk = new Dijkstra();
+        dijk.init(graph);
+        dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
+        dijk.compute();
     }
 }

@@ -36,6 +36,7 @@ public class DijkstraTest {
         graph.addEdge("v3v4", "v3", "v4");
         graph.addEdge("v5v4", "v5", "v4");
         graph.addEdge("v5v6", "v5", "v6");
+
         Dijkstra.preview = false; // Graph nicht visualisieren
     }
 
@@ -56,7 +57,7 @@ public class DijkstraTest {
         graph.getEdge("v2v3").addAttribute("weight", 5.0);
         graph.getEdge("v2v6").addAttribute("weight", 2.0);
         graph.getEdge("v2v5").addAttribute("weight", 3.0);
-        ;
+
         graph.getEdge("v3v6").addAttribute("weight", 2.0);
         graph.getEdge("v3v5").addAttribute("weight", 2.0);
         graph.getEdge("v3v4").addAttribute("weight", 1.0);

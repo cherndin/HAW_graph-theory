@@ -92,11 +92,13 @@ public class BreadthFirstSearch implements Algorithm {
      *
      * @param s source node
      * @param t target node
-     */
+     */ // TODO methode in eine Klasse AlgoHelper oder so auslagern
     public void setSourceAndTarget(@NotNull Node s,
                                    @NotNull Node t) {
-        if (source != null) source.setAttribute("title", "");
-        if (target != null) target.setAttribute("title", "");
+        if (this.source != null && this.source.hasAttribute("title"))
+            this.source.removeAttribute("title");
+        if (this.target != null && this.target.hasAttribute("title"))
+            this.target.removeAttribute("title");
         this.source = s;
         this.target = t;
         source.setAttribute("title", "source");
