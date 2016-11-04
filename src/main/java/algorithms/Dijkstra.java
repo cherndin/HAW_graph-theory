@@ -71,10 +71,27 @@ public class Dijkstra implements Algorithm {
      * @return the shortest Path from the Source to the Target
      */
     public List<Node> getShortestPath() {
+        // TODO getShortestPath()
         return null;
     }
 
-    // === private ===
+    /**
+     * Sets source and target before compute()
+     *
+     * @param source source node
+     * @param target target node
+     */
+    public void setSourceAndTarget(@NotNull Node source,
+                                   @NotNull Node target) {
+        source.setAttribute("title", "");
+        target.setAttribute("title", "");
+        this.source = source;
+        this.target = target;
+        source.setAttribute("title", "source");
+        target.setAttribute("title", "target");
+    }
+
+    // === PRIVATE ===
 
     private void calcNewDistance(Node currNode) {
         // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
@@ -120,6 +137,7 @@ public class Dijkstra implements Algorithm {
         return hasWeight;
     }
 
+
     private void setUp() {
         for (Node node : graph.getEachNode()) {
             if (!node.equals(source)) {
@@ -138,25 +156,6 @@ public class Dijkstra implements Algorithm {
 
     }
 
-
-    /**
-     * Sets source and target before compute()
-     *
-     * @param source source node
-     * @param target target node
-     */
-    public void setSourceAndTarget(@NotNull Node source,
-                                   @NotNull Node target) {
-        source.setAttribute("title", "");
-        target.setAttribute("title", "");
-        this.source = source;
-        this.target = target;
-        source.setAttribute("title", "source");
-        target.setAttribute("title", "target");
-    }
-
-    // ====== PRIVATE =========
-
     private void reset() {
         for (Node node : graph.getEachNode()) {
             node.removeAttribute("Distance");
@@ -166,6 +165,8 @@ public class Dijkstra implements Algorithm {
         source.removeAttribute("title");
         target.removeAttribute("title");
     }
+
+    // === MAIN ===
 
     public static void main(String[] args) throws Exception {
 
