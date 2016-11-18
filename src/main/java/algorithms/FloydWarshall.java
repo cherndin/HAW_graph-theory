@@ -44,8 +44,8 @@ public class FloydWarshall implements Algorithm {
         distances = new double[n][n];
 
         Iterator<Node> nodesForI = graph.getNodeIterator();
-        Iterator<Node> nodesForJ = graph.getNodeIterator();
         for (int i = 0; i < n; i++) {
+            Iterator<Node> nodesForJ = graph.getNodeIterator();
             Node NodeI = nodesForI.next();
             for (int j = 0; j < n; j++) {
                 Node NodeJ = nodesForJ.next();
@@ -57,8 +57,10 @@ public class FloydWarshall implements Algorithm {
                     distances[i][j] = Integer.MAX_VALUE;
                 }
             }
-            nodesForJ = graph.getNodeIterator();
         }
+        System.out.println("================== Start ======================");
+        printMatrix();
+        System.out.println();
     }
 
     public void compute() {
@@ -70,12 +72,12 @@ public class FloydWarshall implements Algorithm {
                 List<Node> incomingNodes = getIncomingNodes(curr); // ...dann finde alle eingehenden Knoten
                 List<Node> getTargetNodes = getTargetNodes(curr); // ... magic
                 for (Node incomingNode : incomingNodes) {
-                    double incomeWeight = (double) Integer.MAX_VALUE;
+                    double incomeWeight = Double.POSITIVE_INFINITY;
                     if (incomingNode != curr) { //check if not the same
                         incomeWeight = incomingNode.getEdgeBetween(curr).getAttribute("weight");
                     }
                     for (Node outgoingNode : getTargetNodes) {
-                        double outWeight = (double) Integer.MAX_VALUE;
+                        double outWeight = Double.POSITIVE_INFINITY;
                         if (outgoingNode != curr) { //check if not the same
                             outWeight = curr.getEdgeBetween(outgoingNode).getAttribute("weight");
                         }
@@ -84,6 +86,9 @@ public class FloydWarshall implements Algorithm {
                     }
                 }
             }
+            System.out.println("================== " + curr + " ======================");
+            printMatrix();
+            System.out.println();
         }
         distance = distances[source.getIndex()][target.getIndex()];
     }
@@ -115,6 +120,7 @@ public class FloydWarshall implements Algorithm {
         }
         return hasWeight;
     }
+
     /**
      * Inserts a value if it is smaller
      *
@@ -190,10 +196,25 @@ public class FloydWarshall implements Algorithm {
         return i;
     }
 
+    private void printMatrix() {
+        for (Node node : nodes) { // print x nodes
+            System.out.print("  \t" + node.getId() + " \t");
+        }
+        System.out.println();
+        Iterator<Node> iterator = nodes.iterator();
+        for (double[] distance1 : distances) { // print x nodes
+            System.out.print(iterator.next() + " | ");
+            for (int j = 0; j < distances.length; j++) { // print x nodes
+                System.out.print((distance1[j] == 2.147483647E9 ? "Inf" : distance1[j]) + " \t");
+            }
+            System.out.println();
+        }
+    }
+
     // === MAIN ===
 
     public static void main(String[] args) throws Exception {
-// Graph aus den Folien
+        // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6
         Graph graph = new SingleGraph("graph");
 
@@ -216,8 +237,8 @@ public class FloydWarshall implements Algorithm {
         graph.addEdge("v5v6", "v5", "v6").addAttribute("weight", 1.0);
 
         FloydWarshall floyd = new FloydWarshall();
-        floyd.init(graph);
         floyd.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
+        floyd.init(graph);
         floyd.compute();
     }
 }

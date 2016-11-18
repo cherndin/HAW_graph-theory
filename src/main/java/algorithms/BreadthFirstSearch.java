@@ -92,7 +92,7 @@ public class BreadthFirstSearch implements Algorithm {
      *
      * @param s source node
      * @param t target node
-     */ // TODO methode in eine Klasse AlgoHelper oder so auslagern
+     */ // TODO macht es sinn diese methode iwie auszulagern!?
     public void setSourceAndTarget(@NotNull Node s,
                                    @NotNull Node t) {
         if (this.source != null && this.source.hasAttribute("title"))
@@ -150,7 +150,8 @@ public class BreadthFirstSearch implements Algorithm {
      * @return the node param for inline use
      */
     @NotNull
-    private Node tag(@NotNull Node node, @NotNull Integer steps) {
+    private Node tag(@NotNull Node node,
+                     @NotNull Integer steps) {
         node.setAttribute("steps", steps + 1);
         node.setAttribute("ui.label", node.getAttribute("ui.label") + " | " + (steps + 1) + " |");
         return node;
