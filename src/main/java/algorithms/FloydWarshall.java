@@ -4,10 +4,12 @@ import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,37 +20,48 @@ import java.util.List;
  * https://www.cs.usfca.edu/~galles/visualization/Floyd.html
  */
 public class FloydWarshall implements Algorithm {
+
+    public Double distance;
     private Graph graph;
-    private int[][] distances;
-    private List<Node> nodes;
+    private Node source;
+    private Node target;
+    private  double[][] distances;
+    private List<Node> nodes = new LinkedList<Node>();
 
     public void init(Graph graph) {
         this.graph = graph;
+        setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         for (Node node : graph.getEachNode()) {
-            this.nodes.add(node);
+            nodes.add(node);
         }
 
         int n = graph.getNodeCount();
-        distances = new int[n][n];
+        distances = new double[n][n];
 
         Iterator<Node> nodesForI = graph.getNodeIterator();
         Iterator<Node> nodesForJ = graph.getNodeIterator();
-        for (int i = 0; i <= n; i++) {
+        for (int i = 0; i < n; i++) {
             Node NodeI = nodesForI.next();
-            for (int j = 0; j <= n; j++) {
+            for (int j = 0; j < n; j++) {
                 Node NodeJ = nodesForJ.next();
                 if (NodeI == NodeJ) {
-                    distances[i][j] = 0;
+                    distances[i][j] = 0.0;
                 } else if (NodeI.hasEdgeBetween(NodeJ)) {
                     distances[i][j] = NodeI.getEdgeBetween(NodeJ).getAttribute("weight");
                 } else {
                     distances[i][j] = Integer.MAX_VALUE;
                 }
             }
+            nodesForJ = graph.getNodeIterator();
         }
     }
 
     public void compute() {
+        if (graph == null || source == null || target == null) // have to be set
+            throw new IllegalArgumentException();
+        if (!hasWeights(graph))
+            throw new IllegalArgumentException();
+
         Iterator<Node> nodeIter = graph.getNodeIterator();
 
         while (nodeIter.hasNext()) { // Über alle Nodes iterieren
@@ -66,8 +79,36 @@ public class FloydWarshall implements Algorithm {
                 }
             }
         }
+        distance = distances[source.getIndex()][target.getIndex()];
     }
 
+    /**
+     * Sets source and target before compute()
+     *
+     * @param source source node
+     * @param target target node
+     */
+    public void setSourceAndTarget(@NotNull Node source,
+                                   @NotNull Node target) {
+        if (this.source != null && this.source.hasAttribute("title"))
+            this.source.removeAttribute("title");
+        if (this.target != null && this.target.hasAttribute("title"))
+            this.target.removeAttribute("title");
+        this.source = source;
+        this.target = target;
+        source.setAttribute("title", "source");
+        target.setAttribute("title", "target");
+    }
+
+    @NotNull
+    private Boolean hasWeights(@NotNull Graph graph) {
+        boolean hasWeight = true;
+        for (Edge edge : graph.getEachEdge()) {
+            if (!edge.hasAttribute("weight"))
+                hasWeight = false;
+        }
+        return hasWeight;
+    }
     /**
      * Inserts a value if it is smaller
      *
@@ -141,5 +182,37 @@ public class FloydWarshall implements Algorithm {
         int i = nodes.indexOf(node);
         if (i < 0) throw new IllegalArgumentException();
         return i;
+    }
+
+    // === MAIN ===
+
+    public static void main(String[] args) throws Exception {
+// Graph aus den Folien
+        // 02_GKA-Optimale Wege.pdf Folie 2 und 6
+        Graph graph = new SingleGraph("graph");
+
+        graph.addNode("v1");
+        graph.addNode("v2");
+        graph.addNode("v3");
+        graph.addNode("v4");
+        graph.addNode("v5");
+        graph.addNode("v6");
+
+        graph.addEdge("v1v2", "v1", "v2").addAttribute("weight", 1.0);
+        graph.addEdge("v1v6", "v1", "v6").addAttribute("weight", 3.0);
+        graph.addEdge("v2v3", "v2", "v3").addAttribute("weight", 5.0);
+        graph.addEdge("v2v5", "v2", "v5").addAttribute("weight", 2.0);
+        graph.addEdge("v2v6", "v2", "v6").addAttribute("weight", 3.0);
+
+        graph.addEdge("v3v6", "v3", "v6").addAttribute("weight", 2.0);
+        graph.addEdge("v3v5", "v3", "v5").addAttribute("weight", 2.0);
+        graph.addEdge("v3v4", "v3", "v4").addAttribute("weight", 1.0);
+        graph.addEdge("v5v4", "v5", "v4").addAttribute("weight", 3.0);
+        graph.addEdge("v5v6", "v5", "v6").addAttribute("weight", 1.0);
+
+        FloydWarshall floyd = new FloydWarshall();
+        floyd.init(graph);
+        floyd.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
+        floyd.compute();
     }
 }
