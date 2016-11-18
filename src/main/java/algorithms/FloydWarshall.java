@@ -68,12 +68,18 @@ public class FloydWarshall implements Algorithm {
             Node curr = nodeIter.next(); // Aktuellen Node setzten
             if (hasIncomingEdges(curr)) { // Wenn dieser eingehende Edges hat....
                 List<Node> incomingNodes = getIncomingNodes(curr); // ...dann finde alle eingehenden Knoten
-                List<Node> getTargetNodes = getTargetNodes(curr); // ...
+                List<Node> getTargetNodes = getTargetNodes(curr); // ... magic
                 for (Node incomingNode : incomingNodes) {
-                    int incomeWeight = incomingNode.getEdgeBetween(curr).getAttribute("weight");
+                    double incomeWeight = 0.0;
+                    if (incomingNode != curr) { //check if not the same
+                        incomeWeight = incomingNode.getEdgeBetween(curr).getAttribute("weight");
+                    }
                     for (Node outgoingNode : getTargetNodes) {
-                        int outWeight = curr.getEdgeBetween(outgoingNode).getAttribute("weight");
-                        int pathWeight = incomeWeight + outWeight;
+                        double outWeight = 0.0;
+                        if (outgoingNode != curr) { //check if not the same
+                            outWeight = curr.getEdgeBetween(outgoingNode).getAttribute("weight");
+                        }
+                        double pathWeight = incomeWeight + outWeight;
                         insertIfSmaller(incomingNode, outgoingNode, pathWeight);
                     }
                 }
@@ -119,7 +125,7 @@ public class FloydWarshall implements Algorithm {
     @NotNull
     private void insertIfSmaller(@NotNull Node fromNode,
                                  @NotNull Node toNode,
-                                 @NotNull Integer value) {
+                                 @NotNull Double value) {
         int x = getIndex(fromNode);
         int y = getIndex(toNode);
         if (value < distances[x][y])
@@ -203,7 +209,6 @@ public class FloydWarshall implements Algorithm {
         graph.addEdge("v2v3", "v2", "v3").addAttribute("weight", 5.0);
         graph.addEdge("v2v5", "v2", "v5").addAttribute("weight", 2.0);
         graph.addEdge("v2v6", "v2", "v6").addAttribute("weight", 3.0);
-
         graph.addEdge("v3v6", "v3", "v6").addAttribute("weight", 2.0);
         graph.addEdge("v3v5", "v3", "v5").addAttribute("weight", 2.0);
         graph.addEdge("v3v4", "v3", "v4").addAttribute("weight", 1.0);
