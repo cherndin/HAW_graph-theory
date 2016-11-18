@@ -70,12 +70,12 @@ public class FloydWarshall implements Algorithm {
                 List<Node> incomingNodes = getIncomingNodes(curr); // ...dann finde alle eingehenden Knoten
                 List<Node> getTargetNodes = getTargetNodes(curr); // ... magic
                 for (Node incomingNode : incomingNodes) {
-                    double incomeWeight = (double) Integer.MAX_VALUE;
+                    double incomeWeight = 0.0;
                     if (incomingNode != curr) { //check if not the same
                         incomeWeight = incomingNode.getEdgeBetween(curr).getAttribute("weight");
                     }
                     for (Node outgoingNode : getTargetNodes) {
-                        double outWeight = (double) Integer.MAX_VALUE;
+                        double outWeight = 0.0;
                         if (outgoingNode != curr) { //check if not the same
                             outWeight = curr.getEdgeBetween(outgoingNode).getAttribute("weight");
                         }
