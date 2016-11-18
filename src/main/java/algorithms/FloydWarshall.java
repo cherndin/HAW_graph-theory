@@ -127,7 +127,6 @@ public class FloydWarshall implements Algorithm {
      * @param toNode
      * @param value
      */
-    @NotNull
     private void insertIfSmaller(@NotNull Node fromNode,
                                  @NotNull Node toNode,
                                  @NotNull Double value) {
@@ -226,15 +225,15 @@ public class FloydWarshall implements Algorithm {
         graph.addNode("D");
         graph.addNode("E");
 
-        graph.addEdge("AB", "A", "B").addAttribute("weight", 2.0);
-        graph.addEdge("AC", "A", "C").addAttribute("weight", 3.0);
-        graph.addEdge("BD", "B", "D").addAttribute("weight", 9.0);
-        graph.addEdge("CB", "C", "B").addAttribute("weight", 7.0);
-        graph.addEdge("CE", "C", "E").addAttribute("weight", 5.0);
-        graph.addEdge("ED", "E", "D").addAttribute("weight", 1.0);
+        graph.addEdge("AB", "A", "B", true).addAttribute("weight", 2.0);
+        graph.addEdge("AC", "A", "C", true).addAttribute("weight", 3.0);
+        graph.addEdge("BD", "B", "D", true).addAttribute("weight", 9.0);
+        graph.addEdge("CB", "C", "B", true).addAttribute("weight", 7.0);
+        graph.addEdge("CE", "C", "E", true).addAttribute("weight", 5.0);
+        graph.addEdge("ED", "E", "D", true).addAttribute("weight", 1.0);
 
         FloydWarshall floyd = new FloydWarshall();
-        floyd.setSourceAndTarget(graph.getNode("A"), graph.getNode("D"));
+        floyd.setSourceAndTarget(graph.getNode("A"), graph.getNode("E"));
         floyd.init(graph);
         floyd.compute();
     }
