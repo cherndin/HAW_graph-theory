@@ -254,29 +254,29 @@ public class IOGraph {
 
     public static void main(String[] args) throws Exception {
 //        throwExc = false;
-//        Graph graph1 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph09.gka"));
-//        display(graph1);
+        Graph graph3 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
+        display(graph3);
 
-        Graph pentaCircle = new MultiGraph("pentaCircle");
-        pentaCircle.addNode("a");
-        pentaCircle.addNode("b");
-        pentaCircle.addNode("c");
-        pentaCircle.addNode("d");
-        pentaCircle.addNode("e");
-
-        pentaCircle.addEdge("ab", "a", "b");
-        pentaCircle.addEdge("ac", "a", "c");
-        pentaCircle.addEdge("ae", "a", "e");
-        pentaCircle.addEdge("ad", "a", "d");
-        pentaCircle.addEdge("bd", "b", "d");
-        pentaCircle.addEdge("bc", "b", "c");
-        pentaCircle.addEdge("be", "b", "e");
-        pentaCircle.addEdge("ed", "e", "d");
-        pentaCircle.addEdge("ec", "e", "c");
-        pentaCircle.addEdge("cd", "c", "d");
-        save(pentaCircle);
-        Graph pentaCircle2 = fromFile("pentaCircle2", new File("src/main/resources/output/pentaCircle.gka"));
-        display(pentaCircle2);
+//        Graph pentaCircle = new MultiGraph("pentaCircle");
+//        pentaCircle.addNode("a");
+//        pentaCircle.addNode("b");
+//        pentaCircle.addNode("c");
+//        pentaCircle.addNode("d");
+//        pentaCircle.addNode("e");
+//
+//        pentaCircle.addEdge("ab", "a", "b");
+//        pentaCircle.addEdge("ac", "a", "c");
+//        pentaCircle.addEdge("ae", "a", "e");
+//        pentaCircle.addEdge("ad", "a", "d");
+//        pentaCircle.addEdge("bd", "b", "d");
+//        pentaCircle.addEdge("bc", "b", "c");
+//        pentaCircle.addEdge("be", "b", "e");
+//        pentaCircle.addEdge("ed", "e", "d");
+//        pentaCircle.addEdge("ec", "e", "c");
+//        pentaCircle.addEdge("cd", "c", "d");
+//        save(pentaCircle);
+//        Graph pentaCircle2 = fromFile("pentaCircle2", new File("src/main/resources/output/pentaCircle.gka"));
+//        display(pentaCircle2);
 
 //        Graph graph2 = fromFileWithFileChooser("MyGraph2");
 //        display(graph2);

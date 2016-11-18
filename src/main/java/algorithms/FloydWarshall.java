@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Created by MattX7 on 04.11.2016.
@@ -67,9 +68,9 @@ public class FloydWarshall implements Algorithm {
         for (int k = 0; k < n; k++) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    double kij = distances[i][k] + distances[k][j];
-                    if (distances[i][j] > kij) {
-                        distances[i][j] = kij;
+                    double sum = distances[i][k] + distances[k][j];
+                    if (distances[i][j] > sum) {
+                        distances[i][j] = sum;
                     }
                 }
             }
@@ -111,12 +112,14 @@ public class FloydWarshall implements Algorithm {
     /**
      * Returns index of a Node
      *
-     * @param node
-     * @return
+     * @param node from we want to know the index
+     * @return index
+     * @throws NoSuchElementException no such node in the list
      */
-    private int getIndex(Node node) {
+    @NotNull
+    private Integer getIndex(@NotNull Node node) {
         int i = nodes.indexOf(node);
-        if (i < 0) throw new IllegalArgumentException();
+        if (i < 0) throw new NoSuchElementException();
         return i;
     }
 
