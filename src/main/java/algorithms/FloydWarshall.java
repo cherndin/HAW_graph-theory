@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * Created by MattX7 on 04.11.2016.
- *
+ * <p>
  * Ref:
  * http://www.orklaert.de/floyd-warshall-algorithmus.php
  * https://www.cs.usfca.edu/~galles/visualization/Floyd.html
@@ -26,7 +26,8 @@ public class FloydWarshall implements Algorithm {
     private Graph graph;
     private Node source;
     private Node target;
-    private  double[][] distances;
+    private int n;
+    private double[][] distances;
     private List<Node> nodes = new LinkedList<Node>();
 
     public void init(Graph graph) {
@@ -38,6 +39,7 @@ public class FloydWarshall implements Algorithm {
         this.graph = graph;
         setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         nodes = ImmutableList.copyOf(graph.getEachNode());
+        n = nodes.size();
 
         int n = graph.getNodeCount();
         distances = new double[n][n];
@@ -65,27 +67,16 @@ public class FloydWarshall implements Algorithm {
     public void compute() {
         Iterator<Node> nodeIter = graph.getNodeIterator();
 
-        while (nodeIter.hasNext()) { // Über alle Nodes iterieren
-            Node curr = nodeIter.next(); // Aktuellen Node setzten
-            if (hasIncomingEdges(curr)) { // Wenn dieser eingehende Edges hat....
-                List<Node> incomingNodes = getIncomingNodes(curr); // ...dann finde alle eingehenden Knoten
-                List<Node> getTargetNodes = getTargetNodes(curr); // ... magic
-                for (Node incomingNode : incomingNodes) {
-                    double incomeWeight = Double.POSITIVE_INFINITY;
-                    if (incomingNode != curr) { //check if not the same
-                        incomeWeight = incomingNode.getEdgeBetween(curr).getAttribute("weight");
-                    }
-                    for (Node outgoingNode : getTargetNodes) {
-                        double outWeight = Double.POSITIVE_INFINITY;
-                        if (outgoingNode != curr) { //check if not the same
-                            outWeight = curr.getEdgeBetween(outgoingNode).getAttribute("weight");
-                        }
-                        double pathWeight = incomeWeight + outWeight;
-                        insertIfSmaller(incomingNode, outgoingNode, pathWeight);
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    double kij = distances[i][k] + distances[k][j];
+                    if (distances[i][j] > kij) {
+                        distances[i][j] = kij;
                     }
                 }
             }
-            System.out.println("================== " + curr + " ======================");
+            System.out.println("================== " + k + " ======================");
             printMatrix();
             System.out.println();
         }
@@ -146,7 +137,7 @@ public class FloydWarshall implements Algorithm {
     @NotNull
     private Boolean hasIncomingEdges(Node node) {
         for (Edge edge : node.getEachEnteringEdge()) {
-            if (edge.getSourceNode() == node)
+            if (edge.getTargetNode() == node)
                 return true;
         }
         return false;
