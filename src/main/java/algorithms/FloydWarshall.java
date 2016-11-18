@@ -29,6 +29,11 @@ public class FloydWarshall implements Algorithm {
     private List<Node> nodes = new LinkedList<Node>();
 
     public void init(Graph graph) {
+        if (!hasWeights(graph))
+            throw new IllegalArgumentException();
+        if (graph == null || source == null || target == null) // have to be set
+            throw new IllegalArgumentException();
+
         this.graph = graph;
         setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         for (Node node : graph.getEachNode()) {
@@ -57,11 +62,6 @@ public class FloydWarshall implements Algorithm {
     }
 
     public void compute() {
-        if (graph == null || source == null || target == null) // have to be set
-            throw new IllegalArgumentException();
-        if (!hasWeights(graph))
-            throw new IllegalArgumentException();
-
         Iterator<Node> nodeIter = graph.getNodeIterator();
 
         while (nodeIter.hasNext()) { // Über alle Nodes iterieren
@@ -70,12 +70,12 @@ public class FloydWarshall implements Algorithm {
                 List<Node> incomingNodes = getIncomingNodes(curr); // ...dann finde alle eingehenden Knoten
                 List<Node> getTargetNodes = getTargetNodes(curr); // ... magic
                 for (Node incomingNode : incomingNodes) {
-                    double incomeWeight = 0.0;
+                    double incomeWeight = (double) Integer.MAX_VALUE;
                     if (incomingNode != curr) { //check if not the same
                         incomeWeight = incomingNode.getEdgeBetween(curr).getAttribute("weight");
                     }
                     for (Node outgoingNode : getTargetNodes) {
-                        double outWeight = 0.0;
+                        double outWeight = (double) Integer.MAX_VALUE;
                         if (outgoingNode != curr) { //check if not the same
                             outWeight = curr.getEdgeBetween(outgoingNode).getAttribute("weight");
                         }

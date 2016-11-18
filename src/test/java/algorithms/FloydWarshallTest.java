@@ -61,8 +61,8 @@ public class FloydWarshallTest {
         graph.getEdge("v3v4").addAttribute("weight", 1.0);
         graph.getEdge("v5v4").addAttribute("weight", 3.0);
         graph.getEdge("v5v6").addAttribute("weight", 1.0);
-        floyd.init(graph);
         floyd.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
+        floyd.init(graph);
         floyd.compute();
 
         assertEquals(new Double(6), floyd.distance);
@@ -79,8 +79,8 @@ public class FloydWarshallTest {
             bigGraph.addEdge("" + (i - 1) + i, "" + (i - 1), "" + i).addAttribute("weight", 1.0);
         }
         FloydWarshall floyd = new FloydWarshall();
-        floyd.init(bigGraph);
         floyd.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
+        floyd.init(bigGraph);
         floyd.compute();
         assertEquals(new Double(edges), floyd.distance);
     }
