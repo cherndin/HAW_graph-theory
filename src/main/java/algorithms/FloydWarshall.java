@@ -8,7 +8,6 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -107,68 +106,6 @@ public class FloydWarshall implements Algorithm {
                 hasWeight = false;
         }
         return hasWeight;
-    }
-
-    /**
-     * Inserts a value if it is smaller
-     *
-     * @param fromNode
-     * @param toNode
-     * @param value
-     */
-    private void insertIfSmaller(@NotNull Node fromNode,
-                                 @NotNull Node toNode,
-                                 @NotNull Double value) {
-        int x = getIndex(fromNode);
-        int y = getIndex(toNode);
-        if (value < distances[x][y])
-            distances[x][y] = value;
-
-    }
-
-    /**
-     * Returns true if node has incoming Edges
-     *
-     * @param node
-     * @return
-     */
-    @NotNull
-    private Boolean hasIncomingEdges(Node node) {
-        for (Edge edge : node.getEachEnteringEdge()) {
-            if (edge.getTargetNode() == node)
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns incoming Nodes
-     *
-     * @param node
-     * @return
-     */
-    @NotNull
-    private List<Node> getIncomingNodes(Node node) {
-        List<Node> nodes = new ArrayList<Node>();
-        for (Edge edge : node.getEachEnteringEdge()) {
-            nodes.add(edge.getSourceNode());
-        }
-        return nodes;
-    }
-
-    /**
-     * Return target Nodes
-     *
-     * @param node
-     * @return
-     */
-    @NotNull
-    private List<Node> getTargetNodes(Node node) {
-        List<Node> nodes = new ArrayList<Node>();
-        for (Edge edge : node.getEachLeavingEdge()) {
-            nodes.add(edge.getTargetNode());
-        }
-        return nodes;
     }
 
     /**
