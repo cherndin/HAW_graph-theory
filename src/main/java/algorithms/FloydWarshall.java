@@ -65,8 +65,6 @@ public class FloydWarshall implements Algorithm {
     }
 
     public void compute() {
-        Iterator<Node> nodeIter = graph.getNodeIterator();
-
         for (int k = 0; k < n; k++) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
@@ -80,7 +78,7 @@ public class FloydWarshall implements Algorithm {
             printMatrix();
             System.out.println();
         }
-        distance = distances[source.getIndex()][target.getIndex()];
+        distance = distances[getIndex(source)][getIndex(target)];
     }
 
     /**
