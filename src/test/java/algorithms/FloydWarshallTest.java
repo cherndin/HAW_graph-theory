@@ -5,6 +5,9 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+
+import static helper.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -12,6 +15,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class FloydWarshallTest {
     private Graph graph;
+    private Graph graph3;
+
 
     // TODO Testen Sie für graph3 in graph3.gka dabei Floyd-Warshall gegen Dijkstra und geben Sie den kürzesten Weg, sowie die Anzahl der Zugriffe auf den Graphen an
 
@@ -36,14 +41,16 @@ public class FloydWarshallTest {
         graph.addEdge("v3v4", "v3", "v4").addAttribute("weight", 1.0);
         graph.addEdge("v5v4", "v5", "v4").addAttribute("weight", 3.0);
         graph.addEdge("v5v6", "v5", "v6").addAttribute("weight", 1.0);
+
+        graph3 = fromFile("graph3", new File("src/main/resources/output/graph03.gka"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void graphWithNoWeightTest() throws Exception {
-        // TODO INIT UND COMPUTE AUSFÜHREN STEPS UND SHORTESTPATH ANGUCKEN
+        Graph graph9 = fromFile("graph09", new File("src/main/resources/output/graph09.gka"));
         FloydWarshall floyd = new FloydWarshall();
-        floyd.init(graph);
-        floyd.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
+        floyd.setSourceAndTarget(graph9.getNode("a"), graph9.getNode("d"));
+        floyd.init(graph9);
         floyd.compute();
     }
 
@@ -58,9 +65,19 @@ public class FloydWarshallTest {
     }
 
     @Test
+    public void graph03test() throws Exception {
+        FloydWarshall floyd = new FloydWarshall();
+        floyd.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
+        floyd.init(graph3);
+        floyd.compute();
+        assertEquals(new Double(170.0), floyd.distance);
+        assertEquals(new Integer(484), floyd.steps);
+    }
+
+    @Test
     public void bigGraphTest() throws Exception {
-        int edges = 1000;   // TODO 100 Knoten und etwa 2500 Kanten.
-                            // TODO Lassen Sie bitte beide Algorithmen auf dem Graphen BIG, die k¨urzestenWege berechnen und vergleichen diese.
+        int edges = 100;   // TODO 100 Knoten und etwa 2500 Kanten.
+        // TODO Lassen Sie bitte beide Algorithmen auf dem Graphen BIG, die kürzestenWege berechnen und vergleichen diese.
         Graph bigGraph = new SingleGraph("bigGraph");
         bigGraph.addNode("0");
         for (int i = 1; i <= edges; i++) {
@@ -72,5 +89,6 @@ public class FloydWarshallTest {
         floyd.init(bigGraph);
         floyd.compute();
         assertEquals(new Double(edges), floyd.distance);
+        assertEquals(new Integer(150), floyd.steps);
     }
 }

@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 public class FloydWarshall implements Algorithm {
 
     public Double distance;
+    public Integer steps = 0;
     private Graph graph;
     private Node source;
     private Node target;
@@ -37,7 +38,6 @@ public class FloydWarshall implements Algorithm {
             throw new IllegalArgumentException();
 
         this.graph = graph;
-        setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         nodes = ImmutableList.copyOf(graph.getEachNode());
         n = nodes.size();
 
@@ -50,12 +50,17 @@ public class FloydWarshall implements Algorithm {
             Node NodeI = nodesForI.next();
             for (int j = 0; j < n; j++) {
                 Node NodeJ = nodesForJ.next();
+                steps += 1;
                 if (NodeI == NodeJ) {
                     distances[i][j] = 0.0;
-                } else if (NodeI.hasEdgeBetween(NodeJ)) {
-                    distances[i][j] = NodeI.getEdgeBetween(NodeJ).getAttribute("weight");
                 } else {
-                    distances[i][j] = Integer.MAX_VALUE;
+                    if (NodeI.hasEdgeBetween(NodeJ)) {
+                        String weight = NodeI.getEdgeBetween(NodeJ).getAttribute("weight").toString();
+                        Double.parseDouble(weight);
+                        distances[i][j] = Double.parseDouble(weight);
+                    } else {
+                        distances[i][j] = Integer.MAX_VALUE;
+                    }
                 }
             }
         }

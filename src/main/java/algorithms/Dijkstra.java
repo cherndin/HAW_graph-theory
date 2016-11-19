@@ -21,6 +21,7 @@ public class Dijkstra implements Algorithm {
 
     public static boolean preview = true;
     public Double distance;
+    public Integer steps = 0;
     private Graph graph;
     private Node source;
     private Node target;
@@ -33,7 +34,7 @@ public class Dijkstra implements Algorithm {
      */
     public void init(Graph graph) {
         this.graph = graph;
-        setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
+        //  setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         uncheckedNodes = new LinkedList<Node>();
     }
 
@@ -53,6 +54,7 @@ public class Dijkstra implements Algorithm {
         setUp(); // Attribute setzen und mit Standartwerten belegen
 
         calcNewDistance(source);
+
         while (!uncheckedNodes.isEmpty()) {
             logger.debug(uncheckedNodes.toString());
             // Knoten mit minimaler Distanz auswählen
@@ -62,6 +64,7 @@ public class Dijkstra implements Algorithm {
             // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             calcNewDistance(currentNode);
+            steps += 1;
         }
         distance = target.getAttribute("Distance");
         reset();
@@ -127,7 +130,9 @@ public class Dijkstra implements Algorithm {
         while (leavingEdgeIterator.hasNext()) {
             Edge leavingEdge = leavingEdgeIterator.next();
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
-            Double newDist = ((Double) currNode.getAttribute("Distance")) + ((Double) leavingEdge.getAttribute("weight"));
+            String weight1 = currNode.getAttribute("Distance").toString();
+            String weight2 = leavingEdge.getAttribute("weight").toString();
+            Double newDist = (Double.parseDouble(weight1)) + (Double.parseDouble(weight2));
             Node nodeFromLeavingEdge = getRightNode(currNode, leavingEdge); // TODO ist das notwendig?
 
             if (preview) nodeFromLeavingEdge.setAttribute("ui.class", "markBlue");

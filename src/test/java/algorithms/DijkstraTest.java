@@ -5,6 +5,9 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+
+import static helper.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -12,6 +15,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class DijkstraTest {
     private Graph graph;
+    private Graph graph3;
 
     // TODO Testen Sie für graph3 in graph3.gka dabei Floyd-Warshall gegen Dijkstra und geben Sie den k¨urzesten Weg, sowie die Anzahl der Zugriffe auf den Graphen an
 
@@ -38,6 +42,7 @@ public class DijkstraTest {
         graph.addEdge("v5v6", "v5", "v6");
 
         Dijkstra.preview = false; // Graph nicht visualisieren
+        graph3 = fromFile("graph3", new File("src/main/resources/output/graph03.gka"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -57,7 +62,6 @@ public class DijkstraTest {
         graph.getEdge("v2v3").addAttribute("weight", 5.0);
         graph.getEdge("v2v6").addAttribute("weight", 2.0);
         graph.getEdge("v2v5").addAttribute("weight", 3.0);
-
         graph.getEdge("v3v6").addAttribute("weight", 2.0);
         graph.getEdge("v3v5").addAttribute("weight", 2.0);
         graph.getEdge("v3v4").addAttribute("weight", 1.0);
@@ -72,8 +76,18 @@ public class DijkstraTest {
     }
 
     @Test
+    public void graph03test() throws Exception {
+        Dijkstra dijk = new Dijkstra();
+        dijk.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
+        dijk.init(graph3);
+        dijk.compute();
+        assertEquals(new Double(170.0), dijk.distance);
+        assertEquals(new Integer(21), dijk.steps);
+    }
+
+    @Test
     public void bigGraphTest() throws Exception {
-        int edges = 1000; // TODO 100 Knoten und etwa 2500 Kanten.
+        int edges = 100; // TODO 100 Knoten und etwa 2500 Kanten.
         // TODO Lassen Sie bitte beide Algorithmen auf dem Graphen BIG, die k¨urzestenWege berechnen und vergleichen diese.
         Graph bigGraph = new SingleGraph("bigGraph");
         bigGraph.addNode("0");
@@ -87,5 +101,6 @@ public class DijkstraTest {
         dijk.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
         dijk.compute();
         assertEquals(new Double(edges), dijk.distance);
+        assertEquals(new Integer(22801), dijk.steps);
     }
 }
