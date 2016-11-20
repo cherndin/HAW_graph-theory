@@ -81,7 +81,7 @@ public class Dijkstra {
      * @return boolean
      */
     private boolean asLongAsWeHaveNodesWithFalse() {
-        for (int i = 0; i < ok.length; i++) {
+        for (int i = 0; i <= ok.length; i++) {
             if (ok[i] == false) return true;
         }
         return false;
