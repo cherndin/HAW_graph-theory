@@ -130,36 +130,17 @@ public class Dijkstra {
     private void calcNewDistance(@NotNull Node currNode) {
         // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
         Iterator<Edge> leavingEdgeIterator = currNode.getLeavingEdgeIterator();
-        if (preview) currNode.setAttribute("ui.class", "markRed");
-        GraphUtil.sleepLong();
         while (leavingEdgeIterator.hasNext()) {
             hits++;
             Edge leavingEdge = leavingEdgeIterator.next();
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
-            String weight1 = currNode.getAttribute("Distance").toString();
-            String weight2 = leavingEdge.getAttribute("weight").toString();
-            Double newDist = (Double.parseDouble(weight1)) + (Double.parseDouble(weight2));
+            String weightCurr = currNode.getAttribute("Distance").toString();
+            String weightLeav = leavingEdge.getAttribute("weight").toString();
+            Double newDist = (Double.parseDouble(weightCurr)) + (Double.parseDouble(weightLeav));
             Node nodeFromLeavingEdge = getRightNode(currNode, leavingEdge); // TODO ist das notwendig?
-
-            if (preview) nodeFromLeavingEdge.setAttribute("ui.class", "markBlue");
-            if (!((Boolean) nodeFromLeavingEdge.getAttribute("OK")) &&
-                    (newDist < (Double) nodeFromLeavingEdge.getAttribute("Distance"))) {
-                nodeFromLeavingEdge.setAttribute("Distance", newDist);
-                nodeFromLeavingEdge.setAttribute("Predecessor", currNode);
-                if (preview) updateLabel(nodeFromLeavingEdge);
-            }
-            GraphUtil.sleepLong();
-            if (preview) nodeFromLeavingEdge.setAttribute("ui.class", "");
+            //TODO in die Matrix einfügen
         }
-        currNode.setAttribute("ui.class", "");
-    }
 
-    private void updateLabel(Node node) {
-        node.setAttribute("ui.label", node.getId()
-                + " | Dist.: " + node.getAttribute("Distance")
-                + " | OK.: " + node.getAttribute("OK")
-                + " | Pred..: " + node.getAttribute("Predecessor")
-        );
     }
 
     @NotNull
