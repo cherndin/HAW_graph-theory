@@ -143,6 +143,20 @@ public class Dijkstra {
 
     }
 
+    /**
+     * Returns index of a Node
+     *
+     * @param node from we want to know the index
+     * @return index
+     */
+    @NotNull
+    private Integer getIndex(@NotNull Node node) {
+        for (int i = 0; i <= nodes.length; i++) {
+            if (nodes[i] == node) return i;
+        }
+        return null;
+    }
+
     @NotNull
     private Node getRightNode(@NotNull Node currNode, @NotNull Edge leavingEdge) {
         Node node;
