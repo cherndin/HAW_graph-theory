@@ -1,5 +1,6 @@
 package algorithms;
 
+import com.google.common.collect.Lists;
 import helper.GraphUtil;
 import org.apache.log4j.Logger;
 import org.graphstream.graph.Edge;
@@ -25,7 +26,7 @@ public class Dijkstra {
     public Double[] entf;
     public Node[] vorg;
     public Boolean[] ok;
-    public LinkedList<Node> shortestPath = new LinkedList<Node>();
+    public LinkedList<Node> shortestPath;
     private Graph graph;
     private Node source;
     private Node target;
@@ -38,6 +39,7 @@ public class Dijkstra {
     public void init(Graph graph) {
         this.graph = graph;
         int size = graph.getNodeCount();
+        shortestPath = new LinkedList<Node>();
         nodes = new Node[size];
         entf = new Double[size];
         vorg = new Node[size];
@@ -79,18 +81,6 @@ public class Dijkstra {
     }
 
     /**
-     * Returns true if we still have some "false" in the ok list
-     *
-     * @return boolean
-     */
-    private boolean asLongAsWeHaveNodesWithFalse() {
-        for (Boolean anOk : ok) {
-            if (!anOk) return true;
-        }
-        return false;
-    }
-
-    /**
      * Returns the shortest Path from the Source to the Target
      *
      * @return the shortest Path from the Source to the Target
@@ -99,27 +89,12 @@ public class Dijkstra {
         if (hits == 0)
             throw new IllegalArgumentException("do compute before this method");
         shortestPath.add(target);
-
-
-        while (getPred(target) != source)
-
-            shortestPath.add(getPred(target));
+        Node current = target;
+        while (hasPred(current)) {
+            shortestPath.add(getPred(current));
+            current = getPred(current);
         }
-        return shortestPath;
-}
-
-    private Node getPred(Node target) {
-        Node pred = vorg[getIndex(target)];
-        return pred;
-
-    }
-
-    private boolean hasPred(Node target) {
-        Node pred = vorg[getIndex(target)];
-        if (pred != null)
-            return true;
-        else return false;
-
+        return Lists.reverse(shortestPath);
     }
 
     /**
@@ -138,6 +113,27 @@ public class Dijkstra {
         this.target = target;
         source.setAttribute("title", "source");
         target.setAttribute("title", "target");
+    }
+
+    /**
+     * Returns true if we still have some "false" in the ok list
+     *
+     * @return boolean
+     */
+    private boolean asLongAsWeHaveNodesWithFalse() {
+        for (Boolean anOk : ok) {
+            if (!anOk) return true;
+        }
+        return false;
+    }
+
+    private Node getPred(Node target) {
+        return vorg[getIndex(target)];
+    }
+
+    private boolean hasPred(Node node) {
+        return node != vorg[getIndex(node)];
+
     }
 
     // === PRIVATE ===
