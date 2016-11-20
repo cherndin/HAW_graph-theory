@@ -9,7 +9,6 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -20,7 +19,6 @@ public class Dijkstra {
 
     public Double distance;
     public Integer hits = 0;
-    public Object[][] matrix;
     public Node[] nodes;
     public Double[] entf;
     public Node[] vorg;
@@ -28,7 +26,6 @@ public class Dijkstra {
     private Graph graph;
     private Node source;
     private Node target;
-    private LinkedList<Node> uncheckedNodes; // TODO could be a set
 
     /**
      * Initialisation
@@ -37,13 +34,12 @@ public class Dijkstra {
      */
     public void init(Graph graph) {
         this.graph = graph;
-        matrix = new Double[4][graph.getNodeCount()];
-        nodes = (Node[]) matrix[0];
-        entf = (Double[]) matrix[1];
-        vorg = (Node[]) matrix[2];
-        ok = (Boolean[]) matrix[3];
+        int size = graph.getNodeCount();
+        nodes = new Node[size];
+        entf = new Double[size];
+        vorg = new Node[size];
+        ok = new Boolean[size];
         setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
-        uncheckedNodes = new LinkedList<Node>();
     }
 
     /**
@@ -65,13 +61,13 @@ public class Dijkstra {
             Node currentNode = withMinDistance();
             // Setze OKh := true.
             ok[getIndex(currentNode)] = true;
-            //
+
             // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             calcNewDistance(currentNode);
 
         } while (asLongAsWeHaveNodesWithFalse());
-        distance = target.getAttribute("Distance");
+        distance = target.getAttribute("Distance"); // TODO
         reset();
     }
 
@@ -81,8 +77,8 @@ public class Dijkstra {
      * @return boolean
      */
     private boolean asLongAsWeHaveNodesWithFalse() {
-        for (int i = 0; i <= ok.length; i++) {
-            if (ok[i] == false) return true;
+        for (Boolean anOk : ok) {
+            if (!anOk) return true;
         }
         return false;
     }
@@ -120,13 +116,16 @@ public class Dijkstra {
     private void setUp() {
         // nodes
         nodes[0] = source;
+        Iterator<Node> nodeIterator = graph.getNodeIterator();
         int n = 1;
-        for (Node node : nodes) {
-            if (source != node) {
+        while (nodeIterator.hasNext()) {
+            Node next = nodeIterator.next();
+            if (source != next) {
+                nodes[n] = next;
                 n++;
-                nodes[n] = node;
             }
         }
+
         // Entfernung
         entf[0] = 0.0;
         for (int i = 1; i < entf.length; i++) {
@@ -144,14 +143,21 @@ public class Dijkstra {
         // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
         Iterator<Edge> leavingEdgeIterator = currNode.getLeavingEdgeIterator();
         while (leavingEdgeIterator.hasNext()) {
-            hits++;
             Edge leavingEdge = leavingEdgeIterator.next();
-            // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
-            String weightCurr = entf[getIndex(currNode)]; // entf von aktuellen Knoten aus der Matrix holen
-            String weightLeav = leavingEdge.getAttribute("weight").toString(); // entf vom neuten Knoten holen
-            Double newDist = (Double.parseDouble(weightCurr)) + (Double.parseDouble(weightLeav));
-            Node nodeFromLeavingEdge = getRightNode(currNode, leavingEdge); // TODO ist das notwendig?
-            entf[getIndex(leavingEdge)] = newDist; // neue Entf in matrix einfügen
+            Node leavingNode = leavingEdge.getTargetNode(); // TODO target node richtig?
+            hits++;
+
+            if (!ok[getIndex(leavingNode)]) {
+                Double entfCurr = entf[getIndex(currNode)]; // entf von aktuellen Knoten aus der Matrix holen
+                Double entfLeaving = entf[getIndex(currNode)]; // entf vom neuten Knoten holen
+                Double weightLeavingEdge = Double.parseDouble(leavingEdge.getAttribute("weight").toString());
+
+                if (entfCurr > entfLeaving + weightLeavingEdge) {
+                    // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
+                    entfCurr = entfLeaving + weightLeavingEdge;
+                    vorg[getIndex(leavingNode)] = currNode;
+                }
+            }
         }
     }
 
@@ -164,9 +170,10 @@ public class Dijkstra {
     @NotNull
     private Integer getIndex(@NotNull Node node) {
         for (int i = 0; i <= nodes.length; i++) {
-            if (nodes[i] == node) return i;
+            if (nodes[i] == node)
+                return i;
         }
-        return null;
+        throw new IllegalArgumentException();
     }
 
     @NotNull
@@ -209,11 +216,6 @@ public class Dijkstra {
     }
 
     private void reset() {
-        for (Node node : graph.getEachNode()) {
-            node.removeAttribute("Distance");
-            node.removeAttribute("OK");
-            node.removeAttribute("Predecessor");
-        }
         source.removeAttribute("title");
         target.removeAttribute("title");
     }
@@ -221,7 +223,7 @@ public class Dijkstra {
     // === MAIN ===
 
     public static void main(String[] args) throws Exception {
-// Graph aus den Folien
+        // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6
         Graph graph = new SingleGraph("graph");
 
@@ -244,8 +246,7 @@ public class Dijkstra {
         graph.addEdge("v5v4", "v5", "v4").addAttribute("weight", 3.0);
         graph.addEdge("v5v6", "v5", "v6").addAttribute("weight", 1.0);
 
-        DijkstraVisual.preview = true;
-        DijkstraVisual dijk = new DijkstraVisual();
+        Dijkstra dijk = new Dijkstra();
         dijk.init(graph);
         dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
         dijk.compute();
