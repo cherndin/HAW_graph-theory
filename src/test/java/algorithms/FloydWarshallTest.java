@@ -64,6 +64,7 @@ public class FloydWarshallTest {
         floyd.compute();
         // TODO anderer Test
         System.out.println("Hits: " + floyd.hits);
+        System.out.println("Hits: " + floyd.getShortestPath());
     }
 
     @Test

@@ -9,6 +9,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -94,8 +95,16 @@ public class Dijkstra {
      * @return the shortest Path from the Source to the Target
      */
     public List<Node> getShortestPath() {
-        // TODO getShortestPath()
-        return null;
+        if (hits == 0)
+            throw new IllegalArgumentException("do compute before this method");
+        LinkedList<Node> ShortestPath = new LinkedList<Node>();
+        ShortestPath.add(target);
+        for (int i = 0; i < vorg.length; i++) {
+            ShortestPath.add(vorg[getIndex(target)]);
+        }
+
+
+        return ShortestPath;
     }
 
     /**
@@ -180,6 +189,7 @@ public class Dijkstra {
         }
         throw new IllegalArgumentException();
     }
+
 
     @NotNull
     private Node getRightNode(@NotNull Node currNode, @NotNull Edge leavingEdge) {

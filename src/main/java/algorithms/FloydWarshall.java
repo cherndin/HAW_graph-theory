@@ -24,6 +24,7 @@ public class FloydWarshall implements Algorithm {
 
     public Double distance;
     public Integer hits = 0;
+    public int steps = -1;
     public static boolean preview = true;
     private Graph graph;
     private Node source;
@@ -101,6 +102,19 @@ public class FloydWarshall implements Algorithm {
         this.target = target;
         source.setAttribute("title", "source");
         target.setAttribute("title", "target");
+    }
+
+
+    /**
+     * @return shortestWay
+     */
+    public List<Node> getShortestPath() {
+        if (hits == 0)
+            throw new IllegalArgumentException("do compute before this method");
+        LinkedList<Node> ShortestPath = new LinkedList<Node>();
+        ShortestPath.add(target);
+        //TODO
+        return ShortestPath;
     }
 
     @NotNull
