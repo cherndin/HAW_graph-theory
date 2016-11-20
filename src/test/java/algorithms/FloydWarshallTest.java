@@ -1,5 +1,6 @@
 package algorithms;
 
+import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
@@ -86,8 +87,13 @@ public class FloydWarshallTest {
         }
         bigGraph.addEdge("1_100", "1", "100");
         for (int i = 2; i <= edges; i++) {
-            int r = random.nextInt(nodes - 1) + 1;
-            bigGraph.addEdge(i + "_" + r, i + "", r + "").addAttribute("weight", 1);
+            int r = random.nextInt(nodes - 1);
+            if (r == 0) r += +1;
+            try {
+                bigGraph.addEdge(i + "_" + r, i + "", r + "").addAttribute("weight", 1);
+            } catch (EdgeRejectedException o) {
+                continue;
+            }
             edgeCount++;
         }
         FloydWarshall floydWarshall = new FloydWarshall();
