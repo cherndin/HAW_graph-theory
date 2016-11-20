@@ -71,7 +71,8 @@ public class Dijkstra {
                 System.out.println("============================ " + currentNode.getId() + " ============================");
             if (preview) printMatrix();
         } while (asLongAsWeHaveNodesWithFalse());
-        distance = target.getAttribute("Distance"); // TODO
+        //distance = target.getAttribute("Distance"); // TODO
+        distance = entf[getIndex(target)];
         reset();
     }
 
