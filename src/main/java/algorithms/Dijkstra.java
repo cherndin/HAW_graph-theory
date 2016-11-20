@@ -70,12 +70,20 @@ public class Dijkstra {
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             calcNewDistance(currentNode);
 
-        } while (untilWeHaveNodesWithFalse());
+        } while (asLongAsWeHaveNodesWithFalse());
         distance = target.getAttribute("Distance");
         reset();
     }
 
-    private boolean untilWeHaveNodesWithFalse() {
+    /**
+     * Returns true if we still have some "false" in the ok list
+     *
+     * @return boolean
+     */
+    private boolean asLongAsWeHaveNodesWithFalse() {
+        for (int i = 0; i < ok.length; i++) {
+            if (ok[i] == false) return true;
+        }
         return false;
     }
 
