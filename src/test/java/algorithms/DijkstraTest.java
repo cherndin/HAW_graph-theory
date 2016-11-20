@@ -87,17 +87,24 @@ public class DijkstraTest {
 
     @Test
     public void bigGraphTest() throws Exception {
-        int edges = 100; // TODO 100 Knoten und etwa 2500 Kanten.
+        int nodes = 100; // TODO 100 Knoten und etwa 2500 Kanten.
+        int edges = 2500;
+        int edgeCount = 0;
         Graph bigGraph = new SingleGraph("bigGraph");
-        bigGraph.addNode("0");
-        for (int i = 1; i <= edges; i++) {
+
+        for (int i = 1; i <= nodes; i++) {
             bigGraph.addNode("" + i);
-            bigGraph.addEdge("" + (i - 1) + i, "" + (i - 1), "" + i).addAttribute("weight", 1.0);
+        }
+        for (int i = 1; i <= edges; i++) {
+            for (int j = i + 1; j <= i + 26; j++) {
+                bigGraph.addEdge(i + j + "", i + "", j + "").addAttribute("weight", 1);
+                edgeCount++;
+            }
         }
         Dijkstra.preview = false;
         Dijkstra dijk = new Dijkstra();
         dijk.init(bigGraph);
-        dijk.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
+        dijk.setSourceAndTarget(bigGraph.getNode("1"), bigGraph.getNode("" + nodes));
         dijk.compute();
         assertEquals(new Double(edges), dijk.distance);
         assertEquals(new Integer(edges), dijk.steps);

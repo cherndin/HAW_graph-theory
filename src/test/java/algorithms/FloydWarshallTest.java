@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Random;
 
 import static helper.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
@@ -74,18 +75,27 @@ public class FloydWarshallTest {
 
     @Test
     public void bigGraphTest() throws Exception {
-        int edges = 150;   // TODO 100 Knoten und etwa 2500 Kanten.
+        int nodes = 100;
+        int edges = 2500;
+        int edgeCount = 0;
+        Random random = new Random();
         Graph bigGraph = new SingleGraph("bigGraph");
-        bigGraph.addNode("0");
-        for (int i = 1; i <= edges; i++) {
+
+        for (int i = 1; i <= nodes; i++) {
             bigGraph.addNode("" + i);
-            bigGraph.addEdge("" + (i - 1) + i, "" + (i - 1), "" + i).addAttribute("weight", 1.0);
         }
-        FloydWarshall floyd = new FloydWarshall();
-        floyd.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
-        floyd.init(bigGraph);
-        floyd.compute();
-        assertEquals(new Double(edges), floyd.distance);
-        assertEquals(new Integer(22801), floyd.steps);
+        bigGraph.addEdge("1_100", "1", "100");
+        for (int i = 2; i <= edges; i++) {
+            int r = random.nextInt(nodes - 1) + 1;
+            bigGraph.addEdge(i + "_" + r, i + "", r + "").addAttribute("weight", 1);
+            edgeCount++;
+        }
+        FloydWarshall floydWarshall = new FloydWarshall();
+        floydWarshall.init(bigGraph);
+        floydWarshall.setSourceAndTarget(bigGraph.getNode("1"), bigGraph.getNode("" + nodes));
+        floydWarshall.compute();
+        assertEquals(2500, edgeCount);
+        assertEquals(new Double(edges), floydWarshall.distance);
+        assertEquals(new Integer(edges), floydWarshall.steps);
     }
 }
