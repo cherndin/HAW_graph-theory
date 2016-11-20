@@ -1,6 +1,7 @@
 package algorithms;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -26,6 +27,7 @@ public class FloydWarshall implements Algorithm {
     public Integer hits = 0;
     public int steps = -1;
     public static boolean preview = true;
+    public LinkedList<Node> shortestPath;
     private Graph graph;
     private Node source;
     private Node target;
@@ -113,8 +115,36 @@ public class FloydWarshall implements Algorithm {
             throw new IllegalArgumentException("do compute before this method");
         LinkedList<Node> ShortestPath = new LinkedList<Node>();
         ShortestPath.add(target);
-        //TODO
-        return ShortestPath;
+        Node current = target;
+        while (hasPred(current)) {
+            shortestPath.add(getPred(current));
+            current = getPred(current);
+        }
+        return Lists.reverse(shortestPath);
+    }
+
+    private Node getPred(Node node) {
+        int y = getIndex(node);
+        int maxColumn = -1;
+        for (int x = 1; x < n; x++) {
+            if (distances[x][y] != 0.0 && Double.valueOf(distances[x][y]).isInfinite()) {
+                maxColumn = x;
+            }
+        }
+        if (maxColumn == -1)
+            throw new IllegalArgumentException();
+        return nodes.get(maxColumn);
+    }
+
+    private boolean hasPred(Node node) {
+        int y = getIndex(node);
+        for (int x = 1; x < n; x++) {
+            if (distances[x][y] != 0.0 && Double.valueOf(distances[x][y]).isInfinite()) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     @NotNull

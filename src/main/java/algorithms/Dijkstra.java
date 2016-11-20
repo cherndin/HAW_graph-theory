@@ -127,8 +127,8 @@ public class Dijkstra {
         return false;
     }
 
-    private Node getPred(Node target) {
-        return vorg[getIndex(target)];
+    private Node getPred(Node node) {
+        return vorg[getIndex(node)];
     }
 
     private boolean hasPred(Node node) {

@@ -58,14 +58,13 @@ public class FloydWarshallTest {
     @Test
     public void computeSimpleGraphTest() throws Exception {
         FloydWarshall floyd = new FloydWarshall();
-        FloydWarshall.preview = false;
+        FloydWarshall.preview = true;
         floyd.init(graph);
         floyd.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
         floyd.compute();
-        // TODO anderer Test
         assertEquals(Double.valueOf(6), floyd.distance);
         System.out.println("Hits: " + floyd.hits);
-        System.out.println("Steps: " + floyd.getShortestPath());
+//        System.out.println("Steps: " + floyd.getShortestPath());
     }
 
     @Test

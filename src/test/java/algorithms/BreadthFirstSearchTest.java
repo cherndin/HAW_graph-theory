@@ -81,7 +81,7 @@ public class BreadthFirstSearchTest {
         bfs3.compute();
 
         assertEquals(2, bfs.steps);
-        assertEquals("[c, b, a]", bfs.getShortestPath().toString());
+        assertEquals("[c, d, a]", bfs.getShortestPath().toString());
         assertEquals(1, bfs2.steps);
         assertEquals("[c, a]", bfs2.getShortestPath().toString());
         assertEquals(2, bfs3.steps);
