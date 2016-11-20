@@ -23,7 +23,8 @@ import java.util.NoSuchElementException;
 public class FloydWarshall implements Algorithm {
 
     public Double distance;
-    public Integer steps = 0;
+    public Integer hits = 0;
+    public boolean logMatrix = true;
     private Graph graph;
     private Node source;
     private Node target;
@@ -31,16 +32,15 @@ public class FloydWarshall implements Algorithm {
     private double[][] distances;
     private List<Node> nodes = new LinkedList<Node>();
 
+
     public void init(Graph graph) {
         if (!hasWeights(graph))
-            throw new IllegalArgumentException();
-        if (source == null || target == null) // have to be set
             throw new IllegalArgumentException();
 
         this.graph = graph;
         nodes = ImmutableList.copyOf(graph.getEachNode());
         n = nodes.size();
-
+        hits = n * n; // Zugriffe auf den Graphen
         int n = graph.getNodeCount();
         distances = new double[n][n];
 
@@ -50,7 +50,6 @@ public class FloydWarshall implements Algorithm {
             Node NodeI = nodesForI.next();
             for (int j = 0; j < n; j++) {
                 Node NodeJ = nodesForJ.next();
-                steps += 1;
                 if (NodeI == NodeJ) {
                     distances[i][j] = 0.0;
                 } else {
@@ -64,9 +63,9 @@ public class FloydWarshall implements Algorithm {
                 }
             }
         }
-        System.out.println("================== Start ======================");
-        printMatrix();
-        System.out.println();
+        if (logMatrix) System.out.println("================== Start ======================");
+        if (logMatrix) printMatrix();
+        if (logMatrix) System.out.println();
     }
 
     public void compute() {
@@ -79,9 +78,9 @@ public class FloydWarshall implements Algorithm {
                     }
                 }
             }
-            System.out.println("================== " + k + " ======================");
-            printMatrix();
-            System.out.println();
+            if (logMatrix) System.out.println("================== " + k + " ======================");
+            if (logMatrix) printMatrix();
+            if (logMatrix) System.out.println();
         }
         distance = distances[getIndex(source)][getIndex(target)];
     }

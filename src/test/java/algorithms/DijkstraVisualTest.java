@@ -1,11 +1,13 @@
 package algorithms;
 
+import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Random;
 
 import static helper.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
@@ -13,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by Neak on 03.11.2016.
  */
-public class DijkstraTest {
+public class DijkstraVisualTest {
     private Graph graph;
     private Graph graph3;
 
@@ -41,14 +43,14 @@ public class DijkstraTest {
         graph.addEdge("v5v4", "v5", "v4");
         graph.addEdge("v5v6", "v5", "v6");
 
-        Dijkstra.preview = false; // Graph nicht visualisieren
+        DijkstraVisual.preview = false; // Graph nicht visualisieren
         graph3 = fromFile("graph3", new File("src/main/resources/output/graph03.gka"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void graphWithNoWeightTest() throws Exception {
         // TODO INIT UND COMPUTE AUSFÜHREN STEPS UND SHORTESTPATH ANGUCKEN
-        Dijkstra dijk = new Dijkstra();
+        DijkstraVisual dijk = new DijkstraVisual();
         dijk.init(graph);
         dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
         dijk.compute();
@@ -56,7 +58,7 @@ public class DijkstraTest {
 
     @Test
     public void computeSimpleGraphTest() throws Exception {
-        Dijkstra dijk = new Dijkstra();
+        DijkstraVisual dijk = new DijkstraVisual();
         graph.getEdge("v1v2").addAttribute("weight", 1.0);
         graph.getEdge("v1v6").addAttribute("weight", 3.0);
         graph.getEdge("v2v3").addAttribute("weight", 5.0);
@@ -77,36 +79,43 @@ public class DijkstraTest {
 
     @Test
     public void graph03test() throws Exception {
-        Dijkstra dijk = new Dijkstra();
+        DijkstraVisual dijk = new DijkstraVisual();
         dijk.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
         dijk.init(graph3);
         dijk.compute();
         assertEquals(new Double(170.0), dijk.distance);
-        assertEquals(new Integer(21), dijk.steps);
+        assertEquals(new Integer(21), dijk.hits);
     }
 
     @Test
     public void bigGraphTest() throws Exception {
-        int nodes = 100; // TODO 100 Knoten und etwa 2500 Kanten.
+        int nodes = 100;
         int edges = 2500;
-        int edgeCount = 0;
+        int edgeCount = 1;
+        Random random = new Random();
         Graph bigGraph = new SingleGraph("bigGraph");
 
         for (int i = 1; i <= nodes; i++) {
             bigGraph.addNode("" + i);
         }
-        for (int i = 1; i <= edges; i++) {
-            for (int j = i + 1; j <= i + 26; j++) {
-                bigGraph.addEdge(i + j + "", i + "", j + "").addAttribute("weight", 1);
-                edgeCount++;
+        bigGraph.addEdge("1_100", "1", "100").addAttribute("weight", 1);
+        for (int i = 2; i <= edges; i++) {
+            int x = random.nextInt(nodes - 1) + 1;
+            int y = random.nextInt(nodes - 1) + 1;
+            try {
+                bigGraph.addEdge(x + "_" + y + "| " + edgeCount + " |", x + "", y + "").addAttribute("weight", 1);
+            } catch (EdgeRejectedException o) {
+                i--;
+                continue;
             }
+            edgeCount++;
         }
-        Dijkstra.preview = false;
-        Dijkstra dijk = new Dijkstra();
-        dijk.init(bigGraph);
-        dijk.setSourceAndTarget(bigGraph.getNode("1"), bigGraph.getNode("" + nodes));
-        dijk.compute();
-        assertEquals(new Double(edges), dijk.distance);
-        assertEquals(new Integer(edges), dijk.steps);
+        DijkstraVisual dijkstraVisual = new DijkstraVisual();
+        dijkstraVisual.init(bigGraph);
+        dijkstraVisual.setSourceAndTarget(bigGraph.getNode("1"), bigGraph.getNode("" + nodes));
+        dijkstraVisual.compute();
+        assertEquals(2500, edgeCount);
+        assertEquals(Double.valueOf(1), dijkstraVisual.distance);
+        System.out.println("Hits: " + dijkstraVisual.hits);
     }
 }

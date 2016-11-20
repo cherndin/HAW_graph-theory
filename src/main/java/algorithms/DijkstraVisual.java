@@ -16,12 +16,12 @@ import java.util.List;
 /**
  * Created by MattX7 on 03.11.2016.
  */
-public class Dijkstra implements Algorithm {
-    private static Logger logger = Logger.getLogger(Dijkstra.class);
+public class DijkstraVisual implements Algorithm {
+    private static Logger logger = Logger.getLogger(DijkstraVisual.class);
 
     public static boolean preview = true;
     public Double distance;
-    public Integer steps = 0;
+    public Integer hits = 0;
     private Graph graph;
     private Node source;
     private Node target;
@@ -34,7 +34,7 @@ public class Dijkstra implements Algorithm {
      */
     public void init(Graph graph) {
         this.graph = graph;
-        //  setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
+        setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         uncheckedNodes = new LinkedList<Node>();
     }
 
@@ -50,7 +50,7 @@ public class Dijkstra implements Algorithm {
             throw new IllegalArgumentException();
 
         // Implementation
-        if (preview) GraphUtil.buildForDisplay(graph).display(); // TODO visualisierung des algos
+        if (preview) GraphUtil.buildForDisplay(graph).display();
         setUp(); // Attribute setzen und mit Standartwerten belegen
 
         calcNewDistance(source);
@@ -64,7 +64,7 @@ public class Dijkstra implements Algorithm {
             // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             calcNewDistance(currentNode);
-            steps += 1;
+
         }
         distance = target.getAttribute("Distance");
         reset();
@@ -128,6 +128,7 @@ public class Dijkstra implements Algorithm {
         if (preview) currNode.setAttribute("ui.class", "markRed");
         GraphUtil.sleepLong();
         while (leavingEdgeIterator.hasNext()) {
+            hits++;
             Edge leavingEdge = leavingEdgeIterator.next();
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             String weight1 = currNode.getAttribute("Distance").toString();
@@ -172,6 +173,7 @@ public class Dijkstra implements Algorithm {
         for (Node cur : uncheckedNodes) {
             if (((Double) cur.getAttribute("Distance") < ((Double) min.getAttribute("Distance"))))
                 min = cur;
+            hits++;
         }
         return min;
     }
@@ -222,8 +224,8 @@ public class Dijkstra implements Algorithm {
         graph.addEdge("v5v4", "v5", "v4").addAttribute("weight", 3.0);
         graph.addEdge("v5v6", "v5", "v6").addAttribute("weight", 1.0);
 
-        Dijkstra.preview = true;
-        Dijkstra dijk = new Dijkstra();
+        DijkstraVisual.preview = true;
+        DijkstraVisual dijk = new DijkstraVisual();
         dijk.init(graph);
         dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
         dijk.compute();

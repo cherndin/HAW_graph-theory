@@ -44,7 +44,7 @@ public class BreadthFirstSearch implements Algorithm {
             if (preview) GraphUtil.sleepLong();
             queue.addAll(getUntaggedNeighborsAndTagThem(next));
             if (isTargetTagged()) {
-                steps = target.getAttribute("steps");
+                steps = target.getAttribute("hits");
                 break;
             }
             next.setAttribute("ui.class", "markBlue");
@@ -58,7 +58,7 @@ public class BreadthFirstSearch implements Algorithm {
     }
 
     public List<Node> getShortestPath() {
-        if (target.getAttribute("steps").equals(-1))
+        if (target.getAttribute("hits").equals(-1))
             throw new IllegalArgumentException("do compute before this method");
         LinkedList<Node> shortestWay = new LinkedList<Node>();
         for (Node node : graph.getEachNode()) {
@@ -66,7 +66,7 @@ public class BreadthFirstSearch implements Algorithm {
         }
         shortestWay.add(target);
         target.setAttribute("ui.class", "markRed");
-        while (!shortestWay.getLast().getAttribute("steps").equals(0)) { // TODO noch eine Abbruchbedingung
+        while (!shortestWay.getLast().getAttribute("hits").equals(0)) { // TODO noch eine Abbruchbedingung
             Node next = getShortestNode(shortestWay.getLast()); // TODO Nullable
             if (preview) GraphUtil.sleepShort();
             next.setAttribute("ui.class", "markRed");
@@ -80,7 +80,7 @@ public class BreadthFirstSearch implements Algorithm {
         Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
         while (nodeIterator.hasNext()) {
             Node next = nodeIterator.next();
-            if (next.getAttribute("steps").equals((((Integer) node.getAttribute("steps")) - 1))) {
+            if (next.getAttribute("hits").equals((((Integer) node.getAttribute("hits")) - 1))) {
                 return next;
             }
         }
@@ -124,9 +124,9 @@ public class BreadthFirstSearch implements Algorithm {
                 nextNode = nextEdge.getNode1();
             else
                 nextNode = nextEdge.getNode0();
-            if (nextNode.getAttribute("steps").toString().equals("-1")) {
+            if (nextNode.getAttribute("hits").toString().equals("-1")) {
                 newTaggedNeighbors.add(
-                        tag(nextNode, Integer.valueOf(node.getAttribute("steps").toString())));
+                        tag(nextNode, Integer.valueOf(node.getAttribute("hits").toString())));
                 nextNode.setAttribute("ui.class", "markBlue");
                 if (preview) GraphUtil.sleepShort();
             }
@@ -138,7 +138,7 @@ public class BreadthFirstSearch implements Algorithm {
     private void reset() {
         this.steps = -1;
         for (Node node : graph.getEachNode()) {
-            node.setAttribute("steps", -1);
+            node.setAttribute("hits", -1);
         }
     }
 
@@ -152,14 +152,14 @@ public class BreadthFirstSearch implements Algorithm {
     @NotNull
     private Node tag(@NotNull Node node,
                      @NotNull Integer steps) {
-        node.setAttribute("steps", steps + 1);
+        node.setAttribute("hits", steps + 1);
         node.setAttribute("ui.label", node.getAttribute("ui.label") + " | " + (steps + 1) + " |");
         return node;
     }
 
     @NotNull
     private Boolean isTargetTagged() {
-        return (!target.getAttribute("steps").equals(-1));
+        return (!target.getAttribute("hits").equals(-1));
     }
 
 
