@@ -18,8 +18,6 @@ public class FloydWarshallTest {
     private Graph graph3;
 
 
-    // TODO Testen Sie für graph3 in graph3.gka dabei Floyd-Warshall gegen Dijkstra und geben Sie den kürzesten Weg, sowie die Anzahl der Zugriffe auf den Graphen an
-
     @Before
     public void setUp() throws Exception {
         // Graph aus den Folien
@@ -76,8 +74,7 @@ public class FloydWarshallTest {
 
     @Test
     public void bigGraphTest() throws Exception {
-        int edges = 100;   // TODO 100 Knoten und etwa 2500 Kanten.
-        // TODO Lassen Sie bitte beide Algorithmen auf dem Graphen BIG, die kürzestenWege berechnen und vergleichen diese.
+        int edges = 150;   // TODO 100 Knoten und etwa 2500 Kanten.
         Graph bigGraph = new SingleGraph("bigGraph");
         bigGraph.addNode("0");
         for (int i = 1; i <= edges; i++) {
@@ -89,6 +86,6 @@ public class FloydWarshallTest {
         floyd.init(bigGraph);
         floyd.compute();
         assertEquals(new Double(edges), floyd.distance);
-        assertEquals(new Integer(150), floyd.steps);
+        assertEquals(new Integer(22801), floyd.steps);
     }
 }
