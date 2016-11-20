@@ -158,13 +158,14 @@ public class Dijkstra {
         Iterator<Edge> leavingEdgeIterator = currNode.getLeavingEdgeIterator();
         while (leavingEdgeIterator.hasNext()) {
             Edge leavingEdge = leavingEdgeIterator.next();
-            Node leavingNode = getRightNode(currNode, leavingEdge); // TODO target node richtig?
+            Node leavingNode = getRightNode(currNode, leavingEdge);
             hits += 2;
 
             if (!ok[getIndex(leavingNode)]) {
                 Double entfCurr = entf[getIndex(currNode)]; // entf von aktuellen Knoten aus der Matrix holen
                 Double entfLeaving = entf[getIndex(leavingNode)]; // entf vom neuten Knoten holen
                 Double weightLeavingEdge = Double.parseDouble(leavingEdge.getAttribute("weight").toString());
+                hits++;
 
                 if (entfLeaving > entfCurr + weightLeavingEdge) {
                     // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.

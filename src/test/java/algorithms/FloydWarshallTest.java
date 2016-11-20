@@ -63,6 +63,7 @@ public class FloydWarshallTest {
         floyd.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
         floyd.compute();
         // TODO anderer Test
+        assertEquals(Double.valueOf(6), floyd.distance);
         System.out.println("Hits: " + floyd.hits);
         System.out.println("Hits: " + floyd.getShortestPath());
     }
@@ -74,7 +75,7 @@ public class FloydWarshallTest {
         floyd.init(graph3);
         floyd.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
         floyd.compute();
-        assertEquals(new Double(170.0), floyd.distance);
+        assertEquals(Double.valueOf(170.0), floyd.distance);
         System.out.println("Hits: " + floyd.hits);
     }
 
