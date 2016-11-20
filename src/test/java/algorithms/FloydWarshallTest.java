@@ -49,6 +49,7 @@ public class FloydWarshallTest {
     public void graphWithNoWeightTest() throws Exception {
         Graph graph9 = fromFile("graph09", new File("src/main/resources/input/BspGraph/graph09.gka"));
         FloydWarshall floyd = new FloydWarshall();
+        FloydWarshall.preview = false;
         floyd.init(graph9);
         floyd.setSourceAndTarget(graph9.getNode("a"), graph9.getNode("d"));
         floyd.compute();
@@ -57,6 +58,7 @@ public class FloydWarshallTest {
     @Test
     public void computeSimpleGraphTest() throws Exception {
         FloydWarshall floyd = new FloydWarshall();
+        FloydWarshall.preview = false;
         floyd.init(graph);
         floyd.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
         floyd.compute();
@@ -67,6 +69,7 @@ public class FloydWarshallTest {
     @Test
     public void graph03test() throws Exception {
         FloydWarshall floyd = new FloydWarshall();
+        FloydWarshall.preview = false;
         floyd.init(graph3);
         floyd.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
         floyd.compute();
@@ -98,7 +101,7 @@ public class FloydWarshallTest {
             edgeCount++;
         }
         FloydWarshall floydWarshall = new FloydWarshall();
-        floydWarshall.preview = false;
+        FloydWarshall.preview = false;
         floydWarshall.init(bigGraph);
         floydWarshall.setSourceAndTarget(bigGraph.getNode("1"), bigGraph.getNode("" + nodes));
         floydWarshall.compute();

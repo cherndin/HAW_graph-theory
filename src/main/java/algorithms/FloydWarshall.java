@@ -24,7 +24,7 @@ public class FloydWarshall implements Algorithm {
 
     public Double distance;
     public Integer hits = 0;
-    public boolean preview = true;
+    public static boolean preview = true;
     private Graph graph;
     private Node source;
     private Node target;

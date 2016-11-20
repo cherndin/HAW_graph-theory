@@ -18,7 +18,7 @@ public class Dijkstra {
     private static Logger logger = Logger.getLogger(Dijkstra.class);
 
     public Double distance;
-    public boolean preview = true;
+    public static boolean preview = true;
     public Integer hits = 0;
     public Node[] nodes;
     public Double[] entf;
@@ -40,7 +40,7 @@ public class Dijkstra {
         entf = new Double[size];
         vorg = new Node[size];
         ok = new Boolean[size];
-        setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
+        setSourceAndTarget(graph.getNode(0), graph.getNode(size - 1));
     }
 
     /**
