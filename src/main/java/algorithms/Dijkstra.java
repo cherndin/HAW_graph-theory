@@ -59,22 +59,24 @@ public class Dijkstra {
 
         // Implementation
         setUp(); // Attribute setzen und mit Standartwerten belegen
-
         calcNewDistance(source);
-
-        while (!uncheckedNodes.isEmpty()) {
-            logger.debug(uncheckedNodes.toString());
+        do {
             // Knoten mit minimaler Distanz auswählen
             Node currentNode = withMinDistance();
-            // speichere, dass dieser Knoten schon besucht wurde.
-            uncheckedNodes.remove(currentNode);
+            // Setze OKh := true.
+            ok[getIndex(currentNode)] = true;
+            //
             // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             calcNewDistance(currentNode);
 
-        }
+        } while (untilWeHaveNodesWithFalse());
         distance = target.getAttribute("Distance");
         reset();
+    }
+
+    private boolean untilWeHaveNodesWithFalse() {
+        return false;
     }
 
     /**
@@ -109,10 +111,13 @@ public class Dijkstra {
 
     private void setUp() {
         // nodes
-        int n = 0;
+        nodes[0] = source;
+        int n = 1;
         for (Node node : nodes) {
-            n++;
-            nodes[n] = node;
+            if (source != node) {
+                n++;
+                nodes[n] = node;
+            }
         }
         // Entfernung
         entf[0] = 0.0;
@@ -134,13 +139,12 @@ public class Dijkstra {
             hits++;
             Edge leavingEdge = leavingEdgeIterator.next();
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
-            String weightCurr = currNode.getAttribute("Distance").toString();
-            String weightLeav = leavingEdge.getAttribute("weight").toString();
+            String weightCurr = entf[getIndex(currNode)]; // entf von aktuellen Knoten aus der Matrix holen
+            String weightLeav = leavingEdge.getAttribute("weight").toString(); // entf vom neuten Knoten holen
             Double newDist = (Double.parseDouble(weightCurr)) + (Double.parseDouble(weightLeav));
             Node nodeFromLeavingEdge = getRightNode(currNode, leavingEdge); // TODO ist das notwendig?
-            //TODO in die Matrix einfügen
+            entf[getIndex(leavingEdge)] = newDist; // neue Entf in matrix einfügen
         }
-
     }
 
     /**
@@ -169,13 +173,21 @@ public class Dijkstra {
 
     @NotNull
     private Node withMinDistance() {
-        Node min = uncheckedNodes.getFirst();
-        for (Node cur : uncheckedNodes) {
-            if (((Double) cur.getAttribute("Distance") < ((Double) min.getAttribute("Distance"))))
-                min = cur;
-            hits++;
+        Node min;
+        for (int i = 0; i < nodes.length; i++) {
+            if (!ok[i]) {
+                min = nodes[i];
+                for (int j = 0; j < nodes.length; j++) {
+                    if (!ok[j]) {
+                        if (entf[j] < entf[getIndex(min)]) {
+                            min = nodes[j];
+                        }
+                    }
+                }
+                return min;
+            }
         }
-        return min;
+        throw new IllegalArgumentException();
     }
 
     @NotNull
