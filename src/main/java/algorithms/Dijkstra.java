@@ -18,6 +18,7 @@ public class Dijkstra {
     private static Logger logger = Logger.getLogger(Dijkstra.class);
 
     public Double distance;
+    public boolean preview = true;
     public Integer hits = 0;
     public Node[] nodes;
     public Double[] entf;
@@ -55,6 +56,7 @@ public class Dijkstra {
 
         // Implementation
         setUp(); // Attribute setzen und mit Standartwerten belegen
+        if (preview) printMatrix();
         calcNewDistance(source);
         do {
             // Knoten mit minimaler Distanz auswählen
@@ -65,7 +67,9 @@ public class Dijkstra {
             // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
             // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
             calcNewDistance(currentNode);
-
+            if (preview)
+                System.out.println("============================ " + currentNode.getId() + " ============================");
+            if (preview) printMatrix();
         } while (asLongAsWeHaveNodesWithFalse());
         distance = target.getAttribute("Distance"); // TODO
         reset();
@@ -144,17 +148,17 @@ public class Dijkstra {
         Iterator<Edge> leavingEdgeIterator = currNode.getLeavingEdgeIterator();
         while (leavingEdgeIterator.hasNext()) {
             Edge leavingEdge = leavingEdgeIterator.next();
-            Node leavingNode = leavingEdge.getTargetNode(); // TODO target node richtig?
-            hits++;
+            Node leavingNode = getRightNode(currNode, leavingEdge); // TODO target node richtig?
+            hits += 2;
 
             if (!ok[getIndex(leavingNode)]) {
                 Double entfCurr = entf[getIndex(currNode)]; // entf von aktuellen Knoten aus der Matrix holen
-                Double entfLeaving = entf[getIndex(currNode)]; // entf vom neuten Knoten holen
+                Double entfLeaving = entf[getIndex(leavingNode)]; // entf vom neuten Knoten holen
                 Double weightLeavingEdge = Double.parseDouble(leavingEdge.getAttribute("weight").toString());
 
-                if (entfCurr > entfLeaving + weightLeavingEdge) {
+                if (entfLeaving > entfCurr + weightLeavingEdge) {
                     // Ist dieser Wert für einen Knoten kleiner als die dort gespeicherte Distanz, aktualisiere sie und setze den aktuellen Knoten als Vorgänger.
-                    entfCurr = entfLeaving + weightLeavingEdge;
+                    entf[getIndex(leavingNode)] = entfCurr + weightLeavingEdge;
                     vorg[getIndex(leavingNode)] = currNode;
                 }
             }
@@ -220,6 +224,34 @@ public class Dijkstra {
         target.removeAttribute("title");
     }
 
+    /**
+     * Output for the distance matrix
+     */
+    private void printMatrix() {
+        System.out.print("\t\t");
+        for (Node node : nodes) { // print x nodes
+            System.out.print(node.getId() + "\t\t\t");
+        }
+        System.out.println();
+        System.out.print("entf |\t");
+        for (int i = 0; i < nodes.length; i++) {
+            System.out.print((entf[i].isInfinite() ? "Inf." : entf[i]) + "\t\t\t");
+        }
+        System.out.println();
+        System.out.print("vorg |\t");
+        for (int i = 0; i < nodes.length; i++) {
+            System.out.print(vorg[i] + "\t\t\t");
+        }
+        System.out.println();
+        System.out.print("ok   |\t");
+        for (int i = 0; i < nodes.length; i++) {
+            System.out.print(ok[i] + "\t\t");
+        }
+        System.out.println();
+        System.out.println();
+
+    }
+
     // === MAIN ===
 
     public static void main(String[] args) throws Exception {
@@ -237,8 +269,8 @@ public class Dijkstra {
         graph.addEdge("v1v2", "v1", "v2").addAttribute("weight", 1.0);
         graph.addEdge("v1v6", "v1", "v6").addAttribute("weight", 3.0);
         graph.addEdge("v2v3", "v2", "v3").addAttribute("weight", 5.0);
-        graph.addEdge("v2v5", "v2", "v5").addAttribute("weight", 2.0);
-        graph.addEdge("v2v6", "v2", "v6").addAttribute("weight", 3.0);
+        graph.addEdge("v2v5", "v2", "v5").addAttribute("weight", 3.0);
+        graph.addEdge("v2v6", "v2", "v6").addAttribute("weight", 2.0);
 
         graph.addEdge("v3v6", "v3", "v6").addAttribute("weight", 2.0);
         graph.addEdge("v3v5", "v3", "v5").addAttribute("weight", 2.0);

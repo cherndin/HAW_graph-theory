@@ -24,7 +24,7 @@ public class FloydWarshall implements Algorithm {
 
     public Double distance;
     public Integer hits = 0;
-    public boolean logMatrix = true;
+    public boolean preview = true;
     private Graph graph;
     private Node source;
     private Node target;
@@ -63,9 +63,9 @@ public class FloydWarshall implements Algorithm {
                 }
             }
         }
-        if (logMatrix) System.out.println("================== Start ======================");
-        if (logMatrix) printMatrix();
-        if (logMatrix) System.out.println();
+        if (preview) System.out.println("================== Start ======================");
+        if (preview) printMatrix();
+        if (preview) System.out.println();
     }
 
     public void compute() {
@@ -78,9 +78,9 @@ public class FloydWarshall implements Algorithm {
                     }
                 }
             }
-            if (logMatrix) System.out.println("================== " + k + " ======================");
-            if (logMatrix) printMatrix();
-            if (logMatrix) System.out.println();
+            if (preview) System.out.println("================== " + k + " ======================");
+            if (preview) printMatrix();
+            if (preview) System.out.println();
         }
         distance = distances[getIndex(source)][getIndex(target)];
     }

@@ -98,7 +98,7 @@ public class FloydWarshallTest {
             edgeCount++;
         }
         FloydWarshall floydWarshall = new FloydWarshall();
-        floydWarshall.logMatrix = false;
+        floydWarshall.preview = false;
         floydWarshall.init(bigGraph);
         floydWarshall.setSourceAndTarget(bigGraph.getNode("1"), bigGraph.getNode("" + nodes));
         floydWarshall.compute();
