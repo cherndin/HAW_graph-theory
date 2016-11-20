@@ -76,7 +76,7 @@ public class DijkstraTest {
 
         assertEquals(Double.valueOf(6), dijk.distance);
         System.out.println("Hits: " + dijk.hits);
-        // TODO assertEquals("[v1, v6, v3, v4]", dijk.getShortestPath().toString());
+        System.out.println("Steps: " + dijk.getShortestPath());
     }
 
     @Test

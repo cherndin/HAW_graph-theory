@@ -65,7 +65,7 @@ public class FloydWarshallTest {
         // TODO anderer Test
         assertEquals(Double.valueOf(6), floyd.distance);
         System.out.println("Hits: " + floyd.hits);
-        System.out.println("Hits: " + floyd.getShortestPath());
+        System.out.println("Steps: " + floyd.getShortestPath());
     }
 
     @Test

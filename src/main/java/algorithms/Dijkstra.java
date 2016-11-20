@@ -25,6 +25,7 @@ public class Dijkstra {
     public Double[] entf;
     public Node[] vorg;
     public Boolean[] ok;
+    public LinkedList<Node> shortestPath = new LinkedList<Node>();
     private Graph graph;
     private Node source;
     private Node target;
@@ -97,14 +98,28 @@ public class Dijkstra {
     public List<Node> getShortestPath() {
         if (hits == 0)
             throw new IllegalArgumentException("do compute before this method");
-        LinkedList<Node> ShortestPath = new LinkedList<Node>();
-        ShortestPath.add(target);
-        for (int i = 0; i < vorg.length; i++) {
-            ShortestPath.add(vorg[getIndex(target)]);
+        shortestPath.add(target);
+
+
+        while (getPred(target) != source)
+
+            shortestPath.add(getPred(target));
         }
+        return shortestPath;
+}
 
+    private Node getPred(Node target) {
+        Node pred = vorg[getIndex(target)];
+        return pred;
 
-        return ShortestPath;
+    }
+
+    private boolean hasPred(Node target) {
+        Node pred = vorg[getIndex(target)];
+        if (pred != null)
+            return true;
+        else return false;
+
     }
 
     /**
