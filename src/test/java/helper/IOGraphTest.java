@@ -39,6 +39,7 @@ public class IOGraphTest {
         File file = new File("src/main/resources/output/testSave.gka");
         assertTrue(file.exists());
 
+
         // Get saved File
         Graph chooser = fromFile("chooser", file);
 
@@ -86,6 +87,8 @@ public class IOGraphTest {
         Graph graph08_2 = fromFile("graph08", new File("src/main/resources/output/graph08.gka"));
         Graph graph09_2 = fromFile("graph09", new File("src/main/resources/output/graph09.gka"));
         Graph graph10_2 = fromFile("graph10", new File("src/main/resources/output/graph10.gka"));
+
+        graph01_2.display();
 
 //        assertEquals(graph01, graph01_2);
 //        assertEquals(graph02, graph02_2);
