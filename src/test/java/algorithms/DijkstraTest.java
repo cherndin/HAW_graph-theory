@@ -24,7 +24,7 @@ public class DijkstraTest {
     @Before
     public void setUp() throws Exception {
         // Graph aus den Folien
-        // 02_GKA-Optimale Wege.pdf Folie 2 und 6
+        // 02_GKA-Optimale Wege.pdf Folie 2 und 6 // TODO gerichtet und mit negativen
         graph = new SingleGraph("graph");
         graph.addNode("v1");
         graph.addNode("v2");

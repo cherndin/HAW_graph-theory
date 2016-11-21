@@ -24,7 +24,7 @@ public class FloydWarshallTest {
     public void setUp() throws Exception {
         // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6
-        graph = new SingleGraph("graph");
+        graph = new SingleGraph("graph"); // TODO gerichtet und mit negativen
         graph.addNode("v1");
         graph.addNode("v2");
         graph.addNode("v3");

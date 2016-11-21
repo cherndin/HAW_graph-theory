@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
  * <p>
  * Ref:
  * http://www.orklaert.de/floyd-warshall-algorithmus.php
+ * https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html (gute Erklärung)
  * https://www.cs.usfca.edu/~galles/visualization/Floyd.html
  */
 public class FloydWarshall implements Algorithm {
@@ -34,9 +35,10 @@ public class FloydWarshall implements Algorithm {
     private int n;
     private double[][] distances;
     private List<Node> nodes = new LinkedList<Node>();
-
+    // TODO (nicht von Padberg nachgefragt) negative Kanten und negative Kreise abfangen/ bearbeiten -> siehte TODOcompute()
 
     public void init(Graph graph) {
+        // Preconditions
         if (!hasWeights(graph))
             throw new IllegalArgumentException();
 
@@ -47,42 +49,28 @@ public class FloydWarshall implements Algorithm {
         int n = graph.getNodeCount();
         distances = new double[n][n];
 
-        Iterator<Node> nodesForI = graph.getNodeIterator();
-        for (int i = 0; i < n; i++) {
-            Iterator<Node> nodesForJ = graph.getNodeIterator();
-            Node NodeI = nodesForI.next();
-            for (int j = 0; j < n; j++) {
-                Node NodeJ = nodesForJ.next();
-                if (NodeI == NodeJ) {
-                    distances[i][j] = 0.0;
-                } else {
-                    if (NodeI.hasEdgeBetween(NodeJ)) {
-                        String weight = NodeI.getEdgeBetween(NodeJ).getAttribute("weight").toString();
-                        Double.parseDouble(weight);
-                        distances[i][j] = Double.parseDouble(weight);
-                    } else {
-                        distances[i][j] = Integer.MAX_VALUE;
-                    }
-                }
-            } // TODO andere matrix mit aufbauen
-        }
-        if (preview) System.out.println("================== Start ======================");
-        if (preview) printMatrix();
-        if (preview) System.out.println();
+
     }
 
     public void compute() {
-        for (int k = 0; k < n; k++) {
-            for (int i = 0; i < n; i++) { // TODO k mit inf oder so nicht machen
-                for (int j = 0; j < n; j++) {
-                    double sum = distances[i][k] + distances[k][j];
-                    if (distances[i][j] > sum) {
-                        distances[i][j] = sum;
-                        // TODO andere matrix
+        setUp();
+        // Bei jeder Iteration in dieser Schleife versucht der Algorithmus alle (i, j) Wege durch Wege (i, k) und (k, j) verbessern.
+        for (int k = 0; k < n; k++) { // Schritte
+            for (int i = 0; i < n; i++) { // Spalte
 
-                    }
+                Double rowValue = distances[i][k];
+                if (rowValue.isInfinite()) continue; // Spalte mit Inf. überspringen
+
+                for (int j = 0; j < n; j++) { // Zeile
+                    Double columnValue = distances[k][j];
+                    if (columnValue.isInfinite()) continue; // Zeile mit Inf. überspringen
+                    if (rowValue == 0.0 && columnValue == 0.0) continue; // Zeile==Spalte überspringen
+
+                    if (distances[i][j] > rowValue + columnValue) // Wenn kleiner, dann ersetzten
+                        distances[i][j] = rowValue + columnValue;
                 }
             }
+            // TODO negative Kanten hier abfangen: https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
             if (preview) System.out.println("================== " + k + " ======================");
             if (preview) printMatrix();
             if (preview) System.out.println();
@@ -108,7 +96,6 @@ public class FloydWarshall implements Algorithm {
         target.setAttribute("title", "target");
     }
 
-
     /**
      * @return shortestWay
      */
@@ -123,6 +110,32 @@ public class FloydWarshall implements Algorithm {
             current = getPred(current);
         }
         return Lists.reverse(shortestPath);
+    }
+
+
+    private void setUp() {
+        Iterator<Node> nodesForI = graph.getNodeIterator();
+        for (int i = 0; i < n; i++) {
+            Iterator<Node> nodesForJ = graph.getNodeIterator();
+            Node NodeI = nodesForI.next();
+            for (int j = 0; j < n; j++) {
+                Node NodeJ = nodesForJ.next();
+                if (NodeI == NodeJ) {
+                    distances[i][j] = 0.0;
+                } else {
+                    if (NodeI.hasEdgeBetween(NodeJ)) {
+                        String weight = NodeI.getEdgeBetween(NodeJ).getAttribute("weight").toString();
+                        Double.parseDouble(weight);
+                        distances[i][j] = Double.parseDouble(weight);
+                    } else {
+                        distances[i][j] = Integer.MAX_VALUE;
+                    }
+                }
+            } // TODO andere matrix mit aufbauen
+        }
+        if (preview) System.out.println("================== Start ======================");
+        if (preview) printMatrix();
+        if (preview) System.out.println();
     }
 
     private Node getPred(Node node) {
@@ -196,24 +209,39 @@ public class FloydWarshall implements Algorithm {
     public static void main(String[] args) throws Exception {
         // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6
-        Graph graph = new SingleGraph("graph");
+        Graph bspPadberg = new SingleGraph("bspPadberg");
+        bspPadberg.addNode("A");
+        bspPadberg.addNode("B");
+        bspPadberg.addNode("C");
+        bspPadberg.addNode("D");
+        bspPadberg.addNode("E");
+        bspPadberg.addEdge("AB", "A", "B", true).addAttribute("weight", 2.0);
+        bspPadberg.addEdge("AC", "A", "C", true).addAttribute("weight", 3.0);
+        bspPadberg.addEdge("BD", "B", "D", true).addAttribute("weight", 9.0);
+        bspPadberg.addEdge("CB", "C", "B", true).addAttribute("weight", 7.0);
+        bspPadberg.addEdge("CE", "C", "E", true).addAttribute("weight", 5.0);
+        bspPadberg.addEdge("ED", "E", "D", true).addAttribute("weight", 1.0);
 
-        graph.addNode("A");
-        graph.addNode("B");
-        graph.addNode("C");
-        graph.addNode("D");
-        graph.addNode("E");
+        FloydWarshall floydBspPadberg = new FloydWarshall();
+        floydBspPadberg.setSourceAndTarget(bspPadberg.getNode("A"), bspPadberg.getNode("E"));
+        floydBspPadberg.init(bspPadberg);
+        floydBspPadberg.compute();
 
-        graph.addEdge("AB", "A", "B", true).addAttribute("weight", 2.0);
-        graph.addEdge("AC", "A", "C", true).addAttribute("weight", 3.0);
-        graph.addEdge("BD", "B", "D", true).addAttribute("weight", 9.0);
-        graph.addEdge("CB", "C", "B", true).addAttribute("weight", 7.0);
-        graph.addEdge("CE", "C", "E", true).addAttribute("weight", 5.0);
-        graph.addEdge("ED", "E", "D", true).addAttribute("weight", 1.0);
-
-        FloydWarshall floyd = new FloydWarshall();
-        floyd.setSourceAndTarget(graph.getNode("A"), graph.getNode("E"));
-        floyd.init(graph);
-        floyd.compute();
+//        // Graph from https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
+//        Graph m9 = new SingleGraph("m9");
+//        m9.addNode("A");
+//        m9.addNode("B");
+//        m9.addNode("C");
+//        m9.addNode("D");
+//        m9.addEdge("AB","A","B",true).addAttribute("weight",3);
+//        m9.addEdge("AC","A","C",true).addAttribute("weight",4);
+//        m9.addEdge("AD","A","D",true).addAttribute("weight",9);
+//        m9.addEdge("BD","B","D",true).addAttribute("weight",5);
+//        m9.addEdge("CD","C","D",true).addAttribute("weight",3);
+//
+//        FloydWarshall floydM9 = new FloydWarshall();
+//        floydM9.setSourceAndTarget(m9.getNode("A"), m9.getNode("D"));
+//        floydM9.init(m9);
+//        floydM9.compute();
     }
 }
