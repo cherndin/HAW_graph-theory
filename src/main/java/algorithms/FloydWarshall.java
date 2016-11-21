@@ -24,16 +24,17 @@ import java.util.NoSuchElementException;
  */
 public class FloydWarshall implements Algorithm {
 
-    public Double distance;
-    public Integer hits = 0;
+    Double distance;
+    Integer hits = 0;
     public int steps = -1;
-    public static boolean preview = true;
-    public LinkedList<Node> shortestPath;
+    static boolean preview = true;
+    private LinkedList<Node> shortestPath;
     private Graph graph;
     private Node source;
     private Node target;
     private int n;
     private double[][] distances;
+    private int[][] adjacent;
     private List<Node> nodes = new LinkedList<Node>();
     // TODO (nicht von Padberg nachgefragt) negative Kanten und negative Kreise abfangen/ bearbeiten -> siehte TODOcompute()
 
@@ -50,8 +51,7 @@ public class FloydWarshall implements Algorithm {
         hits = n * n; // Zugriffe auf den Graphen TODO stimmt das noch?
         int n = graph.getNodeCount();
         distances = new double[n][n];
-
-
+        adjacent = new int[n][n];
     }
 
     public void compute() {
@@ -85,8 +85,8 @@ public class FloydWarshall implements Algorithm {
      * @param source source node
      * @param target target node
      */
-    public void setSourceAndTarget(@NotNull Node source,
-                                   @NotNull Node target) {
+    void setSourceAndTarget(@NotNull Node source,
+                            @NotNull Node target) {
         if (this.source != null && this.source.hasAttribute("title"))
             this.source.removeAttribute("title");
         if (this.target != null && this.target.hasAttribute("title"))
@@ -112,6 +112,9 @@ public class FloydWarshall implements Algorithm {
         return Lists.reverse(shortestPath);
     }
 
+    /**
+     * initialises arrays for Floyd and Warshall
+     */
     private void setUp() {
         Iterator<Node> nodesForI = graph.getNodeIterator();
         for (int i = 0; i < n; i++) {
@@ -124,8 +127,8 @@ public class FloydWarshall implements Algorithm {
                 } else {
                     if (NodeI.hasEdgeBetween(NodeJ)) {
                         String weight = NodeI.getEdgeBetween(NodeJ).getAttribute("weight").toString();
-                        Double.parseDouble(weight);
                         distances[i][j] = Double.parseDouble(weight);
+                        adjacent[i][j] = 1;
                     } else {
                         distances[i][j] = Integer.MAX_VALUE;
                     }
@@ -143,7 +146,7 @@ public class FloydWarshall implements Algorithm {
      *
      * @param node to check
      * @return Predecessor from node
-     * @throws IllegalAccessException if node has no predecessor
+     * @throws IllegalArgumentException if node has no predecessor
      */
     @NotNull
     private Node getPred(Node node) throws IllegalArgumentException {
