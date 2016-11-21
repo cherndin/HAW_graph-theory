@@ -39,9 +39,9 @@ public class FloydWarshall implements Algorithm {
 
     public void init(Graph graph) {
         // Preconditions
-        if (!hasWeights())
+        if (!hasWeights(graph))
             throw new IllegalArgumentException("edges must have weights");
-        if (!isDirected())
+        if (!isDirected(graph))
             throw new IllegalArgumentException("graph has to be directed");
 
         this.graph = graph;
@@ -68,8 +68,7 @@ public class FloydWarshall implements Algorithm {
                     if (columnValue.isInfinite()) continue; // Zeile mit Inf. überspringen
                     if (rowValue == 0.0 && columnValue == 0.0) continue; // Zeile==Spalte überspringen
 
-                    if (distances[i][j] > rowValue + columnValue) // Wenn kleiner, dann ersetzten
-                        distances[i][j] = rowValue + columnValue;
+                    distances[i][j] = min(distances[i][j], rowValue + columnValue);// Wenn kleiner, dann ersetzten
                 }
             }
             // TODO negative Kreise hier abfangen: https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
@@ -97,7 +96,6 @@ public class FloydWarshall implements Algorithm {
         source.setAttribute("title", "source");
         target.setAttribute("title", "target");
     }
-
     /**
      * @return shortestWay
      */
@@ -199,7 +197,7 @@ public class FloydWarshall implements Algorithm {
      * @return true if all edges have weights
      */
     @NotNull
-    private Boolean hasWeights() {
+    private Boolean hasWeights(@NotNull Graph graph) {
         boolean hasWeight = true;
         for (Edge edge : graph.getEachEdge()) {
             hits++;
@@ -216,12 +214,17 @@ public class FloydWarshall implements Algorithm {
      * @return true if all edges are directed
      */
     @NotNull
-    private Boolean isDirected() {
+    private Boolean isDirected(@NotNull Graph graph) {
         for (Edge edge : graph.getEachEdge()) {
             hits++;
             if (!edge.isDirected()) return false;
         }
         return true;
+    }
+
+    @NotNull
+    private Double min(@NotNull Double x, @NotNull Double y) {
+        return ((x < y) ? x : y);
     }
 
     /**
