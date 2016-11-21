@@ -72,7 +72,7 @@ public class FloydWarshall implements Algorithm {
                         distances[i][j] = rowValue + columnValue;
                 }
             }
-            // TODO negative Kanten hier abfangen: https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
+            // TODO negative Kreise hier abfangen: https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
             if (preview) System.out.println("================== " + k + " ======================");
             if (preview) printMatrix();
             if (preview) System.out.println();
