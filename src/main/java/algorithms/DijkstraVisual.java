@@ -25,7 +25,7 @@ public class DijkstraVisual implements Algorithm {
     private Graph graph;
     private Node source;
     private Node target;
-    private LinkedList<Node> uncheckedNodes; // TODO could be a set
+    private LinkedList<Node> uncheckedNodes;
 
     /**
      * Initialisation
@@ -76,7 +76,6 @@ public class DijkstraVisual implements Algorithm {
      * @return the shortest Path from the Source to the Target
      */
     public List<Node> getShortestPath() {
-        // TODO getShortestPath()
         return null;
     }
 
@@ -115,7 +114,7 @@ public class DijkstraVisual implements Algorithm {
                 source.addAttribute("Predecessor", source);
                 logger.debug(source.getId() + " | Dist.: 0 | OK: true | Pred.: " + source.getId());
             }
-        } // TODO unterschied set und add Attribut
+        }
         for (Edge edge : graph.getEachEdge()) {
             edge.addAttribute("ui.label", edge.getAttribute("weight"));
         }
@@ -134,7 +133,7 @@ public class DijkstraVisual implements Algorithm {
             String weight1 = currNode.getAttribute("Distance").toString();
             String weight2 = leavingEdge.getAttribute("weight").toString();
             Double newDist = (Double.parseDouble(weight1)) + (Double.parseDouble(weight2));
-            Node nodeFromLeavingEdge = getRightNode(currNode, leavingEdge); // TODO ist das notwendig?
+            Node nodeFromLeavingEdge = getRightNode(currNode, leavingEdge);
 
             if (preview) nodeFromLeavingEdge.setAttribute("ui.class", "markBlue");
             if (!((Boolean) nodeFromLeavingEdge.getAttribute("OK")) &&

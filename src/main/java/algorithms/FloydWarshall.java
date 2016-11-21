@@ -43,7 +43,7 @@ public class FloydWarshall implements Algorithm {
         this.graph = graph;
         nodes = ImmutableList.copyOf(graph.getEachNode());
         n = nodes.size();
-        hits = n * n; // Zugriffe auf den Graphen
+        hits = n * n; // Zugriffe auf den Graphen TODO stimmt das noch?
         int n = graph.getNodeCount();
         distances = new double[n][n];
 
@@ -64,7 +64,7 @@ public class FloydWarshall implements Algorithm {
                         distances[i][j] = Integer.MAX_VALUE;
                     }
                 }
-            }
+            } // TODO andere matrix mit aufbauen
         }
         if (preview) System.out.println("================== Start ======================");
         if (preview) printMatrix();
@@ -73,11 +73,13 @@ public class FloydWarshall implements Algorithm {
 
     public void compute() {
         for (int k = 0; k < n; k++) {
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) { // TODO k mit inf oder so nicht machen
                 for (int j = 0; j < n; j++) {
                     double sum = distances[i][k] + distances[k][j];
                     if (distances[i][j] > sum) {
                         distances[i][j] = sum;
+                        // TODO andere matrix
+
                     }
                 }
             }
