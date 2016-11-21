@@ -39,8 +39,10 @@ public class FloydWarshall implements Algorithm {
 
     public void init(Graph graph) {
         // Preconditions
-        if (!hasWeights(graph))
-            throw new IllegalArgumentException();
+        if (!hasWeights())
+            throw new IllegalArgumentException("edges must have weights");
+        if (!isDirected())
+            throw new IllegalArgumentException("graph has to be directed");
 
         this.graph = graph;
         nodes = ImmutableList.copyOf(graph.getEachNode());
@@ -112,7 +114,6 @@ public class FloydWarshall implements Algorithm {
         return Lists.reverse(shortestPath);
     }
 
-
     private void setUp() {
         Iterator<Node> nodesForI = graph.getNodeIterator();
         for (int i = 0; i < n; i++) {
@@ -138,7 +139,16 @@ public class FloydWarshall implements Algorithm {
         if (preview) System.out.println();
     }
 
-    private Node getPred(Node node) {
+    /**
+     * Helper method for getShortestPath()
+     * check node with hasPred() before this method
+     *
+     * @param node to check
+     * @return Predecessor from node
+     * @throws IllegalAccessException if node has no predecessor
+     */
+    @NotNull
+    private Node getPred(Node node) throws IllegalArgumentException {
         int y = getIndex(node);
         int maxColumn = -1;
         for (int x = 1; x < n; x++) {
@@ -151,7 +161,14 @@ public class FloydWarshall implements Algorithm {
         return nodes.get(maxColumn);
     }
 
-    private boolean hasPred(Node node) {
+    /**
+     * Helper method for getShortestPath()
+     *
+     * @param node to check
+     * @return true if node has predecessor
+     */
+    @NotNull
+    private Boolean hasPred(Node node) {
         int y = getIndex(node);
         for (int x = 1; x < n; x++) {
             if (distances[x][y] != 0.0 && Double.valueOf(distances[x][y]).isInfinite()) {
@@ -160,16 +177,6 @@ public class FloydWarshall implements Algorithm {
         }
         return false;
 
-    }
-
-    @NotNull
-    private Boolean hasWeights(@NotNull Graph graph) {
-        boolean hasWeight = true;
-        for (Edge edge : graph.getEachEdge()) {
-            if (!edge.hasAttribute("weight"))
-                hasWeight = false;
-        }
-        return hasWeight;
     }
 
     /**
@@ -184,6 +191,37 @@ public class FloydWarshall implements Algorithm {
         int i = nodes.indexOf(node);
         if (i < 0) throw new NoSuchElementException();
         return i;
+    }
+
+    /**
+     * <b>Precondition</b> Helper Method for init()
+     *
+     * @return true if all edges have weights
+     */
+    @NotNull
+    private Boolean hasWeights() {
+        boolean hasWeight = true;
+        for (Edge edge : graph.getEachEdge()) {
+            hits++;
+            if (!edge.hasAttribute("weight"))
+                hasWeight = false;
+        }
+        return hasWeight;
+    }
+
+    // TODO könnte man in eine method tuen um eine iteration zu vermeiden
+
+    /**
+     * <b>Precondition</b> Helper Method for init()
+     * @return true if all edges are directed
+     */
+    @NotNull
+    private Boolean isDirected() {
+        for (Edge edge : graph.getEachEdge()) {
+            hits++;
+            if (!edge.isDirected()) return false;
+        }
+        return true;
     }
 
     /**
