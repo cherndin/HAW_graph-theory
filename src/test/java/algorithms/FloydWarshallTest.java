@@ -45,10 +45,14 @@ public class FloydWarshallTest {
         negGraph.addNode("v1");
         negGraph.addNode("v2");
         negGraph.addNode("v3");
+        negGraph.addNode("v4");
+        negGraph.addNode("v5");
 
-        negGraph.addEdge("v1v2", "v1", "v2", true).addAttribute("weight", 3.0);
-        negGraph.addEdge("v1v2", "v1", "v2", true).addAttribute("weight", -11.0);
-        negGraph.addEdge("v1v2", "v1", "v2", true).addAttribute("weight", 2.0);
+        negGraph.addEdge("v1v2", "v1", "v2", true).addAttribute("weight", -3.0);
+        negGraph.addEdge("v2v3", "v2", "v3", true).addAttribute("weight", -11.0);
+        negGraph.addEdge("v3v4", "v3", "v4", true).addAttribute("weight", 4.0);
+        negGraph.addEdge("v4v2", "v4", "v2", true).addAttribute("weight", 3.0);
+        negGraph.addEdge("v5v4", "v5", "v4", true).addAttribute("weight", -2.0);
 
         graph3 = fromFile("graph3", new File("src/main/resources/input/BspGraph/graph03.gka"));
     }
@@ -60,6 +64,16 @@ public class FloydWarshallTest {
         FloydWarshall.preview = false;
         floyd.init(graph9);
         floyd.setSourceAndTarget(graph9.getNode("a"), graph9.getNode("d"));
+        floyd.compute();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void negCircleTest() throws Exception {
+
+        FloydWarshall floyd = new FloydWarshall();
+        FloydWarshall.preview = false;
+        floyd.init(negGraph);
+        floyd.setSourceAndTarget(negGraph.getNode("v1"), negGraph.getNode("v5"));
         floyd.compute();
     }
 
