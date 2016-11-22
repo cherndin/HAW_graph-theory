@@ -30,7 +30,7 @@ public class BigGraph {
         for (int i = 1; i <= nodes; i++) {
             bigGraph.addNode("" + i);
         }
-        bigGraph.addEdge("1_100", "1", "100").addAttribute("weight", 1);
+        bigGraph.addEdge("1_100", "1", "100", true).addAttribute("weight", 1);
         for (int i = 2; i <= edges; i++) {
             int x = random.nextInt(nodes - 1) + 1;
             int y = random.nextInt(nodes - 1) + 1;
