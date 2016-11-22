@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 public class FloydWarshallTest {
     private Graph graph;
     private Graph graph3;
+    private Graph negGraph;
 
 
     @Before
@@ -39,6 +40,15 @@ public class FloydWarshallTest {
         graph.addEdge("v3v4", "v3", "v4").addAttribute("weight", 1.0);
         graph.addEdge("v5v4", "v5", "v4").addAttribute("weight", 3.0);
         graph.addEdge("v5v6", "v5", "v6").addAttribute("weight", 1.0);
+
+        negGraph = new SingleGraph("negGraph");
+        negGraph.addNode("v1");
+        negGraph.addNode("v2");
+        negGraph.addNode("v3");
+
+        negGraph.addEdge("v1v2", "v1", "v2", true).addAttribute("weight", 3.0);
+        negGraph.addEdge("v1v2", "v1", "v2", true).addAttribute("weight", -11.0);
+        negGraph.addEdge("v1v2", "v1", "v2", true).addAttribute("weight", 2.0);
 
         graph3 = fromFile("graph3", new File("src/main/resources/input/BspGraph/graph03.gka"));
     }
