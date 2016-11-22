@@ -1,13 +1,12 @@
 package algorithms;
 
-import org.graphstream.graph.EdgeRejectedException;
+import helper.BigGraph;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Random;
 
 import static helper.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
@@ -80,33 +79,15 @@ public class FloydWarshallTest {
 
     @Test
     public void bigGraphTest() throws Exception {
-        int nodes = 100;
-        int edges = 2500;
-        int edgeCount = 1;
-        Random random = new Random();
-        Graph bigGraph = new SingleGraph("bigGraph");
+        BigGraph bigGraph = new BigGraph(100, 2500);
+        Graph big = bigGraph.createBigGraph();
 
-        for (int i = 1; i <= nodes; i++) {
-            bigGraph.addNode("" + i);
-        }
-        bigGraph.addEdge("1_100", "1", "100").addAttribute("weight", 1);
-        for (int i = 2; i <= edges; i++) {
-            int x = random.nextInt(nodes - 1) + 1;
-            int y = random.nextInt(nodes - 1) + 1;
-            try {
-                bigGraph.addEdge(x + "_" + y + "| " + edgeCount + " |", x + "", y + "").addAttribute("weight", 1);
-            } catch (EdgeRejectedException o) {
-                i--;
-                continue;
-            }
-            edgeCount++;
-        }
         FloydWarshall floydWarshall = new FloydWarshall();
         FloydWarshall.preview = false;
-        floydWarshall.init(bigGraph);
-        floydWarshall.setSourceAndTarget(bigGraph.getNode("1"), bigGraph.getNode("" + nodes));
+        floydWarshall.init(big);
+        floydWarshall.setSourceAndTarget(big.getNode("1"), big.getNode("" + bigGraph.nodes));
         floydWarshall.compute();
-        assertEquals(2500, edgeCount);
+        assertEquals(2500, bigGraph.edgeCount);
         assertEquals(Double.valueOf(1), floydWarshall.distance);
         System.out.println("Hits: " + floydWarshall.hits);
     }
