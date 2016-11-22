@@ -1,6 +1,5 @@
 package algorithms;
 
-import helper.BigGraph;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
@@ -64,31 +63,5 @@ public class FloydWarshallTest {
         assertEquals(Double.valueOf(6), floyd.distance);
         System.out.println("Hits: " + floyd.hits);
 //        System.out.println("Steps: " + floyd.getShortestPath());
-    }
-
-    @Test
-    public void graph03test() throws Exception {
-        FloydWarshall floyd = new FloydWarshall();
-        FloydWarshall.preview = false;
-        floyd.init(graph3);
-        floyd.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
-        floyd.compute();
-        assertEquals(Double.valueOf(170.0), floyd.distance);
-        System.out.println("Hits: " + floyd.hits);
-    }
-
-    @Test
-    public void bigGraphTest() throws Exception {
-        BigGraph bigGraph = new BigGraph(100, 2500);
-        Graph big = bigGraph.createBigGraph();
-
-        FloydWarshall floydWarshall = new FloydWarshall();
-        FloydWarshall.preview = false;
-        floydWarshall.init(big);
-        floydWarshall.setSourceAndTarget(big.getNode("1"), big.getNode("" + bigGraph.nodes));
-        floydWarshall.compute();
-        assertEquals(2500, bigGraph.edgeCount);
-        assertEquals(Double.valueOf(1), floydWarshall.distance);
-        System.out.println("Hits: " + floydWarshall.hits);
     }
 }

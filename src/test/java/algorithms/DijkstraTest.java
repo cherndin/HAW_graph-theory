@@ -1,13 +1,11 @@
 package algorithms;
 
-import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Random;
 
 import static helper.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
@@ -79,48 +77,6 @@ public class DijkstraTest {
         System.out.println("Steps: " + dijk.getShortestPath());
     }
 
-    @Test
-    public void graph03test() throws Exception {
-        Dijkstra dijk = new Dijkstra();
-        Dijkstra.preview = false;
-        dijk.init(graph3);
-        dijk.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
-        dijk.compute();
-        assertEquals(Double.valueOf(170.0), dijk.distance); //TODO not same as Floyd's
-        System.out.println("Hits: " + dijk.hits);
-    }
 
-    @Test
-    public void bigGraphTest() throws Exception {
-        int nodes = 100;
-        int edges = 2500;
-        int edgeCount = 1;
-        Random random = new Random();
-        Graph bigGraph = new SingleGraph("bigGraph");
-
-        for (int i = 1; i <= nodes; i++) {
-            bigGraph.addNode("" + i);
-        }
-        bigGraph.addEdge("1_100", "1", "100").addAttribute("weight", 1);
-        for (int i = 2; i <= edges; i++) {
-            int x = random.nextInt(nodes - 1) + 1;
-            int y = random.nextInt(nodes - 1) + 1;
-            try {
-                bigGraph.addEdge(x + "_" + y + "| " + edgeCount + " |", x + "", y + "").addAttribute("weight", 1);
-            } catch (EdgeRejectedException o) {
-                i--;
-                continue;
-            }
-            edgeCount++;
-        }
-        Dijkstra dijkstraVisual = new Dijkstra();
-        Dijkstra.preview = false;
-        dijkstraVisual.init(bigGraph);
-        dijkstraVisual.setSourceAndTarget(bigGraph.getNode("1"), bigGraph.getNode("" + nodes));
-        dijkstraVisual.compute();
-        assertEquals(2500, edgeCount);
-        assertEquals(Double.valueOf(1), dijkstraVisual.distance);
-        System.out.println("Hits: " + dijkstraVisual.hits);
-    }
 
 }
