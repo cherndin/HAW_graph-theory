@@ -30,16 +30,16 @@ public class DijkstraTest {
         graph.addNode("v4");
         graph.addNode("v5");
         graph.addNode("v6");
-        graph.addEdge("v1v2", "v1", "v2");
-        graph.addEdge("v1v6", "v1", "v6");
-        graph.addEdge("v2v3", "v2", "v3");
-        graph.addEdge("v2v5", "v2", "v5");
-        graph.addEdge("v2v6", "v2", "v6");
-        graph.addEdge("v3v6", "v3", "v6");
-        graph.addEdge("v3v5", "v3", "v5");
-        graph.addEdge("v3v4", "v3", "v4");
-        graph.addEdge("v5v4", "v5", "v4");
-        graph.addEdge("v5v6", "v5", "v6");
+        graph.addEdge("v1v2", "v1", "v2", true);
+        graph.addEdge("v1v6", "v1", "v6", true);
+        graph.addEdge("v2v3", "v2", "v3", true);
+        graph.addEdge("v2v5", "v2", "v5", true);
+        graph.addEdge("v2v6", "v2", "v6", true);
+        graph.addEdge("v3v5", "v3", "v5", true);
+        graph.addEdge("v3v4", "v3", "v4", true);
+        graph.addEdge("v5v4", "v5", "v4", true);
+        graph.addEdge("v5v6", "v5", "v6", true);
+        graph.addEdge("v6v3", "v6", "v3", true);
 
         graph3 = fromFile("graph3", new File("src/main/resources/input/BspGraph/graph03.gka"));
     }

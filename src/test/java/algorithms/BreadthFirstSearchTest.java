@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class BreadthFirstSearchTest {
     @Before
     public void setUp() throws Exception {
-
+        BreadthFirstSearch.preview = false;
     }
 
     @Test

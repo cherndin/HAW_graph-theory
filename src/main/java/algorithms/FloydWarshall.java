@@ -34,7 +34,7 @@ public class FloydWarshall implements Algorithm {
     private Node target;
     private int n;
     private double[][] distances;
-    private int[][] adjacent;
+    private int[][] transits;
     private List<Node> nodes = new LinkedList<Node>();
     // TODO (nicht von Padberg nachgefragt) negative Kanten und negative Kreise abfangen/ bearbeiten -> siehte TODOcompute()
 
@@ -51,27 +51,41 @@ public class FloydWarshall implements Algorithm {
         hits = n * n; // Zugriffe auf den Graphen TODO stimmt das noch?
         int n = graph.getNodeCount();
         distances = new double[n][n];
-        adjacent = new int[n][n];
+        transits = new int[n][n];
     }
 
     public void compute() {
+        // Preconditions
+        if (graph == null || source == null || target == null) // have to be set
+            throw new IllegalArgumentException("Attributes are missing");
+
+        // Implementation
         setUp();
         // Bei jeder Iteration in dieser Schleife versucht der Algorithmus alle (i, j) Wege durch Wege (i, k) und (k, j) verbessern.
         for (int k = 0; k < n; k++) { // Schritte
             for (int i = 0; i < n; i++) { // Spalte
 
+                if (i == k) continue;
                 Double rowValue = distances[i][k];
                 if (rowValue.isInfinite()) continue; // Spalte mit Inf. überspringen
 
                 for (int j = 0; j < n; j++) { // Zeile
+
+                    if (j == k) continue;
                     Double columnValue = distances[k][j];
                     if (columnValue.isInfinite()) continue; // Zeile mit Inf. überspringen
                     if (rowValue == 0.0 && columnValue == 0.0) continue; // Zeile==Spalte überspringen
 
+                    double oldDistance = distances[i][j];
                     distances[i][j] = min(distances[i][j], rowValue + columnValue);// Wenn kleiner, dann ersetzten
+
+                    if (oldDistance != distances[i][j]) // Falls Dij verändert wurde, setzt Tij := k
+                        transits[i][j] = k;
+
+                    if (distances[i][i] < 0) // Kreis mit negativer Länge gefunden
+                        throw new IllegalArgumentException("Graph has negative circles");
                 }
             }
-            // TODO negative Kreise hier abfangen: https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
             if (preview) System.out.println("================== " + k + " ======================");
             if (preview) printMatrix();
             if (preview) System.out.println();
@@ -85,8 +99,8 @@ public class FloydWarshall implements Algorithm {
      * @param source source node
      * @param target target node
      */
-    void setSourceAndTarget(@NotNull Node source,
-                            @NotNull Node target) {
+    public void setSourceAndTarget(@NotNull Node source,
+                                   @NotNull Node target) {
         if (this.source != null && this.source.hasAttribute("title"))
             this.source.removeAttribute("title");
         if (this.target != null && this.target.hasAttribute("title"))
@@ -128,12 +142,11 @@ public class FloydWarshall implements Algorithm {
                     if (NodeI.hasEdgeBetween(NodeJ)) {
                         String weight = NodeI.getEdgeBetween(NodeJ).getAttribute("weight").toString();
                         distances[i][j] = Double.parseDouble(weight);
-                        adjacent[i][j] = 1;
                     } else {
                         distances[i][j] = Integer.MAX_VALUE;
                     }
                 }
-            } // TODO andere matrix mit aufbauen
+            }
         }
         if (preview) System.out.println("================== Start ======================");
         if (preview) printMatrix();
