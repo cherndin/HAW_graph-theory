@@ -33,8 +33,8 @@ public class FloydWarshall implements Algorithm {
     private Node source;
     private Node target;
     private int n;
-    private double[][] distances;
-    private int[][] transits;
+    private Double[][] distances;
+    private Integer[][] transits;
     private List<Node> nodes = new LinkedList<Node>();
     // TODO (nicht von Padberg nachgefragt) negative Kanten und negative Kreise abfangen/ bearbeiten -> siehte TODOcompute()
 
@@ -50,8 +50,8 @@ public class FloydWarshall implements Algorithm {
         n = nodes.size();
         hits = n * n; // Zugriffe auf den Graphen TODO stimmt das noch?
         int n = graph.getNodeCount();
-        distances = new double[n][n];
-        transits = new int[n][n];
+        distances = new Double[n][n];
+        transits = new Integer[n][n];
     }
 
     public void compute() {
@@ -87,7 +87,8 @@ public class FloydWarshall implements Algorithm {
                 }
             }
             if (preview) System.out.println("================== " + k + " ======================");
-            if (preview) printMatrix();
+            if (preview) printMatrix(distances);
+            if (preview) printMatrix(transits);
             if (preview) System.out.println();
         }
         distance = distances[getIndex(source)][getIndex(target)];
@@ -136,6 +137,7 @@ public class FloydWarshall implements Algorithm {
             Node NodeI = nodesForI.next();
             for (int j = 0; j < n; j++) {
                 Node NodeJ = nodesForJ.next();
+                transits[i][j] = 0;
                 if (NodeI == NodeJ) {
                     distances[i][j] = 0.0;
                 } else {
@@ -143,13 +145,14 @@ public class FloydWarshall implements Algorithm {
                         String weight = NodeI.getEdgeBetween(NodeJ).getAttribute("weight").toString();
                         distances[i][j] = Double.parseDouble(weight);
                     } else {
-                        distances[i][j] = Integer.MAX_VALUE;
+                        distances[i][j] = Double.POSITIVE_INFINITY;
                     }
                 }
             }
         }
         if (preview) System.out.println("================== Start ======================");
-        if (preview) printMatrix();
+        if (preview) printMatrix(distances);
+        if (preview) printMatrix(transits);
         if (preview) System.out.println();
     }
 
@@ -166,7 +169,7 @@ public class FloydWarshall implements Algorithm {
         int y = getIndex(node);
         int maxColumn = -1;
         for (int x = 1; x < n; x++) {
-            if (distances[x][y] != 0.0 && Double.valueOf(distances[x][y]).isInfinite()) {
+            if (distances[x][y] != 0.0 && distances[x][y].isInfinite()) {
                 maxColumn = x;
             }
         }
@@ -185,7 +188,7 @@ public class FloydWarshall implements Algorithm {
     private Boolean hasPred(Node node) {
         int y = getIndex(node);
         for (int x = 1; x < n; x++) {
-            if (distances[x][y] != 0.0 && Double.valueOf(distances[x][y]).isInfinite()) {
+            if (distances[x][y] != 0.0 && distances[x][y].isInfinite()) {
                 return true;
             }
         }
@@ -223,7 +226,7 @@ public class FloydWarshall implements Algorithm {
         return hasWeight;
     }
 
-    // TODO könnte man in eine method tuen um eine iteration zu vermeiden
+    // TODO Precondition hasWeight und isDirected könnte man in eine method tuen um eine iteration zu vermeiden
 
     /**
      * <b>Precondition</b> Helper Method for init()
@@ -246,21 +249,39 @@ public class FloydWarshall implements Algorithm {
     /**
      * Output for the distance matrix
      */
-    private void printMatrix() {
+    private void printMatrix(Integer[][] matrix) {
+        System.out.println();
         for (Node node : nodes) { // print x nodes
             System.out.print("  \t" + node.getId() + " \t");
         }
         System.out.println();
         Iterator<Node> iterator = nodes.iterator();
-        for (double[] distance1 : distances) { // print x nodes
+        for (Number[] array : matrix) { // print x nodes
             System.out.print(iterator.next() + " | ");
-            for (int j = 0; j < distances.length; j++) { // print x nodes
-                System.out.print((distance1[j] == 2.147483647E9 ? "Inf" : distance1[j]) + " \t");
+            for (Number number : array) { // print x nodes
+                System.out.print((Double.valueOf(number.doubleValue()).isInfinite() ? "Inf" : number) + " \t\t");
             }
             System.out.println();
         }
     }
 
+    /**
+     * Output for the distance matrix
+     */
+    private void printMatrix(Double[][] matrix) {
+        for (Node node : nodes) { // print x nodes
+            System.out.print("  \t" + node.getId() + " \t");
+        }
+        System.out.println();
+        Iterator<Node> iterator = nodes.iterator();
+        for (Number[] array : matrix) { // print x nodes
+            System.out.print(iterator.next() + " | ");
+            for (Number number : array) { // print x nodes
+                System.out.print((Double.valueOf(number.doubleValue()).isInfinite() ? "Inf" : number) + " \t");
+            }
+            System.out.println();
+        }
+    }
     // === MAIN ===
 
     public static void main(String[] args) throws Exception {
