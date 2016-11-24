@@ -15,18 +15,19 @@ import java.util.List;
 
 /**
  * Created by MattX7 on 20.11.2016.
+ *
  */
 public class Dijkstra {
     private static Logger logger = Logger.getLogger(Dijkstra.class);
+    static boolean preview = true;
 
-    public Double distance;
-    public static boolean preview = true;
-    public Integer hits = 0;
-    public Node[] nodes;
-    public Double[] entf;
-    public Node[] vorg;
-    public Boolean[] ok;
-    public LinkedList<Node> shortestPath;
+    Double distance;
+    Integer hits = 0;
+
+    private Node[] nodes;
+    private Double[] entf;
+    private Node[] vorg;
+    private Boolean[] ok;
     private Graph graph;
     private Node source;
     private Node target;
@@ -36,7 +37,7 @@ public class Dijkstra {
      *
      * @param graph
      */
-    public void init(Graph graph) {
+    void init(Graph graph) {
         // Preconditions
         if (!hasWeights(graph))
             throw new IllegalArgumentException();
@@ -47,7 +48,6 @@ public class Dijkstra {
 
         this.graph = graph;
         int size = graph.getNodeCount();
-        shortestPath = new LinkedList<Node>();
         nodes = new Node[size];
         entf = new Double[size];
         vorg = new Node[size];
@@ -58,7 +58,7 @@ public class Dijkstra {
     /**
      * starts the algorithm
      */
-    public void compute() {
+    void compute() {
         logger.debug("Starting Dijkstra with " + GraphUtil.graphToString(graph, false, false));
         // Preconditions
         if (graph == null || source == null || target == null) // have to be set
@@ -92,9 +92,12 @@ public class Dijkstra {
      *
      * @return the shortest Path from the Source to the Target
      */
-    public List<Node> getShortestPath() {
+    List<Node> getShortestPath() {
         if (hits == 0)
             throw new IllegalArgumentException("do compute before this method");
+
+        List<Node> shortestPath = new LinkedList<Node>();
+
         shortestPath.add(target);
         Node current = target;
         while (hasPred(current)) {
@@ -110,8 +113,8 @@ public class Dijkstra {
      * @param source source node
      * @param target target node
      */
-    public void setSourceAndTarget(@NotNull Node source,
-                                   @NotNull Node target) {
+    void setSourceAndTarget(@NotNull Node source,
+                            @NotNull Node target) {
         if (this.source != null && this.source.hasAttribute("title"))
             this.source.removeAttribute("title");
         if (this.target != null && this.target.hasAttribute("title"))

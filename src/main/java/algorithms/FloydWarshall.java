@@ -2,6 +2,7 @@ package algorithms;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -23,12 +24,12 @@ import java.util.NoSuchElementException;
  * https://www.cs.usfca.edu/~galles/visualization/Floyd.html
  */
 public class FloydWarshall implements Algorithm {
+    private static Logger logger = Logger.getLogger(FloydWarshall.class);
+    static boolean preview = true;
 
     Double distance;
     Integer hits = 0;
-    public int steps = -1;
-    static boolean preview = true;
-    public LinkedList<Node> shortestPath;
+
     private Graph graph;
     private Node source;
     private Node target;
@@ -36,7 +37,6 @@ public class FloydWarshall implements Algorithm {
     private Double[][] distances;
     private Integer[][] transits;
     private List<Node> nodes = new LinkedList<Node>();
-    // TODO (nicht von Padberg nachgefragt) negative Kanten und negative Kreise abfangen/ bearbeiten -> siehte TODOcompute()
 
     public void init(Graph graph) {
         // Preconditions
@@ -100,8 +100,8 @@ public class FloydWarshall implements Algorithm {
      * @param source source node
      * @param target target node
      */
-    public void setSourceAndTarget(@NotNull Node source,
-                                   @NotNull Node target) {
+    void setSourceAndTarget(@NotNull Node source,
+                            @NotNull Node target) {
         if (this.source != null && this.source.hasAttribute("title"))
             this.source.removeAttribute("title");
         if (this.target != null && this.target.hasAttribute("title"))
@@ -114,11 +114,13 @@ public class FloydWarshall implements Algorithm {
     /**
      * @return shortestWay
      */
-    public List<Node> getShortestPath() {
+    List<Node> getShortestPath() {
         if (hits == 0)
             throw new IllegalArgumentException("do compute before this method");
-        LinkedList<Node> ShortestPath = new LinkedList<Node>();
-        ShortestPath.add(target);
+
+        LinkedList<Node> shortestPath = new LinkedList<Node>();
+
+        shortestPath.add(target);
         Node current = target;
         while (hasPred(current)) {
             shortestPath.add(getPred(current));
