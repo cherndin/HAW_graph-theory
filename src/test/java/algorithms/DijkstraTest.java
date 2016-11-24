@@ -1,11 +1,14 @@
 package algorithms;
 
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static helper.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
@@ -16,11 +19,41 @@ import static org.junit.Assert.assertEquals;
 public class DijkstraTest {
     private Graph graph;
     private Graph graph3;
+    private Graph test;
+    private List<Node> list = new ArrayList<Node>();
 
     // TODO Testen Sie für graph3 in graph3.gka dabei Floyd-Warshall gegen Dijkstra und geben Sie den k¨urzesten Weg, sowie die Anzahl der Zugriffe auf den Graphen an
 
     @Before
     public void setUp() throws Exception {
+
+        test = new SingleGraph("test");
+        test.addNode("0");
+        test.addNode("1");
+        test.addNode("2");
+        test.addNode("3");
+        test.addNode("4");
+        test.addNode("5");
+        test.addNode("6");
+        test.addNode("7");
+        test.addEdge("01", "0", "1", true).addAttribute("weight", 3);
+        test.addEdge("03", "0", "3", true).addAttribute("weight", 2);
+        test.addEdge("10", "1", "0", true).addAttribute("weight", 2);
+        test.addEdge("15", "1", "5", true).addAttribute("weight", 3);
+        test.addEdge("16", "1", "6", true).addAttribute("weight", 8);
+        test.addEdge("26", "2", "6", true).addAttribute("weight", 8);
+        test.addEdge("42", "4", "2", true).addAttribute("weight", 3);
+        test.addEdge("46", "4", "6", true).addAttribute("weight", 1);
+        test.addEdge("53", "5", "3", true).addAttribute("weight", 0);
+        test.addEdge("56", "5", "6", true).addAttribute("weight", 2);
+        test.addEdge("67", "6", "7", true).addAttribute("weight", 1);
+
+        list.add(test.getNode(0));
+        list.add(test.getNode(1));
+        list.add(test.getNode(5));
+        list.add(test.getNode(6));
+        list.add(test.getNode(7));
+
         // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6 // TODO gerichtet und mit negativen
         graph = new SingleGraph("graph");
@@ -77,7 +110,18 @@ public class DijkstraTest {
         System.out.println("Steps: " + dijk.getShortestPath());
     }
 
-    //TODO SHORTEST PATH TEST
+    @Test
+    public void getShortestPathTest() { //TODO rausziehen
+        Dijkstra dijk = new Dijkstra();
+        Dijkstra.preview = true;
+        dijk.init(test);
+        dijk.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
+        dijk.compute();
+        assertEquals(Double.valueOf(9), dijk.distance);
+        assertEquals(list, dijk.getShortestPath());
+        System.out.println("Hits: " + dijk.hits);
+        System.out.println(dijk.shortestPath);
+    }
 
 
 }
