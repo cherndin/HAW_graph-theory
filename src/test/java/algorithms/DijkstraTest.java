@@ -113,6 +113,7 @@ public class DijkstraTest {
     @Test
     public void getShortestPathTest() { //TODO rausziehen
         Dijkstra dijk = new Dijkstra();
+        Dijkstra.preview = true;
         dijk.init(test);
         dijk.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
         dijk.compute();

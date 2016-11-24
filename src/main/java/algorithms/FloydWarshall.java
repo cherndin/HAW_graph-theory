@@ -44,7 +44,7 @@ public class FloydWarshall implements Algorithm {
             throw new IllegalArgumentException("edges must have weights");
         if (!isDirected(graph))
             throw new IllegalArgumentException("graph has to be directed");
-
+        // Implementation
         this.graph = graph;
         nodes = ImmutableList.copyOf(graph.getEachNode());
         n = nodes.size();
@@ -58,7 +58,6 @@ public class FloydWarshall implements Algorithm {
         // Preconditions
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException("Attributes are missing");
-
         // Implementation
         setUp();
         // Bei jeder Iteration in dieser Schleife versucht der Algorithmus alle (i, j) Wege durch Wege (i, k) und (k, j) verbessern.
