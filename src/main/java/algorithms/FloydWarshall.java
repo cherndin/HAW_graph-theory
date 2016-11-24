@@ -166,16 +166,7 @@ public class FloydWarshall implements Algorithm {
      */
     @NotNull
     private Node getPred(Node node) throws IllegalArgumentException {
-        int y = getIndex(node);
-        int maxColumn = -1;
-        for (int x = 1; x < n; x++) {
-            if (distances[x][y] != 0.0 && distances[x][y].isInfinite()) {
-                maxColumn = x;
-            }
-        }
-        if (maxColumn == -1)
-            throw new IllegalArgumentException();
-        return nodes.get(maxColumn);
+        return nodes.get(transits[getIndex(source)][getIndex(node)]);
     }
 
     /**
@@ -186,14 +177,7 @@ public class FloydWarshall implements Algorithm {
      */
     @NotNull
     private Boolean hasPred(Node node) {
-        int y = getIndex(node);
-        for (int x = 1; x < n; x++) {
-            if (distances[x][y] != 0.0 && distances[x][y].isInfinite()) {
-                return true;
-            }
-        }
-        return false;
-
+        return transits[getIndex(source)][getIndex(node)] > 0;
     }
 
     /**
@@ -287,25 +271,25 @@ public class FloydWarshall implements Algorithm {
     public static void main(String[] args) throws Exception {
         // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6
-        Graph bspPadberg = new SingleGraph("bspPadberg");
-        bspPadberg.addNode("A");
-        bspPadberg.addNode("B");
-        bspPadberg.addNode("C");
-        bspPadberg.addNode("D");
-        bspPadberg.addNode("E");
-        bspPadberg.addEdge("AB", "A", "B", true).addAttribute("weight", 2.0);
-        bspPadberg.addEdge("AC", "A", "C", true).addAttribute("weight", 3.0);
-        bspPadberg.addEdge("BD", "B", "D", true).addAttribute("weight", 9.0);
-        bspPadberg.addEdge("CB", "C", "B", true).addAttribute("weight", 7.0);
-        bspPadberg.addEdge("CE", "C", "E", true).addAttribute("weight", 5.0);
-        bspPadberg.addEdge("ED", "E", "D", true).addAttribute("weight", 1.0);
+//        Graph bspPadberg = new SingleGraph("bspPadberg");
+//        bspPadberg.addNode("A");
+//        bspPadberg.addNode("B");
+//        bspPadberg.addNode("C");
+//        bspPadberg.addNode("D");
+//        bspPadberg.addNode("E");
+//        bspPadberg.addEdge("AB", "A", "B", true).addAttribute("weight", 2.0);
+//        bspPadberg.addEdge("AC", "A", "C", true).addAttribute("weight", 3.0);
+//        bspPadberg.addEdge("BD", "B", "D", true).addAttribute("weight", 9.0);
+//        bspPadberg.addEdge("CB", "C", "B", true).addAttribute("weight", 7.0);
+//        bspPadberg.addEdge("CE", "C", "E", true).addAttribute("weight", 5.0);
+//        bspPadberg.addEdge("ED", "E", "D", true).addAttribute("weight", 1.0);
+//
+//        FloydWarshall floydBspPadberg = new FloydWarshall();
+//        floydBspPadberg.setSourceAndTarget(bspPadberg.getNode("A"), bspPadberg.getNode("E"));
+//        floydBspPadberg.init(bspPadberg);
+//        floydBspPadberg.compute();
 
-        FloydWarshall floydBspPadberg = new FloydWarshall();
-        floydBspPadberg.setSourceAndTarget(bspPadberg.getNode("A"), bspPadberg.getNode("E"));
-        floydBspPadberg.init(bspPadberg);
-        floydBspPadberg.compute();
-
-//        // Graph from https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
+        // Graph from https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
 //        Graph m9 = new SingleGraph("m9");
 //        m9.addNode("A");
 //        m9.addNode("B");
@@ -321,5 +305,34 @@ public class FloydWarshall implements Algorithm {
 //        floydM9.setSourceAndTarget(m9.getNode("A"), m9.getNode("D"));
 //        floydM9.init(m9);
 //        floydM9.compute();
+
+        Graph test = new SingleGraph("test");
+        test.addNode("0");
+        test.addNode("1");
+        test.addNode("2");
+        test.addNode("3");
+        test.addNode("4");
+        test.addNode("5");
+        test.addNode("6");
+        test.addNode("7");
+        test.addEdge("01", "0", "1", true).addAttribute("weight", 3);
+        test.addEdge("03", "0", "3", true).addAttribute("weight", 2);
+        test.addEdge("10", "1", "0", true).addAttribute("weight", 2);
+        test.addEdge("15", "1", "5", true).addAttribute("weight", 3);
+        test.addEdge("16", "1", "6", true).addAttribute("weight", 8);
+        test.addEdge("26", "2", "6", true).addAttribute("weight", 8);
+        test.addEdge("42", "4", "2", true).addAttribute("weight", 3);
+        test.addEdge("46", "4", "6", true).addAttribute("weight", 1);
+        test.addEdge("53", "5", "3", true).addAttribute("weight", 0);
+        test.addEdge("56", "5", "6", true).addAttribute("weight", 2);
+        test.addEdge("67", "6", "7", true).addAttribute("weight", 1);
+
+//        GraphUtil.buildForDisplay(test).display();
+        FloydWarshall floydTest = new FloydWarshall();
+        floydTest.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
+        floydTest.init(test);
+        floydTest.compute();
+
+
     }
 }
