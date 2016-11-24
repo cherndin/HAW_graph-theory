@@ -28,7 +28,7 @@ public class FloydWarshall implements Algorithm {
     Integer hits = 0;
     public int steps = -1;
     static boolean preview = true;
-    private LinkedList<Node> shortestPath;
+    public LinkedList<Node> shortestPath;
     private Graph graph;
     private Node source;
     private Node target;

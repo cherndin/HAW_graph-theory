@@ -77,6 +77,7 @@ public class DijkstraTest {
         System.out.println("Steps: " + dijk.getShortestPath());
     }
 
+    //TODO SHORTEST PATH TEST
 
 
 }

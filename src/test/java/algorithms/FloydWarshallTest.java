@@ -1,11 +1,14 @@
 package algorithms;
 
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static helper.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
@@ -17,10 +20,39 @@ public class FloydWarshallTest {
     private Graph graph;
     private Graph graph3;
     private Graph negGraph;
-
+    private Graph test;
+    private List<Node> list = new ArrayList<Node>();
 
     @Before
     public void setUp() throws Exception {
+
+        test = new SingleGraph("test");
+        test.addNode("0");
+        test.addNode("1");
+        test.addNode("2");
+        test.addNode("3");
+        test.addNode("4");
+        test.addNode("5");
+        test.addNode("6");
+        test.addNode("7");
+        test.addEdge("01", "0", "1", true).addAttribute("weight", 3);
+        test.addEdge("03", "0", "3", true).addAttribute("weight", 2);
+        test.addEdge("10", "1", "0", true).addAttribute("weight", 2);
+        test.addEdge("15", "1", "5", true).addAttribute("weight", 3);
+        test.addEdge("16", "1", "6", true).addAttribute("weight", 8);
+        test.addEdge("26", "2", "6", true).addAttribute("weight", 8);
+        test.addEdge("42", "4", "2", true).addAttribute("weight", 3);
+        test.addEdge("46", "4", "6", true).addAttribute("weight", 1);
+        test.addEdge("53", "5", "3", true).addAttribute("weight", 0);
+        test.addEdge("56", "5", "6", true).addAttribute("weight", 2);
+        test.addEdge("67", "6", "7", true).addAttribute("weight", 1);
+
+        list.add(test.getNode(0));
+        list.add(test.getNode(1));
+        list.add(test.getNode(5));
+        list.add(test.getNode(6));
+        list.add(test.getNode(7));
+
         // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6
         graph = new SingleGraph("graph"); // TODO gerichtet und mit negativen
@@ -86,5 +118,21 @@ public class FloydWarshallTest {
         assertEquals(Double.valueOf(6), floyd.distance);
         System.out.println("Hits: " + floyd.hits);
 //        System.out.println("Steps: " + floyd.getShortestPath());
+    }
+
+    @Test
+    public void getShortestPathTest() {
+        FloydWarshall floyd = new FloydWarshall();
+        FloydWarshall.preview = true;
+        floyd.init(test);
+        floyd.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
+        floyd.compute();
+        floyd.getShortestPath();
+        assertEquals(Double.valueOf(9), floyd.distance);
+        assertEquals(list, floyd.shortestPath);
+        System.out.println("Hits: " + floyd.hits);
+        System.out.println(floyd.shortestPath);
+
+
     }
 }
