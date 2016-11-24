@@ -47,7 +47,6 @@ public class FloydWarshallTest {
         test.addEdge("56", "5", "6", true).addAttribute("weight", 2);
         test.addEdge("67", "6", "7", true).addAttribute("weight", 1);
 
-        list.add(test.getNode(0));
         list.add(test.getNode(1));
         list.add(test.getNode(5));
         list.add(test.getNode(6));
@@ -123,14 +122,12 @@ public class FloydWarshallTest {
     @Test
     public void getShortestPathTest() {
         FloydWarshall floyd = new FloydWarshall();
-        FloydWarshall.preview = true;
         floyd.init(test);
         floyd.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
         floyd.compute();
         assertEquals(Double.valueOf(9), floyd.distance);
         assertEquals(list, floyd.getShortestPath());
         System.out.println("Hits: " + floyd.hits);
-        System.out.println(floyd.getShortestPath());
 
 
     }
