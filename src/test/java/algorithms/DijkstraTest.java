@@ -120,7 +120,7 @@ public class DijkstraTest {
         assertEquals(Double.valueOf(9), dijk.distance);
         assertEquals(list, dijk.getShortestPath());
         System.out.println("Hits: " + dijk.hits);
-        System.out.println(dijk.shortestPath);
+        System.out.println(dijk.getShortestPath());
     }
 
 

@@ -130,7 +130,7 @@ public class FloydWarshallTest {
         assertEquals(Double.valueOf(9), floyd.distance);
         assertEquals(list, floyd.getShortestPath());
         System.out.println("Hits: " + floyd.hits);
-        System.out.println(floyd.shortestPath);
+        System.out.println(floyd.getShortestPath());
 
 
     }
