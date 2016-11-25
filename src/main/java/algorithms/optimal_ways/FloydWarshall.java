@@ -1,4 +1,4 @@
-package algorithms;
+package algorithms.optimal_ways;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

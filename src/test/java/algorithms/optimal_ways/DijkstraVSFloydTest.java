@@ -1,4 +1,4 @@
-package algorithms;
+package algorithms.optimal_ways;
 
 import helper.BigGraph;
 import org.graphstream.graph.Graph;

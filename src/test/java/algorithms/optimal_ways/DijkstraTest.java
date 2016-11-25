@@ -1,4 +1,4 @@
-package algorithms;
+package algorithms.optimal_ways;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -96,11 +96,11 @@ public class DijkstraTest {
         graph.getEdge("v2v3").addAttribute("weight", 5.0);
         graph.getEdge("v2v6").addAttribute("weight", 2.0);
         graph.getEdge("v2v5").addAttribute("weight", 3.0);
-        graph.getEdge("v3v6").addAttribute("weight", 2.0);
         graph.getEdge("v3v5").addAttribute("weight", 2.0);
         graph.getEdge("v3v4").addAttribute("weight", 1.0);
         graph.getEdge("v5v4").addAttribute("weight", 3.0);
         graph.getEdge("v5v6").addAttribute("weight", 1.0);
+        graph.getEdge("v6v3").addAttribute("weight", 2.0);
         dijk.init(graph);
         dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
         dijk.compute();
