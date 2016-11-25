@@ -46,12 +46,9 @@ public class FloydWarshall implements Algorithm {
      * @param graph The graph this algorithm is using.
      */
     public void init(Graph graph) {
-        // Preconditions
-        if (!Preconditions.hasWeights(graph))
-            throw new IllegalArgumentException("edges must have weights");
-        if (!Preconditions.isDirected(graph))
-            throw new IllegalArgumentException("graph has to be directed");
-        // Implementation
+        Preconditions.mustHaveWeights(graph);
+        Preconditions.noNonDirectedEdges(graph);
+
         this.graph = graph;
         nodes = ImmutableList.copyOf(graph.getEachNode());
         n = nodes.size();

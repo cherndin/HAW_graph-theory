@@ -42,13 +42,8 @@ public class Dijkstra implements Algorithm {
      * @param graph The graph this algorithm is using.
      */
     public void init(Graph graph) {
-        // Preconditions
-        if (!Preconditions.hasWeights(graph))
-            throw new IllegalArgumentException();
-        if (!Preconditions.isDirected(graph))
-            throw new IllegalArgumentException("graph has to be directed");
-        if (Preconditions.hasNegativeWeights(graph))
-            throw new IllegalArgumentException("graph has negative edge-weights");
+        Preconditions.mustHaveWeights(graph);
+        Preconditions.noNegativeWeights(graph);
 
         this.graph = graph;
         int size = graph.getNodeCount();
