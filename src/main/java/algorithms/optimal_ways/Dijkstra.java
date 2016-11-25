@@ -1,5 +1,6 @@
 package algorithms.optimal_ways;
 
+import algorithms.Preconditions;
 import com.google.common.collect.Lists;
 import helper.GraphUtil;
 import org.apache.log4j.Logger;
@@ -34,17 +35,19 @@ public class Dijkstra implements Algorithm {
     private Node target;
 
     /**
-     * Initialisation
+     * Initialization of the algorithm. This method has to be called before the
+     * {@link #compute()} method to initialize or reset the algorithm according
+     * to the new given graph.
      *
-     * @param graph
+     * @param graph The graph this algorithm is using.
      */
     public void init(Graph graph) {
         // Preconditions
-        if (!hasWeights(graph))
+        if (!Preconditions.hasWeights(graph))
             throw new IllegalArgumentException();
-        if (!isDirected(graph))
+        if (!Preconditions.isDirected(graph))
             throw new IllegalArgumentException("graph has to be directed");
-        if (hasNegativeWeights(graph))
+        if (Preconditions.hasNegativeWeights(graph))
             throw new IllegalArgumentException("graph has negative edge-weights");
 
         this.graph = graph;
@@ -57,7 +60,10 @@ public class Dijkstra implements Algorithm {
     }
 
     /**
-     * starts the algorithm
+     * Run the algorithm. The {@link #init(Graph)} method has to be called
+     * before computing.
+     *
+     * @see #init(Graph)
      */
     public void compute() {
         logger.debug("Starting Dijkstra with " + GraphUtil.graphToString(graph, false, false));
@@ -241,50 +247,6 @@ public class Dijkstra implements Algorithm {
             }
         }
         throw new IllegalArgumentException();
-    }
-
-    /**
-     * <b>Precondition</b> Helper Method for init()
-     *
-     * @return true if all edges are directed
-     */
-    @NotNull
-    private Boolean hasWeights(@NotNull Graph graph) {
-        boolean hasWeight = true;
-        for (Edge edge : graph.getEachEdge()) {
-            if (!edge.hasAttribute("weight"))
-                hasWeight = false;
-        }
-        return hasWeight;
-    }
-
-    /**
-     * <b>Precondition</b> Helper Method for init()
-     *
-     * @return true if all edges are directed
-     */
-    @NotNull
-    private Boolean isDirected(@NotNull Graph graph) {
-        for (Edge edge : graph.getEachEdge()) {
-            hits++;
-            if (!edge.isDirected()) return false;
-        }
-        return true;
-    }
-
-    /**
-     * <b>Precondition</b> Helper Method for init()
-     *
-     * @return true if all edges are directed
-     */
-    @NotNull
-    private Boolean hasNegativeWeights(Graph graph) {
-        for (Edge edge : graph.getEachEdge()) {
-            hits++;
-            if ((Double.valueOf(edge.getAttribute("weight").toString())) < 0.0)
-                return true;
-        }
-        return false;
     }
 
     private void reset() {

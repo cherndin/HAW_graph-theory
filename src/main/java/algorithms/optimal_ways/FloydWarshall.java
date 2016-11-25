@@ -1,10 +1,10 @@
 package algorithms.optimal_ways;
 
+import algorithms.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -38,11 +38,18 @@ public class FloydWarshall implements Algorithm {
     private Integer[][] transits;
     private List<Node> nodes = new LinkedList<Node>();
 
+    /**
+     * Initialization of the algorithm. This method has to be called before the
+     * {@link #compute()} method to initialize or reset the algorithm according
+     * to the new given graph.
+     *
+     * @param graph The graph this algorithm is using.
+     */
     public void init(Graph graph) {
         // Preconditions
-        if (!hasWeights(graph))
+        if (!Preconditions.hasWeights(graph))
             throw new IllegalArgumentException("edges must have weights");
-        if (!isDirected(graph))
+        if (!Preconditions.isDirected(graph))
             throw new IllegalArgumentException("graph has to be directed");
         // Implementation
         this.graph = graph;
@@ -54,6 +61,12 @@ public class FloydWarshall implements Algorithm {
         transits = new Integer[n][n];
     }
 
+    /**
+     * Run the algorithm. The {@link #init(Graph)} method has to be called
+     * before computing.
+     *
+     * @see #init(Graph)
+     */
     public void compute() {
         // Preconditions
         if (graph == null || source == null || target == null) // have to be set
@@ -193,37 +206,6 @@ public class FloydWarshall implements Algorithm {
         int i = nodes.indexOf(node);
         if (i < 0) throw new NoSuchElementException();
         return i;
-    }
-
-    /**
-     * <b>Precondition</b> Helper Method for init()
-     *
-     * @return true if all edges have weights
-     */
-    @NotNull
-    private Boolean hasWeights(@NotNull Graph graph) {
-        boolean hasWeight = true;
-        for (Edge edge : graph.getEachEdge()) {
-            hits++;
-            if (!edge.hasAttribute("weight"))
-                hasWeight = false;
-        }
-        return hasWeight;
-    }
-
-    // TODO Precondition hasWeight und isDirected könnte man in eine method tuen um eine iteration zu vermeiden
-
-    /**
-     * <b>Precondition</b> Helper Method for init()
-     * @return true if all edges are directed
-     */
-    @NotNull
-    private Boolean isDirected(@NotNull Graph graph) {
-        for (Edge edge : graph.getEachEdge()) {
-            hits++;
-            if (!edge.isDirected()) return false;
-        }
-        return true;
     }
 
     @NotNull
