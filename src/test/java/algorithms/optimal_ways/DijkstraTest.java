@@ -117,9 +117,9 @@ public class DijkstraTest {
         dijk.init(test);
         dijk.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
         dijk.compute();
-        assertEquals(Double.valueOf(9), dijk.distance);
+        assertEquals(Double.valueOf(9), dijk.getDistance());
         assertEquals(list, dijk.getShortestPath());
-        System.out.println("Hits: " + dijk.hits);
+        System.out.println("Hits: " + dijk.getHits());
     }
 
 

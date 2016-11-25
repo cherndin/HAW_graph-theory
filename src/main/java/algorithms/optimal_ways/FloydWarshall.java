@@ -316,4 +316,12 @@ public class FloydWarshall implements Algorithm {
 
 
     }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public Integer getHits() {
+        return hits;
+    }
 }

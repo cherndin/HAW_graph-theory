@@ -125,9 +125,9 @@ public class FloydWarshallTest {
         floyd.init(test);
         floyd.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
         floyd.compute();
-        assertEquals(Double.valueOf(9), floyd.distance);
+        assertEquals(Double.valueOf(9), floyd.getDistance());
         assertEquals(list, floyd.getShortestPath());
-        System.out.println("Hits: " + floyd.hits);
+        System.out.println("Hits: " + floyd.getHits());
 
 
     }

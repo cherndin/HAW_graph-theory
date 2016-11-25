@@ -48,7 +48,7 @@ public class FordFulkersonTest {
         ford.init(test);
         ford.setSourceAndTarget(test.getNode("S"), test.getNode("T"));
         ford.compute();
-        assertEquals(28, ford.maxFlow(test));
+        assertEquals(28, ford.getMaxFlow(test));
 //        System.out.println("Steps: " + floyd.getShortestPath());
     }
 

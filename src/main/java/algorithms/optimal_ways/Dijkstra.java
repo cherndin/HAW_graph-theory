@@ -308,4 +308,12 @@ public class Dijkstra implements Algorithm {
         dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
         dijk.compute();
     }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public Integer getHits() {
+        return hits;
+    }
 }
