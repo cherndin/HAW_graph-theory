@@ -3,6 +3,7 @@ package algorithms.optimal_ways;
 import com.google.common.collect.Lists;
 import helper.GraphUtil;
 import org.apache.log4j.Logger;
+import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -17,7 +18,7 @@ import java.util.List;
  * Created by MattX7 on 20.11.2016.
  *
  */
-public class Dijkstra {
+public class Dijkstra implements Algorithm {
     private static Logger logger = Logger.getLogger(Dijkstra.class);
     static boolean preview = true;
 
@@ -37,7 +38,7 @@ public class Dijkstra {
      *
      * @param graph
      */
-    void init(Graph graph) {
+    public void init(Graph graph) {
         // Preconditions
         if (!hasWeights(graph))
             throw new IllegalArgumentException();
@@ -58,7 +59,7 @@ public class Dijkstra {
     /**
      * starts the algorithm
      */
-    void compute() {
+    public void compute() {
         logger.debug("Starting Dijkstra with " + GraphUtil.graphToString(graph, false, false));
         // Preconditions
         if (graph == null || source == null || target == null) // have to be set

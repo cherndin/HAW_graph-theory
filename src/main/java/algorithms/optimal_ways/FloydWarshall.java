@@ -267,8 +267,9 @@ public class FloydWarshall implements Algorithm {
             System.out.println();
         }
     }
-    // === MAIN ===
 
+
+    // === MAIN ===
     public static void main(String[] args) throws Exception {
         // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6
