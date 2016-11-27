@@ -81,14 +81,17 @@ public class FordFulkerson implements Algorithm {
      * @see #init(Graph)
      */
     public void compute() {
-        computeInspectAndMark();
+        compute_InspectAndMark();
 
 
     }
 
-    private void computeInspectAndMark() {
+    /**
+     * (2) Inspektion und Markierung
+     */
+    private void compute_InspectAndMark() {
         // crrent setzten wir auch einen bel. markierten aber nicht inspizierten wert
-        Node curr = getBeliebigenMarkiertenAberNichtInspiziertenKnoten(); // VERTEX_i
+        Node curr = getMarkedButNotInspected(); // VERTEX_i
         Integer i = indexOf(curr);
         // OUTPUT
         for (Edge leavingEdge : curr.getEachLeavingEdge()) {   // EDGE_ij elemOf Output(V_i)
@@ -118,15 +121,15 @@ public class FordFulkerson implements Algorithm {
         }
 
         if (areAllMarkedNodesInspected())
-            computeCut();
+            compute_Cut();
         if (isMarked(sink))
-            computeAugmentedPath();
+            compute_AugmentedPath();
     }
 
     /**
      * (3) Vergrößerung der Flussst¨arke
      */
-    private void computeAugmentedPath() {
+    private void compute_AugmentedPath() {
 
         Node current = sink;
         while (hasPred(current)) {
@@ -152,13 +155,12 @@ public class FordFulkerson implements Algorithm {
     /**
      * (4) Es gibt keinen vergrößernden Weg
      */
-    private void computeCut() {
-        // TODO computeCut()
+    private void compute_Cut() {
+        // TODO compute_Cut()
     }
 
     private boolean areAllMarkedNodesInspected() {
         // TODO areAllMarkedNodesInspected()
-
         return false;
     }
 
@@ -168,7 +170,7 @@ public class FordFulkerson implements Algorithm {
      * @return marked but not inspected node or null if everything is inspected
      */
     @Nullable
-    private Node getBeliebigenMarkiertenAberNichtInspiziertenKnoten() {
+    private Node getMarkedButNotInspected() {
         for (Node node : nodes) {
             if (isMarked(node) && !inspected[indexOf(node)]) {
                 return node;
