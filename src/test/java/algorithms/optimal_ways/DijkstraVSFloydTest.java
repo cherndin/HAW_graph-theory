@@ -132,8 +132,8 @@ public class DijkstraVSFloydTest {
         assertEquals(list, dijk.getShortestPath());
         assertEquals(list, floyd.getShortestPath());
 
-        System.out.println("Hits: " + dijk.getHits());
-        System.out.println("Hits: " + floyd.getHits());
+        System.out.println("Dijkstra Hits: " + dijk.getHits());
+        System.out.println("Floyd Warshall Hits: " + floyd.getHits());
     }
 
     @Test(expected = IllegalArgumentException.class)
