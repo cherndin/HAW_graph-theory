@@ -41,9 +41,9 @@ public class Dijkstra implements Algorithm {
      *
      * @param graph The graph this algorithm is using.
      */
-    public void init(Graph graph) {
+    public void init(Graph graph) throws IllegalArgumentException {
         Preconditions.mustHaveWeights(graph);
-        Preconditions.noNegativeWeights(graph);
+        Preconditions.mustHavePositiveWeights(graph);
 
         this.graph = graph;
         int size = graph.getNodeCount();

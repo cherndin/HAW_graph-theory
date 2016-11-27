@@ -20,7 +20,7 @@ public class EdmondsKarp implements Algorithm {
      *
      * @param graph The graph this algorithm is using.
      */
-    public void init(Graph graph) {
+    public void init(Graph graph) throws IllegalArgumentException {
         // Preconditions
 
         //Implementation
