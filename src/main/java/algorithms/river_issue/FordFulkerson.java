@@ -100,6 +100,24 @@ public class FordFulkerson implements Algorithm {
         return x < y ? x : y;  // returns minimum of x and y
     }
 
+    /**
+     * Sets source and target before compute()
+     *
+     * @param source source node
+     * @param target target node
+     */
+    void setSourceAndTarget(@NotNull Node source,
+                            @NotNull Node target) {
+        if (this.source != null && this.source.hasAttribute("title"))
+            this.source.removeAttribute("title");
+        if (this.sink != null && this.sink.hasAttribute("title"))
+            this.sink.removeAttribute("title");
+        this.source = source;
+        this.sink = target;
+        source.setAttribute("title", "source");
+        target.setAttribute("title", "target");
+    }
+
     // === MAIN ===
     public static void main(String[] args) throws Exception {
         Graph test = new SingleGraph("test");
