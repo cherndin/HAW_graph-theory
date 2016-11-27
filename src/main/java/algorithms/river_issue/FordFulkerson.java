@@ -31,8 +31,8 @@ public class FordFulkerson implements Algorithm {
     private Double capacity[][]; // capacity
     private Double flow[][]; // flow
     private Node pred[]; // pred
-    private Double delta[]; // gedissel
-    private Boolean positive[];
+    private Double delta[]; // delta
+    private Boolean forward[];
     private Boolean inspected[];
 
     private List<Node> nodes = new LinkedList<Node>();
@@ -68,7 +68,7 @@ public class FordFulkerson implements Algorithm {
         }
 
         // Markiere q mit (undef, Inf.)
-        pred[indexOf(source)] = source;
+//        pred[indexOf(source)] = source; TODO ist das richtig?
         delta[indexOf(source)] = Double.POSITIVE_INFINITY;
 
 
@@ -81,53 +81,91 @@ public class FordFulkerson implements Algorithm {
      * @see #init(Graph)
      */
     public void compute() {
-        Node curr = getBeliebigenMarkiertenAberNichtInspiziertenKnoten();
-
-        while (!queue.isEmpty()) { // beliebigen markierten, aber noch nicht inspizierten Knoten
-            Node curr = queue.peek(); // VERTEXi
-            Integer i = indexOf(curr);
+        computeInspectAndMark();
 
 
-            for (Edge leavingEdge : curr.getEachLeavingEdge()) {   // EDGEij elemOf Output(Vi)
-                Node targetNode = leavingEdge.getTargetNode();
+    }
 
-                if (!queue.contains(targetNode)) { // unmarkierter Knoten Vj
-                    Integer j = indexOf(targetNode);
+    private void computeInspectAndMark() {
+        // crrent setzten wir auch einen bel. markierten aber nicht inspizierten wert
+        Node curr = getBeliebigenMarkiertenAberNichtInspiziertenKnoten(); // VERTEX_i
+        Integer i = indexOf(curr);
+        // OUTPUT
+        for (Edge leavingEdge : curr.getEachLeavingEdge()) {   // EDGE_ij elemOf Output(V_i)
+            Node targetNode = leavingEdge.getTargetNode();
 
-                    if (flow[i][j] < capacity[i][j]) { // f(EDGEij) < c(EDGEij)
-                        queue.add(targetNode); // markiere VERTEXj
+            if (!isMarked(targetNode)) { // nur unmarkierter Knoten V_j
+                Integer j = indexOf(targetNode);
 
-                        pred[j] = curr;
-                        positive[j] = true;
-                        delta[j] = min(delta[j], capacity[i][j] - flow[i][j]);
-
-                    }
+                if (flow[i][j] < capacity[i][j]) { // f(EDGE_ij) < c(EDGE_ij)
+                    // markiere VERTEX_j
+                    mark(j, curr, true, min(delta[j], capacity[i][j] - flow[i][j]));
                 }
             }
-
-            for (Edge enteringEdge : curr.getEachEnteringEdge()) {   // EDGEji elemOf Input(Vi)
-                Node sourceNode = enteringEdge.getSourceNode();
-
-                if (!queue.contains(sourceNode)) {
-                    Integer j = indexOf(sourceNode);
-
-                    if (flow[j][i] > 0) { // f(Eji) > 0
-                        queue.add(sourceNode); // markiere VERTEXj
-
-                        pred[j] = curr;
-                        positive[j] = false;
-                        delta[j] = min(delta[j], flow[i][j]);
-                    }
-                }
-            }
-
-            queue.remove();
         }
+        // INPUT
+        for (Edge enteringEdge : curr.getEachEnteringEdge()) {   // EDGE_ji elemOf Input(V_i)
+            Node sourceNode = enteringEdge.getSourceNode();
+
+            if (!isMarked(sourceNode)) { // nur unmarkierter Knoten V_j
+                Integer j = indexOf(sourceNode);
+
+                if (flow[j][i] > 0) { // f(E_ji) > 0
+                    // markiere VERTEX_j
+                    mark(j, curr, false, min(delta[j], flow[i][j]));
+                }
+            }
+        }
+
+        if (areAllMarkedNodesInspected())
+            computeCut();
+        if (isMarked(sink))
+            computeAugmentedPath();
+    }
+
+    /**
+     * (3) Vergrößerung der Flussst¨arke
+     */
+    private void computeAugmentedPath() {
+
+        Node current = sink;
+        while (hasPred(current)) {
+            int i = indexOf(current);
+            Edge edge = current.getEdgeBetween(pred[i]);
+
+            if (edge.getTargetNode() == current) { // Vorwärtskante
+                int j = indexOf(edge.getSourceNode());
+                // f(EDGE_ij) um DELTA_s erhöht
+                flow[i][j] += delta[indexOf(sink)];
+            } else if (edge.getSourceNode() == current) { // Rückwärtskante
+                int j = indexOf(edge.getTargetNode());
+                // wird f (EDGE_ji ) um DELTA_s vermindet
+                flow[i][j] -= delta[indexOf(sink)];
+            } else {
+                throw new IllegalArgumentException("WTF: Something impossible went wrong");
+            }
+        }
+        deleteAllMarks();
 
     }
 
     /**
-     * @return null if everything is inspected
+     * (4) Es gibt keinen vergrößernden Weg
+     */
+    private void computeCut() {
+        // TODO computeCut()
+    }
+
+    private boolean areAllMarkedNodesInspected() {
+        // TODO areAllMarkedNodesInspected()
+
+        return false;
+    }
+
+    /**
+     * Returns marked but not inspected node or null if everything is inspected.
+     *
+     * @return marked but not inspected node or null if everything is inspected
      */
     @Nullable
     private Node getBeliebigenMarkiertenAberNichtInspiziertenKnoten() {
@@ -153,8 +191,13 @@ public class FordFulkerson implements Algorithm {
         return i;
     }
 
-    // TODO caoacityOf, deltaOf,...
+    private boolean hasPred(Node node) {
+        return (pred[indexOf(node)] != null);
+    }
 
+    /**
+     * returns minimum of x and y
+     */
     @NotNull
     private Double min(double x, double y) {
         return x < y ? x : y;  // returns minimum of x and y
@@ -178,9 +221,38 @@ public class FordFulkerson implements Algorithm {
         target.setAttribute("title", "target");
     }
 
+    /**
+     * returns true if given node is marked;
+     */
     @NotNull
     private Boolean isMarked(@NotNull Node node) {
         return (delta[indexOf(node)] != 0.0 && pred[indexOf(node)] != null);
+    }
+
+    /**
+     * Marks an Node and sets values in the arrays pred[], forward[] and delta[]
+     *
+     * @param idx     Index
+     * @param pred    Predecessor
+     * @param forward True if Edge goes forward
+     * @param delta   Delta value
+     */
+    private void mark(@NotNull Integer idx,
+                      @NotNull Node pred,
+                      @NotNull Boolean forward,
+                      @NotNull Double delta) {
+        this.pred[idx] = pred;
+        this.forward[idx] = forward;
+        this.delta[idx] = delta;
+    }
+
+    /**
+     * Reset of the arrays for the mark
+     */
+    private void deleteAllMarks() {
+        for (int i = 0; i < nodes.size(); i++) {
+            mark(i, null, false, 0.0);
+        }
     }
 
     // === MAIN ===
@@ -207,4 +279,5 @@ public class FordFulkerson implements Algorithm {
         ford.compute();
 
     }
+
 }
