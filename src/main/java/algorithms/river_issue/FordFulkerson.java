@@ -4,10 +4,12 @@ import algorithms.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,8 +28,12 @@ public class FordFulkerson implements Algorithm {
     private Node source;
     private Node sink;
 
-    private Double capacity[][]; // capacity matrix
-    private Double flow[][]; // flow matrix
+    private Double capacity[][]; // capacity
+    private Double flow[][]; // flow
+    private Node pred[]; // pred
+    private Double delta[]; // gedissel
+    private Boolean positive[];
+    private Boolean inspected[];
 
     private List<Node> nodes = new LinkedList<Node>();
 
@@ -47,7 +53,7 @@ public class FordFulkerson implements Algorithm {
 
         capacity = new Double[size][size]; // capacity matrix
         flow = new Double[size][size]; // flow matrix
-
+        pred = new Node[size]; // flow matrix
 
         // Initialize empty flow & capacity.
         Iterator<Node> iIterator = nodes.iterator();
@@ -56,11 +62,14 @@ public class FordFulkerson implements Algorithm {
             Iterator<Node> jIterator = nodes.iterator();
             for (int j = 0; j < size; j++) {
                 Node nodeJ = jIterator.next();
-                // TODO Markiere q mit (undef, Inf.)
                 capacity[i][j] = nodeI.getEdgeBetween(nodeJ).getAttribute("capacity");
                 flow[i][j] = 0.0;
             }
         }
+
+        // Markiere q mit (undef, Inf.)
+        pred[indexOf(source)] = source;
+        delta[indexOf(source)] = Double.POSITIVE_INFINITY;
 
 
     }
@@ -72,13 +81,62 @@ public class FordFulkerson implements Algorithm {
      * @see #init(Graph)
      */
     public void compute() {
-//        path = PathIterator();
-//        while (hasPath(source, sink)) {
-//            List<Node> path = path.next();
-//            int bottleNeck = getBottleNeck(path);
-//            setFlow(path, bottleNeck);
-//
-//        }
+        Node curr = getBeliebigenMarkiertenAberNichtInspiziertenKnoten();
+
+        while (!queue.isEmpty()) { // beliebigen markierten, aber noch nicht inspizierten Knoten
+            Node curr = queue.peek(); // VERTEXi
+            Integer i = indexOf(curr);
+
+
+            for (Edge leavingEdge : curr.getEachLeavingEdge()) {   // EDGEij elemOf Output(Vi)
+                Node targetNode = leavingEdge.getTargetNode();
+
+                if (!queue.contains(targetNode)) { // unmarkierter Knoten Vj
+                    Integer j = indexOf(targetNode);
+
+                    if (flow[i][j] < capacity[i][j]) { // f(EDGEij) < c(EDGEij)
+                        queue.add(targetNode); // markiere VERTEXj
+
+                        pred[j] = curr;
+                        positive[j] = true;
+                        delta[j] = min(delta[j], capacity[i][j] - flow[i][j]);
+
+                    }
+                }
+            }
+
+            for (Edge enteringEdge : curr.getEachEnteringEdge()) {   // EDGEji elemOf Input(Vi)
+                Node sourceNode = enteringEdge.getSourceNode();
+
+                if (!queue.contains(sourceNode)) {
+                    Integer j = indexOf(sourceNode);
+
+                    if (flow[j][i] > 0) { // f(Eji) > 0
+                        queue.add(sourceNode); // markiere VERTEXj
+
+                        pred[j] = curr;
+                        positive[j] = false;
+                        delta[j] = min(delta[j], flow[i][j]);
+                    }
+                }
+            }
+
+            queue.remove();
+        }
+
+    }
+
+    /**
+     * @return null if everything is inspected
+     */
+    @Nullable
+    private Node getBeliebigenMarkiertenAberNichtInspiziertenKnoten() {
+        for (Node node : nodes) {
+            if (isMarked(node) && !inspected[indexOf(node)]) {
+                return node;
+            }
+        }
+        return null;
     }
 
     /**
@@ -89,11 +147,13 @@ public class FordFulkerson implements Algorithm {
      * @throws NoSuchElementException no such node in the list
      */
     @NotNull
-    private Integer getIndex(@NotNull Node node) {
+    private Integer indexOf(@NotNull Node node) {
         int i = nodes.indexOf(node);
         if (i < 0) throw new NoSuchElementException();
         return i;
     }
+
+    // TODO caoacityOf, deltaOf,...
 
     @NotNull
     private Double min(double x, double y) {
@@ -116,6 +176,11 @@ public class FordFulkerson implements Algorithm {
         this.sink = target;
         source.setAttribute("title", "source");
         target.setAttribute("title", "target");
+    }
+
+    @NotNull
+    private Boolean isMarked(@NotNull Node node) {
+        return (delta[indexOf(node)] != 0.0 && pred[indexOf(node)] != null);
     }
 
     // === MAIN ===
