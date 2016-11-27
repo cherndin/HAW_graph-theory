@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 public class FordFulkerson implements Algorithm {
     private static Logger logger = Logger.getLogger(FordFulkerson.class);
     static boolean preview = true;
+    public int hits = 0;
 
     private Graph graph;
     private Node source;
@@ -38,9 +39,6 @@ public class FordFulkerson implements Algorithm {
      */
     public void init(Graph graph) throws IllegalArgumentException {
         Preconditions.isNetwork(graph);
-        // TODO schwach zusammenhängend
-        // TODO schlicht
-        // TODO simple directed graph
         //Implementation
         this.graph = graph;
         nodes = ImmutableList.copyOf(graph.getEachNode());
@@ -48,7 +46,7 @@ public class FordFulkerson implements Algorithm {
 
         capacity = new Double[size][size]; // capacity matrix
         flow = new Double[size][size]; // flow matrix
-        pred = new int[size];  // array to store augmenting path
+
 
         // Initialize empty flow & capacity.
         Iterator<Node> iIterator = nodes.iterator();
@@ -57,6 +55,7 @@ public class FordFulkerson implements Algorithm {
             Iterator<Node> jIterator = nodes.iterator();
             for (int j = 0; j < size; j++) {
                 Node nodeJ = jIterator.next();
+                // TODO Markiere q mit (undef, Inf.)
                 capacity[i][j] = nodeI.getEdgeBetween(nodeJ).getAttribute("capacity");
                 flow[i][j] = 0.0;
             }
@@ -72,13 +71,13 @@ public class FordFulkerson implements Algorithm {
      * @see #init(Graph)
      */
     public void compute() {
-        path = PathIterator();
-        while (hasPath(source, sink)) {
-            List<Node> path = path.next();
-            int bottleNeck = getBottleNeck(path);
-            setFlow(path, bottleNeck);
-
-        }
+//        path = PathIterator();
+//        while (hasPath(source, sink)) {
+//            List<Node> path = path.next();
+//            int bottleNeck = getBottleNeck(path);
+//            setFlow(path, bottleNeck);
+//
+//        }
     }
 
     /**

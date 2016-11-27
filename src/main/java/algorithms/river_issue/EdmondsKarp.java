@@ -7,7 +7,7 @@ import org.graphstream.graph.Graph;
 /**
  * Created by MattX7 on 25.11.2016.
  */
-public class EdmondsKarp implements Algorithm {
+public class EdmondsKarp extends FordFulkerson implements Algorithm {
     private static Logger logger = Logger.getLogger(EdmondsKarp.class);
     static boolean preview = true;
 

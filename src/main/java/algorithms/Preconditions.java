@@ -55,10 +55,11 @@ public class Preconditions {
             if (isUndirected(edge))
                 throw new IllegalArgumentException("Graph has nonDirected edges");
             // TODO keine schleifen, da schlicht
+            // TODO ? schwach zusammenh¨angenden ?
         }
     }
 
-    // TODO Fehlermeldungen auslagern
+    // TODO Error-Msg auslagern
     // TODO eigene Exc als innerclass
 
     // ====== BOOLEAN-METHODS FOR EDGES ======

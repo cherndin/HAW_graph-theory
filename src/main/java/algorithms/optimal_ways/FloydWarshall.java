@@ -74,7 +74,7 @@ public class FloydWarshall implements Algorithm {
         for (int k = 0; k < n; k++) { // Schritte
             for (int i = 0; i < n; i++) { // Spalte
 
-                if (i == k) continue;
+                if (i == k) continue; //
                 Double rowValue = distances[i][k];
                 if (rowValue.isInfinite()) continue; // Spalte mit Inf. überspringen
 
@@ -83,7 +83,7 @@ public class FloydWarshall implements Algorithm {
                     if (j == k) continue;
                     Double columnValue = distances[k][j];
                     if (columnValue.isInfinite()) continue; // Zeile mit Inf. überspringen
-                    if (rowValue == 0.0 && columnValue == 0.0) continue; // Zeile==Spalte überspringen
+                    if (i == j) continue; // Zeile==Spalte überspringen
 
                     double oldDistance = distances[i][j];
                     distances[i][j] = min(distances[i][j], rowValue + columnValue);// Wenn kleiner, dann ersetzten
@@ -135,6 +135,7 @@ public class FloydWarshall implements Algorithm {
             shortestPath.add(getPred(current));
             current = getPred(current);
         }
+        shortestPath.add(source);
         return Lists.reverse(shortestPath);
     }
 
@@ -148,7 +149,7 @@ public class FloydWarshall implements Algorithm {
             Node NodeI = nodesForI.next();
             for (int j = 0; j < n; j++) {
                 Node NodeJ = nodesForJ.next();
-                transits[i][j] = 0;
+                transits[i][j] = -1;
                 if (NodeI == NodeJ) {
                     distances[i][j] = 0.0;
                 } else {
@@ -188,7 +189,7 @@ public class FloydWarshall implements Algorithm {
      */
     @NotNull
     private Boolean hasPred(Node node) {
-        return transits[getIndex(source)][getIndex(node)] > 0;
+        return transits[getIndex(source)][getIndex(node)] >= 0;
     }
 
     /**
