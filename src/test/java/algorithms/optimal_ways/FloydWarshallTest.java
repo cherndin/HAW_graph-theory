@@ -91,7 +91,7 @@ public class FloydWarshallTest {
     @Test(expected = IllegalArgumentException.class)
     public void negCircleTest() throws Exception {
         FloydWarshall floyd = new FloydWarshall();
-        FloydWarshall.preview = false;
+        FloydWarshall.preview = true;
         floyd.init(negGraph);
         floyd.setSourceAndTarget(negGraph.getNode("v1"), negGraph.getNode("v5"));
         floyd.compute();

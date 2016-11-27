@@ -74,7 +74,7 @@ public class FloydWarshall implements Algorithm {
         for (int k = 0; k < n; k++) { // Schritte
             for (int i = 0; i < n; i++) { // Spalte
 
-                if (i == k) continue; //
+                if (i == k) continue; // Kann mit sich selbst addiert nicht kleiner sein
                 Double rowValue = distances[i][k];
                 if (rowValue.isInfinite()) continue; // Spalte mit Inf. überspringen
 
@@ -83,7 +83,6 @@ public class FloydWarshall implements Algorithm {
                     if (j == k) continue;
                     Double columnValue = distances[k][j];
                     if (columnValue.isInfinite()) continue; // Zeile mit Inf. überspringen
-                    if (i == j) continue; // Zeile==Spalte überspringen
 
                     double oldDistance = distances[i][j];
                     distances[i][j] = min(distances[i][j], rowValue + columnValue);// Wenn kleiner, dann ersetzten
