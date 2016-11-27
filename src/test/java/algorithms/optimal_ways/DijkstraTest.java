@@ -77,16 +77,6 @@ public class DijkstraTest {
         graph3 = fromFile("graph3", new File("src/main/resources/input/BspGraph/graph03.gka"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void graphWithNoWeightTest() throws Exception {
-        // TODO INIT UND COMPUTE AUSFÜHREN STEPS UND SHORTESTPATH ANGUCKEN
-        Dijkstra dijk = new Dijkstra();
-        Dijkstra.preview = false;
-        dijk.init(graph);
-        dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
-        dijk.compute();
-    }
-
     @Test
     public void computeSimpleGraphTest() throws Exception {
         Dijkstra dijk = new Dijkstra();
@@ -110,17 +100,6 @@ public class DijkstraTest {
         System.out.println("Steps: " + dijk.getShortestPath());
     }
 
-    @Test
-    public void getShortestPathTest() { //TODO rausziehen
-        Dijkstra dijk = new Dijkstra();
-        Dijkstra.preview = true;
-        dijk.init(test);
-        dijk.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
-        dijk.compute();
-        assertEquals(Double.valueOf(9), dijk.getDistance());
-        assertEquals(list, dijk.getShortestPath());
-        System.out.println("Hits: " + dijk.getHits());
-    }
 
 
 }
