@@ -89,16 +89,6 @@ public class FloydWarshallTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void graphWithNoWeightTest() throws Exception {
-        Graph graph9 = fromFile("graph09", new File("src/main/resources/input/BspGraph/graph09.gka"));
-        FloydWarshall floyd = new FloydWarshall();
-        FloydWarshall.preview = false;
-        floyd.init(graph9);
-        floyd.setSourceAndTarget(graph9.getNode("a"), graph9.getNode("d"));
-        floyd.compute();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void negCircleTest() throws Exception {
         FloydWarshall floyd = new FloydWarshall();
         FloydWarshall.preview = false;
@@ -116,19 +106,7 @@ public class FloydWarshallTest {
         floyd.compute();
         assertEquals(Double.valueOf(6), floyd.distance);
         System.out.println("Hits: " + floyd.hits);
-//        System.out.println("Steps: " + floyd.getShortestPath());
     }
 
-    @Test
-    public void getShortestPathTest() {
-        FloydWarshall floyd = new FloydWarshall();
-        floyd.init(test);
-        floyd.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
-        floyd.compute();
-        assertEquals(Double.valueOf(9), floyd.getDistance());
-        assertEquals(list, floyd.getShortestPath());
-        System.out.println("Hits: " + floyd.getHits());
 
-
-    }
 }
