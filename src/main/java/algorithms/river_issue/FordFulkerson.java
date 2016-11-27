@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -97,5 +98,30 @@ public class FordFulkerson implements Algorithm {
     @NotNull
     private Double min(double x, double y) {
         return x < y ? x : y;  // returns minimum of x and y
+    }
+
+    // === MAIN ===
+    public static void main(String[] args) throws Exception {
+        Graph test = new SingleGraph("test");
+        test.addNode("q");
+        test.addNode("v1");
+        test.addNode("v2");
+        test.addNode("v3");
+        test.addNode("v5");
+        test.addNode("s");
+        test.addEdge("qv5", "q", "v5", true).addAttribute("capacity", 1.0);
+        test.addEdge("qv1", "q", "v1", true).addAttribute("capacity", 5.0);
+        test.addEdge("qv2", "q", "v2", true).addAttribute("capacity", 4.0);
+        test.addEdge("v2v3", "v2", "v3", true).addAttribute("capacity", 2.0);
+        test.addEdge("v1v3", "v1", "v3", true).addAttribute("capacity", 1.0);
+        test.addEdge("v1s", "v1", "s", true).addAttribute("capacity", 3.0);
+        test.addEdge("v1v5", "v1", "v5", true).addAttribute("capacity", 1.0);
+        test.addEdge("v5s", "v5", "s", true).addAttribute("capacity", 3.0);
+
+        FordFulkerson ford = new FordFulkerson();
+        ford.init(test);
+        ford.setSourceAndTarget(test.getNode("q"), test.getNode("s"));
+        ford.compute();
+
     }
 }
