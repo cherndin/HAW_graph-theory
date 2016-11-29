@@ -73,12 +73,13 @@ public class FordFulkerson implements Algorithm {
                 }
                 flow[i][j] = 0.0;
             }
+            delta[i] = Double.POSITIVE_INFINITY;  //changed this
         }
 
         // Markiere q mit (undef, Inf.)
 //        pred[indexOf(source)] = source; TODO ist das richtig?
         delta[indexOf(source)] = Double.POSITIVE_INFINITY;
-        mark(indexOf(source), null, true, delta[indexOf(source)]);
+        mark(indexOf(source), null, true, delta[indexOf(source)]);  //changed this
     }
 
     /**
@@ -102,8 +103,9 @@ public class FordFulkerson implements Algorithm {
         // OUTPUT
         for (Edge leavingEdge : curr.getEachLeavingEdge()) {   // EDGE_ij elemOf Output(V_i)
             Node targetNode = leavingEdge.getTargetNode();
+            pred[indexOf(targetNode)] = leavingEdge.getSourceNode(); //changed this
 
-            if (!isMarked(targetNode)) { // nur uninspizierte Knoten V_j
+            if (!isMarked(targetNode)) { // nur unmarkierte Knoten markieren V_j
                 Integer j = indexOf(targetNode);
 
                 if (flow[i][j] < capacity[i][j]) { // f(EDGE_ij) < c(EDGE_ij)
@@ -178,8 +180,6 @@ public class FordFulkerson implements Algorithm {
     @Nullable
     private Node getMarkedButNotInspected() {
         for (Node node : nodes) {
-            boolean marked = isMarked(node);
-            boolean inspect = inspected[indexOf(node)];
             if (isMarked(node) && !inspected[indexOf(node)]) {
                 return node;
             }
@@ -222,10 +222,11 @@ public class FordFulkerson implements Algorithm {
      */
     @NotNull
     private Boolean isMarked(@NotNull Node node) {
-        if (node == source)
+        if (node == source) {
             return true;
-        if (delta[indexOf(node)] != 0.0 && pred[indexOf(node)] != null)
+        } else if (delta[indexOf(node)] == Double.POSITIVE_INFINITY) { //changed this
             return false;
+        }
         throw new InvalidMarkException();
 
     }
