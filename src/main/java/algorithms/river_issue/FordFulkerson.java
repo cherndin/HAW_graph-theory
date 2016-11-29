@@ -177,11 +177,11 @@ public class FordFulkerson implements Algorithm {
     }
 
     private Node endKnoten(Edge e) {
-        return null;
+        return e.getTargetNode();
     }
 
     private Node startKnoten(Edge e) {
-        return null;
+        return e.getSourceNode();
     }
 
     /**
