@@ -43,12 +43,12 @@ public class FordFulkersonTest {
 
     @Test
     public void computeSimpleGraphTest() throws Exception {
-//        FordFulkerson ford = new FordFulkerson();
-//        ford.init(test);
-//        ford.setSourceAndTarget(test.getNode("S"), test.getNode("T"));
-//        ford.compute();
+        FordFulkerson ford = new FordFulkerson();
+        ford.init(test);
+        ford.setSourceAndTarget(test.getNode("S"), test.getNode("T"));
+        ford.compute();
 //        assertEquals(28, ford.getMaxFlow(test));
-////        System.out.println("Steps: " + floyd.getShortestPath());
+//        System.out.println("Steps: " + floyd.getShortestPath());
     }
 
 }

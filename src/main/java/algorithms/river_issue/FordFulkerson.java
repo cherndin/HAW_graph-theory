@@ -49,11 +49,13 @@ public class FordFulkerson implements Algorithm {
         //Implementation
         this.graph = graph;
         nodes = ImmutableList.copyOf(graph.getEachNode());
+        setSourceAndTarget(graph.getNode(0), graph.getNode(nodes.size() - 1));
         int size = nodes.size();
 
         capacity = new Double[size][size]; // capacity matrix
         flow = new Double[size][size]; // flow matrix
         pred = new Node[size]; // flow matrix
+        delta = new Double[size]; // flow matrix
 
         // Initialize empty flow & capacity.
         Iterator<Node> iIterator = nodes.iterator();
@@ -62,7 +64,10 @@ public class FordFulkerson implements Algorithm {
             Iterator<Node> jIterator = nodes.iterator();
             for (int j = 0; j < size; j++) {
                 Node nodeJ = jIterator.next();
-                capacity[i][j] = nodeI.getEdgeBetween(nodeJ).getAttribute("capacity");
+                Edge edgeBetween = nodeI.getEdgeBetween(nodeJ);
+                if (edgeBetween != null) {
+                    capacity[i][j] = edgeBetween.getAttribute("capacity");
+                }
                 flow[i][j] = 0.0;
             }
         }
@@ -70,7 +75,6 @@ public class FordFulkerson implements Algorithm {
         // Markiere q mit (undef, Inf.)
 //        pred[indexOf(source)] = source; TODO ist das richtig?
         delta[indexOf(source)] = Double.POSITIVE_INFINITY;
-
 
     }
 
@@ -102,7 +106,7 @@ public class FordFulkerson implements Algorithm {
 
                 if (flow[i][j] < capacity[i][j]) { // f(EDGE_ij) < c(EDGE_ij)
                     // markiere VERTEX_j
-                    mark(j, curr, true, min(delta[j], capacity[i][j] - flow[i][j]));
+                    mark(j, curr, true, Math.min(delta[j], capacity[i][j] - flow[i][j]));
                 }
             }
         }
@@ -115,7 +119,7 @@ public class FordFulkerson implements Algorithm {
 
                 if (flow[j][i] > 0) { // f(E_ji) > 0
                     // markiere VERTEX_j
-                    mark(j, curr, false, min(delta[j], flow[i][j]));
+                    mark(j, curr, false, Math.min(delta[j], flow[i][j]));
                 }
             }
         }
@@ -198,14 +202,6 @@ public class FordFulkerson implements Algorithm {
     }
 
     /**
-     * returns minimum of x and y
-     */
-    @NotNull
-    private Double min(double x, double y) {
-        return x < y ? x : y;  // returns minimum of x and y
-    }
-
-    /**
      * Sets source and target before compute()
      *
      * @param source source node
@@ -213,14 +209,8 @@ public class FordFulkerson implements Algorithm {
      */
     void setSourceAndTarget(@NotNull Node source,
                             @NotNull Node target) {
-        if (this.source != null && this.source.hasAttribute("title"))
-            this.source.removeAttribute("title");
-        if (this.sink != null && this.sink.hasAttribute("title"))
-            this.sink.removeAttribute("title");
         this.source = source;
         this.sink = target;
-        source.setAttribute("title", "source");
-        target.setAttribute("title", "target");
     }
 
     /**
@@ -240,7 +230,7 @@ public class FordFulkerson implements Algorithm {
      * @param delta   Delta value
      */
     private void mark(@NotNull Integer idx,
-                      @NotNull Node pred,
+                      @Nullable Node pred,
                       @NotNull Boolean forward,
                       @NotNull Double delta) {
         this.pred[idx] = pred;
