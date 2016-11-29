@@ -11,10 +11,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Created by MattX7 on 25.11.2016.
@@ -22,20 +19,22 @@ import java.util.NoSuchElementException;
 public class FordFulkerson implements Algorithm {
     private static Logger logger = Logger.getLogger(FordFulkerson.class);
     static boolean preview = true;
-    public int hits = 0;
 
     private Graph graph;
+    private List<Node> nodes = new LinkedList<Node>();
     private Node source;
     private Node sink;
 
     private Double capacity[][]; // capacity
     private Double flow[][]; // flow
-    private Node pred[]; // pred
+    private Node predecessor[]; // predecessor
     private Double delta[]; // delta
     private boolean forward[];
     private boolean inspected[];
 
-    private List<Node> nodes = new LinkedList<Node>();
+    public int hits = 0;
+    public Set<Edge> maxFlowMinCut = new HashSet<Edge>();
+
 
     /**
      * Initialization of the algorithm. This method has to be called before the
@@ -54,7 +53,7 @@ public class FordFulkerson implements Algorithm {
 
         capacity = new Double[size][size]; // capacity matrix
         flow = new Double[size][size]; // flow matrix
-        pred = new Node[size]; // flow matrix
+        predecessor = new Node[size]; // flow matrix
         delta = new Double[size]; // flow matrix
         forward = new boolean[size];
         inspected = new boolean[size];
@@ -76,7 +75,7 @@ public class FordFulkerson implements Algorithm {
         }
 
         // Markiere q mit (undef, Inf.)
-//        pred[indexOf(source)] = source; TODO ist das richtig?
+//        predecessor[indexOf(source)] = source; TODO ist das richtig?
         delta[indexOf(source)] = Double.POSITIVE_INFINITY;
         mark(indexOf(source), null, true, delta[indexOf(source)]);  //changed this
     }
@@ -88,101 +87,128 @@ public class FordFulkerson implements Algorithm {
      * @see #init(Graph)
      */
     public void compute() {
-        compute_InspectAndMark();
-
-    }
-
-    /**
-     * (2) Inspektion und Markierung
-     */
-    private void compute_InspectAndMark() {
-        // crrent setzten wir auch einen bel. markierten aber nicht inspizierten wert
-        Node curr = getMarkedButNotInspected(); // VERTEX_i
-        Integer i = indexOf(curr);
+        /* (2) Inspektion und Markierung */
+        // current setzten wir auch einen bel. markierten aber nicht inspizierten wert
+        Node node = getMarkedButNotInspected(); // V_i
+        Integer i = indexOf(node);
         // OUTPUT
-        for (Edge leavingEdge : curr.getEachLeavingEdge()) {   // EDGE_ij elemOf Output(V_i)
+        for (Edge leavingEdge : node.getEachLeavingEdge()) {   // E_ij elemOf Output(V_i)
             Node targetNode = leavingEdge.getTargetNode();
 
             if (!isMarked(targetNode)) { // nur unmarkierte Knoten markieren V_j
                 Integer j = indexOf(targetNode);
 
-                if (flow[i][j] < capacity[i][j]) { // f(EDGE_ij) < c(EDGE_ij)
+                if (flow[i][j] < capacity[i][j]) { // f(E_ij) < c(E_ij)
                     // markiere VERTEX_j
-                    mark(j, curr, true, Math.min(delta[j], capacity[i][j] - flow[i][j]));
+                    mark(j, node, true, Math.min(delta[j], capacity[i][j] - flow[i][j]));
                 }
             }
         }
         // INPUT
-        for (Edge enteringEdge : curr.getEachEnteringEdge()) {   // EDGE_ji elemOf Input(V_i)
+        for (Edge enteringEdge : node.getEachEnteringEdge()) {   // E_ji elemOf Input(V_i)
             Node sourceNode = enteringEdge.getSourceNode();
 
             if (!isMarked(sourceNode)) { // nur unmarkierter Knoten V_j
                 Integer j = indexOf(sourceNode);
 
                 if (flow[j][i] > 0) { // f(E_ji) > 0
-                    // markiere VERTEX_j
-                    mark(j, curr, false, Math.min(delta[j], flow[i][j]));
+                    // markiere V_j
+                    mark(j, node, false, Math.min(delta[j], flow[i][j]));
                 }
             }
         }
 
-        if (areAllMarkedNodesInspected())
-            compute_Cut();
-        if (isMarked(sink))
-            compute_AugmentedPath();
+        if (areAllMarkedNodesInspected()) {
+            compute_Cut(); // (4) Es gibt keinen vergrößernden Weg
+        } else if (isMarked(sink)) {
+            compute_AugmentedPath(); // (3) Vergrößerung der Flussstärke
+        } else {
+            compute(); // (2) Inspektion und Markierung
+        }
+
     }
 
-    /**
-     * (3) Vergrößerung der Flussst¨arke
-     */
+    /* (3) Vergrößerung der Flussstärke */
     private void compute_AugmentedPath() {
 
         Node current = sink;
         while (hasPred(current)) {
             int i = indexOf(current);
-            Edge edge = current.getEdgeBetween(pred[i]);
+            Edge edge = current.getEdgeBetween(predecessor[i]);
 
             if (edge.getTargetNode() == current) { // Vorwärtskante
                 int j = indexOf(edge.getSourceNode());
-                // f(EDGE_ij) um DELTA_s erhöht
+                // f(E_ij) um DELTA_s erhöht
                 flow[i][j] += delta[indexOf(sink)];
             } else if (edge.getSourceNode() == current) { // Rückwärtskante
                 int j = indexOf(edge.getTargetNode());
-                // wird f (EDGE_ji ) um DELTA_s vermindet
+                // wird f (E_ji ) um DELTA_s vermindet
                 flow[i][j] -= delta[indexOf(sink)];
             } else {
                 throw new IllegalArgumentException("WTF: Something impossible went wrong");
             }
         }
         deleteAllMarks();
-
     }
 
-    /**
-     * (4) Es gibt keinen vergrößernden Weg
-     */
+    /* (4) Es gibt keinen vergrößernden Weg ( Max-Flow-Min-Cut-Theorem ) */
+    // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     private void compute_Cut() {
-        // TODO compute_Cut()
+        Set<Node> s = new HashSet<Node>();
+        Set<Node> t = new HashSet<Node>();
+
+        for (Node v : nodes) { // Für jeden Knoten v aus V
+            if (v.getEdgeBetween(source) != null) { // Wenn ein Pfad(s,v) in G existiert...
+                s.add(v);
+            } else {
+                t.add(v);
+            }
+        }
+
+        Set<Edge> cut = new HashSet<Edge>();
+
+        for (Edge e : graph.getEachEdge()) { // Für jede Kante e aus E
+            if (s.contains(startKnoten(e)) && t.contains(endKnoten(e))) { // Wenn startKnoten(e) aus S und endKnoten(e) aus T liegt...
+                cut.add(e);
+            }
+        }
+
+        maxFlowMinCut = cut;
     }
 
-    private boolean areAllMarkedNodesInspected() {
-        // TODO areAllMarkedNodesInspected()
-        return false;
+    private Node endKnoten(Edge e) {
+        return null;
+    }
+
+    private Node startKnoten(Edge e) {
+        return null;
     }
 
     /**
-     * Returns marked but not inspected node or null if everything is inspected.
-     *
-     * @return marked but not inspected node or null if everything is inspected
+     * @return true if all marked nodes are inspected
      */
-    @Nullable
+    private boolean areAllMarkedNodesInspected() {
+        for (Node node : nodes) {
+            if (isMarked(node) && !inspected[indexOf(node)])
+                return false;
+
+        }
+        return true;
+    }
+
+    /**
+     * Returns marked but not inspected node
+     *
+     * @return marked but not inspected node
+     */
+    @NotNull
     private Node getMarkedButNotInspected() {
         for (Node node : nodes) {
             if (isMarked(node) && !inspected[indexOf(node)]) {
                 return node;
             }
         }
-        return null;
+        throw new IllegalArgumentException("no node found");
     }
 
     /**
@@ -200,7 +226,7 @@ public class FordFulkerson implements Algorithm {
     }
 
     private boolean hasPred(Node node) {
-        return (pred[indexOf(node)] != null);
+        return (predecessor[indexOf(node)] != null);
     }
 
     /**
@@ -222,11 +248,11 @@ public class FordFulkerson implements Algorithm {
     private Boolean isMarked(@NotNull Node node) {
         int i = indexOf(node);
         if (node == source) return true;
-        else return (delta[i] != Double.POSITIVE_INFINITY && pred[i] != null);
+        else return (delta[i] != Double.POSITIVE_INFINITY && predecessor[i] != null);
     }
 
     /**
-     * Marks an Node and sets values in the arrays pred[], forward[] and delta[]
+     * Marks an Node and sets values in the arrays predecessor[], forward[] and delta[]
      *
      * @param idx     Index
      * @param pred    Predecessor
@@ -237,7 +263,7 @@ public class FordFulkerson implements Algorithm {
                       @Nullable Node pred,
                       @NotNull Boolean forward,
                       @NotNull Double delta) {
-        this.pred[idx] = pred;
+        this.predecessor[idx] = pred;
         this.forward[idx] = forward;
         this.delta[idx] = delta;
     }
