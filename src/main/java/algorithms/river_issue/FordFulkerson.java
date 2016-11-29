@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class FordFulkerson implements Algorithm {
     private static Logger logger = Logger.getLogger(FordFulkerson.class);
-    static boolean preview = true;
+    public static boolean preview = true;
 
     private Graph graph;
     private List<Node> nodes = new LinkedList<Node>();
@@ -154,21 +154,23 @@ public class FordFulkerson implements Algorithm {
     /* (4) Es gibt keinen vergrößernden Weg ( Max-Flow-Min-Cut-Theorem ) */
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     private void compute_Cut() {
-        Set<Node> s = new HashSet<Node>();
-        Set<Node> t = new HashSet<Node>();
+        Graph graphResidual = residualNetwork(graph); // Residualnetzwerk(G)
 
-        for (Node v : nodes) { // Für jeden Knoten v aus V
+        Set<Node> nodesS = new HashSet<Node>();
+        Set<Node> nodesT = new HashSet<Node>();
+
+        for (Node v : nodes) { // Für jeden Knoten v aus V (Residual hat die gleichen Nodes, daher nodes von graph)
             if (v.getEdgeBetween(source) != null) { // Wenn ein Pfad(s,v) in G existiert...
-                s.add(v);
+                nodesS.add(v);
             } else {
-                t.add(v);
+                nodesT.add(v);
             }
         }
 
         Set<Edge> cut = new HashSet<Edge>();
 
-        for (Edge e : graph.getEachEdge()) { // Für jede Kante e aus E
-            if (s.contains(startKnoten(e)) && t.contains(endKnoten(e))) { // Wenn startKnoten(e) aus S und endKnoten(e) aus T liegt...
+        for (Edge e : graphResidual.getEachEdge()) { // Für jede Kante e aus E
+            if (nodesS.contains(e.getSourceNode()) && nodesT.contains(e.getTargetNode())) { // Wenn startNode(e) aus S und endNode(e) aus T liegt...
                 cut.add(e);
             }
         }
@@ -176,13 +178,11 @@ public class FordFulkerson implements Algorithm {
         maxFlowMinCut = cut;
     }
 
-    private Node endKnoten(Edge e) {
-        return e.getTargetNode();
+    public Graph residualNetwork(Graph graph) { // TODO auslagern oder vlt auch schon in Graphstream vorhanden?
+        // TODO Graph muss Residualnetzwerk sein; c wird durch rückwärtskanten realisiert; siehe https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem#Beispiel
+        return null;
     }
 
-    private Node startKnoten(Edge e) {
-        return e.getSourceNode();
-    }
 
     /**
      * @return true if all marked nodes are inspected
@@ -235,8 +235,8 @@ public class FordFulkerson implements Algorithm {
      * @param source source node
      * @param target target node
      */
-    void setSourceAndTarget(@NotNull Node source,
-                            @NotNull Node target) {
+    public void setSourceAndTarget(@NotNull Node source,
+                                   @NotNull Node target) {
         this.source = source;
         this.sink = target;
     }
