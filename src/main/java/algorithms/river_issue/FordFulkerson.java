@@ -11,7 +11,6 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.InvalidMarkException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,7 +72,7 @@ public class FordFulkerson implements Algorithm {
                 }
                 flow[i][j] = 0.0;
             }
-            delta[i] = Double.POSITIVE_INFINITY;  //changed this
+            delta[i] = Double.POSITIVE_INFINITY;  // TODO right?
         }
 
         // Markiere q mit (undef, Inf.)
@@ -103,7 +102,6 @@ public class FordFulkerson implements Algorithm {
         // OUTPUT
         for (Edge leavingEdge : curr.getEachLeavingEdge()) {   // EDGE_ij elemOf Output(V_i)
             Node targetNode = leavingEdge.getTargetNode();
-            pred[indexOf(targetNode)] = leavingEdge.getSourceNode(); //changed this
 
             if (!isMarked(targetNode)) { // nur unmarkierte Knoten markieren V_j
                 Integer j = indexOf(targetNode);
@@ -222,13 +220,8 @@ public class FordFulkerson implements Algorithm {
      */
     @NotNull
     private Boolean isMarked(@NotNull Node node) {
-        if (node == source) {
-            return true;
-        } else if (delta[indexOf(node)] == Double.POSITIVE_INFINITY) { //changed this
-            return false;
-        }
-        throw new InvalidMarkException();
-
+        int i = indexOf(node);
+        return (delta[i] != Double.POSITIVE_INFINITY && pred[i] != null);
     }
 
     /**
