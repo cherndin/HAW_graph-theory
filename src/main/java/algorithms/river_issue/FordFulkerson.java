@@ -221,7 +221,8 @@ public class FordFulkerson implements Algorithm {
     @NotNull
     private Boolean isMarked(@NotNull Node node) {
         int i = indexOf(node);
-        return (delta[i] != Double.POSITIVE_INFINITY && pred[i] != null);
+        if (node == source) return true;
+        else return (delta[i] != Double.POSITIVE_INFINITY && pred[i] != null);
     }
 
     /**
