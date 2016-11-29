@@ -11,6 +11,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.InvalidMarkException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,8 +33,8 @@ public class FordFulkerson implements Algorithm {
     private Double flow[][]; // flow
     private Node pred[]; // pred
     private Double delta[]; // delta
-    private Boolean forward[];
-    private Boolean inspected[];
+    private boolean forward[];
+    private boolean inspected[];
 
     private List<Node> nodes = new LinkedList<Node>();
 
@@ -56,6 +57,8 @@ public class FordFulkerson implements Algorithm {
         flow = new Double[size][size]; // flow matrix
         pred = new Node[size]; // flow matrix
         delta = new Double[size]; // flow matrix
+        forward = new boolean[size];
+        inspected = new boolean[size];
 
         // Initialize empty flow & capacity.
         Iterator<Node> iIterator = nodes.iterator();
@@ -75,7 +78,7 @@ public class FordFulkerson implements Algorithm {
         // Markiere q mit (undef, Inf.)
 //        pred[indexOf(source)] = source; TODO ist das richtig?
         delta[indexOf(source)] = Double.POSITIVE_INFINITY;
-
+        mark(indexOf(source), null, true, delta[indexOf(source)]);
     }
 
     /**
@@ -86,7 +89,6 @@ public class FordFulkerson implements Algorithm {
      */
     public void compute() {
         compute_InspectAndMark();
-
 
     }
 
@@ -101,7 +103,7 @@ public class FordFulkerson implements Algorithm {
         for (Edge leavingEdge : curr.getEachLeavingEdge()) {   // EDGE_ij elemOf Output(V_i)
             Node targetNode = leavingEdge.getTargetNode();
 
-            if (!isMarked(targetNode)) { // nur unmarkierter Knoten V_j
+            if (!isMarked(targetNode)) { // nur uninspizierte Knoten V_j
                 Integer j = indexOf(targetNode);
 
                 if (flow[i][j] < capacity[i][j]) { // f(EDGE_ij) < c(EDGE_ij)
@@ -176,6 +178,8 @@ public class FordFulkerson implements Algorithm {
     @Nullable
     private Node getMarkedButNotInspected() {
         for (Node node : nodes) {
+            boolean marked = isMarked(node);
+            boolean inspect = inspected[indexOf(node)];
             if (isMarked(node) && !inspected[indexOf(node)]) {
                 return node;
             }
@@ -218,7 +222,12 @@ public class FordFulkerson implements Algorithm {
      */
     @NotNull
     private Boolean isMarked(@NotNull Node node) {
-        return (delta[indexOf(node)] != 0.0 && pred[indexOf(node)] != null);
+        if (node == source)
+            return true;
+        if (delta[indexOf(node)] != 0.0 && pred[indexOf(node)] != null)
+            return false;
+        throw new InvalidMarkException();
+
     }
 
     /**
