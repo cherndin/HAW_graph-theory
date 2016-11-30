@@ -186,6 +186,16 @@ public class FordFulkerson implements Algorithm {
 
     public Graph residualNetwork(Graph graph) { // TODO auslagern oder vlt auch schon in Graphstream vorhanden?
         // TODO Graph muss Residualnetzwerk sein; c wird durch rückwärtskanten realisiert; siehe https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem#Beispiel
+        for (Edge e : graph.getEachEdge()) {
+            double currCapa = e.getAttribute("capacity");
+            double currFlow = flow[indexOf(e.getSourceNode())][indexOf(e.getTargetNode())];
+            if (currFlow > 0 && currFlow < currCapa) {
+                graph.addEdge(e.getTargetNode().toString() + indexOf(e.getSourceNode()).toString(), e.getSourceNode().toString(), e.getTargetNode().toString(), true).setAttribute("capacity", currFlow);
+                graph.getEdge(e.getSourceNode().toString() + indexOf(e.getTargetNode()).toString()).setAttribute("capacity", currCapa - currFlow);
+            }
+        }
+
+
         return null;
     }
 
