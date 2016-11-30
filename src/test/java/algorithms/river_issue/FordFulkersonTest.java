@@ -1,45 +1,56 @@
 package algorithms.river_issue;
 
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.Set;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by MattX7 on 25.11.2016.
  */
 public class FordFulkersonTest {
-    private Graph test, maxFminCGraph, maxFminCGraphResidual;
+    private Graph testGraph, maxFminCGraph, maxFminCGraphResidual;
+    private Set<Edge> cutFromTestGraph, cutFromMaxFminCGraph;
 
     @Before
     public void setUp() throws Exception {
         // https://www.youtube.com/watch?v=Om4j8C6w_SU
-        test = new SingleGraph("test");
-        test.addNode("S");
-        test.addNode("A");
-        test.addNode("B");
-        test.addNode("C");
-        test.addNode("D");
-        test.addNode("E");
-        test.addNode("F");
-        test.addNode("T");
+        testGraph = new SingleGraph("testGraph");
+        testGraph.addNode("S");
+        testGraph.addNode("A");
+        testGraph.addNode("B");
+        testGraph.addNode("C");
+        testGraph.addNode("D");
+        testGraph.addNode("E");
+        testGraph.addNode("F");
+        testGraph.addNode("T");
 
-        test.addEdge("SA", "S", "A", true).addAttribute("capacity", 10.0);
-        test.addEdge("SB", "S", "B", true).addAttribute("capacity", 5.0);
-        test.addEdge("SC", "S", "C", true).addAttribute("capacity", 15.0);
-        test.addEdge("AD", "A", "D", true).addAttribute("capacity", 9.0);
-        test.addEdge("AE", "A", "E", true).addAttribute("capacity", 15.0);
-        test.addEdge("AB", "A", "B", true).addAttribute("capacity", 4.0);
-        test.addEdge("BE", "B", "E", true).addAttribute("capacity", 8.0);
-        test.addEdge("BC", "B", "C", true).addAttribute("capacity", 4.0);
-        test.addEdge("CF", "C", "F", true).addAttribute("capacity", 16.0);
-        test.addEdge("DE", "D", "E", true).addAttribute("capacity", 15.0);
-        test.addEdge("DT", "D", "T", true).addAttribute("capacity", 10.0);
-        test.addEdge("ET", "E", "T", true).addAttribute("capacity", 10.0);
-        test.addEdge("EF", "E", "F", true).addAttribute("capacity", 15.0);
-        test.addEdge("FB", "F", "B", true).addAttribute("capacity", 6.0);
-        test.addEdge("FT", "F", "T", true).addAttribute("capacity", 10.0);
+        testGraph.addEdge("SA", "S", "A", true).addAttribute("capacity", 10.0);
+        testGraph.addEdge("SB", "S", "B", true).addAttribute("capacity", 5.0);
+        testGraph.addEdge("SC", "S", "C", true).addAttribute("capacity", 15.0);
+        testGraph.addEdge("AD", "A", "D", true).addAttribute("capacity", 9.0);
+        testGraph.addEdge("AE", "A", "E", true).addAttribute("capacity", 15.0);
+        testGraph.addEdge("AB", "A", "B", true).addAttribute("capacity", 4.0);
+        testGraph.addEdge("BE", "B", "E", true).addAttribute("capacity", 8.0);
+        testGraph.addEdge("BC", "B", "C", true).addAttribute("capacity", 4.0);
+        testGraph.addEdge("CF", "C", "F", true).addAttribute("capacity", 16.0);
+        testGraph.addEdge("DE", "D", "E", true).addAttribute("capacity", 15.0);
+        testGraph.addEdge("DT", "D", "T", true).addAttribute("capacity", 10.0);
+        testGraph.addEdge("ET", "E", "T", true).addAttribute("capacity", 10.0);
+        testGraph.addEdge("EF", "E", "F", true).addAttribute("capacity", 15.0);
+        testGraph.addEdge("FB", "F", "B", true).addAttribute("capacity", 6.0);
+        testGraph.addEdge("FT", "F", "T", true).addAttribute("capacity", 10.0);
+
+        cutFromTestGraph.add(testGraph.getEdge(0));
+        cutFromTestGraph.add(testGraph.getEdge(5));
+        cutFromTestGraph.add(testGraph.getEdge(6));
+        cutFromTestGraph.add(testGraph.getEdge(12));
+        cutFromTestGraph.add(testGraph.getEdge(14));
 
         // https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
         maxFminCGraph = new SingleGraph("maxFminCGraph");
@@ -58,6 +69,9 @@ public class FordFulkersonTest {
         maxFminCGraph.addEdge("QR", "Q", "R", true).addAttribute("capacity", 4.0);
         maxFminCGraph.addEdge("QT", "Q", "T", true).addAttribute("capacity", 2.0);
         maxFminCGraph.addEdge("RT", "R", "T", true).addAttribute("capacity", 3.0);
+
+        cutFromMaxFminCGraph.add(maxFminCGraph.getEdge("QT"));
+        cutFromMaxFminCGraph.add(maxFminCGraph.getEdge("RT"));
 
         maxFminCGraphResidual = new SingleGraph("maxFminCGraphResidual");
         maxFminCGraphResidual.addNode("O");
@@ -78,27 +92,26 @@ public class FordFulkersonTest {
         maxFminCGraphResidual.addEdge("TQ", "T", "Q", true).addAttribute("capacity", 2.0);
         maxFminCGraphResidual.addEdge("TR", "T", "R", true).addAttribute("capacity", 3.0);
 
-
     }
     @Test
     public void computeSimpleGraphTest() throws Exception {
-        FordFulkerson ford = new FordFulkerson();
-        ford.init(test);
-        ford.setSourceAndTarget(test.getNode("S"), test.getNode("T"));
-        ford.compute();
-//        assertEquals(28, ford.getMaxFlow(test));
-//        System.out.println("Steps: " + floyd.getShortestPath());
+        FordFulkerson fordTestGraph = new FordFulkerson();
+        fordTestGraph.init(testGraph);
+        fordTestGraph.setSourceAndTarget(testGraph.getNode("S"), testGraph.getNode("T"));
+        fordTestGraph.compute();
+
+        assertTrue(cutFromTestGraph.equals(fordTestGraph.maxFlowMinCut));
     }
 
-    @Ignore
+
     @Test
     public void compare_CutTest() throws Exception {
-        FordFulkerson ford = new FordFulkerson();
-        ford.init(maxFminCGraph);
-        ford.setSourceAndTarget(test.getNode("S"), test.getNode("T"));
-        ford.compute();
-        // assertTrue(com.google.common.graph.Graphs.equivalent(ford.residualNetwork(maxFminCGraph),maxFminCGraphResidual));
-        // TODO Graphsteam auf Google Graph mappen ODER eigene equivalent funktion schreiben
+        FordFulkerson fordMaxFminC = new FordFulkerson();
+        fordMaxFminC.init(maxFminCGraph);
+        fordMaxFminC.setSourceAndTarget(testGraph.getNode("S"), testGraph.getNode("T"));
+        fordMaxFminC.compute();
+
+        assertTrue(cutFromMaxFminCGraph.equals(fordMaxFminC.maxFlowMinCut));
     }
 
 

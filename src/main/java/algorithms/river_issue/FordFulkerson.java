@@ -7,6 +7,7 @@ import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +33,6 @@ public class FordFulkerson implements Algorithm {
     private boolean forward[];
     private boolean inspected[];
 
-    public int hits = 0;
     public Set<Edge> maxFlowMinCut = new HashSet<Edge>();
 
 
@@ -45,16 +45,16 @@ public class FordFulkerson implements Algorithm {
      */
     public void init(Graph graph) throws IllegalArgumentException {
         Preconditions.isNetwork(graph);
-        //Implementation
-        this.graph = graph;
-        nodes = ImmutableList.copyOf(graph.getEachNode());
-        setSourceAndTarget(graph.getNode(0), graph.getNode(nodes.size() - 1));
-        int size = nodes.size();
 
-        capacity = new Double[size][size]; // capacity matrix
-        flow = new Double[size][size]; // flow matrix
-        predecessor = new Node[size]; // flow matrix
-        delta = new Double[size]; // flow matrix
+        nodes = ImmutableList.copyOf(graph.getEachNode());
+        int size = nodes.size();
+        setSourceAndTarget(nodes.get(0), nodes.get(size - 1));
+        this.graph = Graphs.clone(graph); // copy so we can make a residualgraph without editing the original
+
+        capacity = new Double[size][size];
+        flow = new Double[size][size];
+        predecessor = new Node[size];
+        delta = new Double[size];
         forward = new boolean[size];
         inspected = new boolean[size];
 
@@ -118,6 +118,8 @@ public class FordFulkerson implements Algorithm {
             }
         }
 
+        inspected[indexOf(node)] = true;
+
         if (areAllMarkedNodesInspected()) {
             compute_Cut(); // (4) Es gibt keinen vergrößernden Weg
         } else if (isMarked(sink)) {
@@ -130,11 +132,13 @@ public class FordFulkerson implements Algorithm {
 
     /* (3) Vergrößerung der Flussstärke */
     private void compute_AugmentedPath() {
-
         Node current = sink;
         while (hasPred(current)) {
             int i = indexOf(current);
-            Edge edge = current.getEdgeBetween(predecessor[i]);
+            Node pred = predecessor[i];
+            Edge edge = pred.getEdgeBetween(current);
+            if (edge == null)
+                edge = current.getEdgeBetween(pred);
 
             if (edge.getTargetNode() == current) { // Vorwärtskante
                 int j = indexOf(edge.getSourceNode());
@@ -147,6 +151,8 @@ public class FordFulkerson implements Algorithm {
             } else {
                 throw new IllegalArgumentException("WTF: Something impossible went wrong");
             }
+
+            current = pred;
         }
         deleteAllMarks();
     }
