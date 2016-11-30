@@ -6,6 +6,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
@@ -19,6 +20,8 @@ public class FordFulkersonTest {
 
     @Before
     public void setUp() throws Exception {
+        cutFromTestGraph = new HashSet<Edge>();
+        cutFromMaxFminCGraph = new HashSet<Edge>();
         // https://www.youtube.com/watch?v=Om4j8C6w_SU
         testGraph = new SingleGraph("testGraph");
         testGraph.addNode("S");
