@@ -117,14 +117,8 @@ public class Dijkstra implements Algorithm {
      */
     void setSourceAndTarget(@NotNull Node source,
                             @NotNull Node target) {
-        if (this.source != null && this.source.hasAttribute("title"))
-            this.source.removeAttribute("title");
-        if (this.target != null && this.target.hasAttribute("title"))
-            this.target.removeAttribute("title");
         this.source = source;
         this.target = target;
-        source.setAttribute("title", "source");
-        target.setAttribute("title", "target");
     }
 
     /**

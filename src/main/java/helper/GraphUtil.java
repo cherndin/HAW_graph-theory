@@ -5,6 +5,8 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
+
 /**
  * Created by MattX7 on 30.10.2016.
  */
@@ -107,5 +109,44 @@ public class GraphUtil {
             string = string + " " + edgeToLine(edge, enableName, enableWeight);
         }
         return string;
+    }
+
+    /**
+     * Output for the distance matrix
+     */
+    public static void printMatrix(@NotNull Graph graph,
+                                   @NotNull Double[][] matrix) {
+        for (Node node : graph.getEachNode()) { // print x nodes
+            System.out.print("  \t" + node.getId() + " \t");
+        }
+        System.out.println();
+        Iterator<Node> iterator = graph.getNodeIterator();
+        for (Number[] array : matrix) { // print x nodes
+            System.out.print(iterator.next() + " | ");
+            for (Number number : array) { // print x nodes
+                System.out.print((Double.valueOf(number.doubleValue()).isInfinite() ? "Inf" : number) + " \t");
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * Output for the distance matrix
+     */
+    public static void printMatrix(@NotNull Graph graph,
+                                   @NotNull Integer[][] matrix) {
+        System.out.println();
+        for (Node node : graph.getEachNode()) { // print x nodes
+            System.out.print("  \t" + node.getId() + " \t");
+        }
+        System.out.println();
+        Iterator<Node> iterator = graph.getNodeIterator();
+        for (Number[] array : matrix) { // print x nodes
+            System.out.print(iterator.next() + " | ");
+            for (Number number : array) { // print x nodes
+                System.out.print((Double.valueOf(number.doubleValue()).isInfinite() ? "Inf" : number) + " \t\t");
+            }
+            System.out.println();
+        }
     }
 }

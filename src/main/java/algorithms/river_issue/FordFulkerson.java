@@ -16,6 +16,7 @@ import java.util.*;
 
 /**
  * Created by MattX7 on 25.11.2016.
+ *
  */
 public class FordFulkerson implements Algorithm {
     private static Logger logger = Logger.getLogger(FordFulkerson.class);
@@ -34,7 +35,6 @@ public class FordFulkerson implements Algorithm {
     private boolean inspected[];
 
     public Set<Edge> maxFlowMinCut = new HashSet<Edge>();
-
 
     /**
      * Initialization of the algorithm. This method has to be called before the
@@ -128,7 +128,6 @@ public class FordFulkerson implements Algorithm {
         } else {
             compute(); // (2) Inspektion und Markierung
         }
-
     }
 
     /* (3) Vergrößerung der Flussstärke */
@@ -200,7 +199,6 @@ public class FordFulkerson implements Algorithm {
             }
         }
     }
-
 
     /**
      * @return true if all marked nodes are inspected

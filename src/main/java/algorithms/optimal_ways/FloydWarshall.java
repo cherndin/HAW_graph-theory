@@ -3,6 +3,7 @@ package algorithms.optimal_ways;
 import algorithms.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import helper.GraphUtil;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Graph;
@@ -95,8 +96,8 @@ public class FloydWarshall implements Algorithm {
                 }
             }
             if (preview) System.out.println("================== " + k + " ======================");
-            if (preview) printMatrix(distances);
-            if (preview) printMatrix(transits);
+            if (preview) GraphUtil.printMatrix(graph, distances);
+            if (preview) GraphUtil.printMatrix(graph, transits);
             if (preview) System.out.println();
         }
         distance = distances[getIndex(source)][getIndex(target)];
@@ -110,15 +111,10 @@ public class FloydWarshall implements Algorithm {
      */
     void setSourceAndTarget(@NotNull Node source,
                             @NotNull Node target) {
-        if (this.source != null && this.source.hasAttribute("title"))
-            this.source.removeAttribute("title");
-        if (this.target != null && this.target.hasAttribute("title"))
-            this.target.removeAttribute("title");
         this.source = source;
         this.target = target;
-        source.setAttribute("title", "source");
-        target.setAttribute("title", "target");
     }
+
     /**
      * @return shortestWay
      */
@@ -162,8 +158,8 @@ public class FloydWarshall implements Algorithm {
             }
         }
         if (preview) System.out.println("================== Start ======================");
-        if (preview) printMatrix(distances);
-        if (preview) printMatrix(transits);
+        if (preview) GraphUtil.printMatrix(graph, distances);
+        if (preview) GraphUtil.printMatrix(graph, transits);
         if (preview) System.out.println();
     }
 
@@ -209,44 +205,6 @@ public class FloydWarshall implements Algorithm {
     private Double min(@NotNull Double x, @NotNull Double y) {
         return ((x < y) ? x : y);
     }
-
-    /**
-     * Output for the distance matrix
-     */
-    private void printMatrix(Integer[][] matrix) {
-        System.out.println();
-        for (Node node : nodes) { // print x nodes
-            System.out.print("  \t" + node.getId() + " \t");
-        }
-        System.out.println();
-        Iterator<Node> iterator = nodes.iterator();
-        for (Number[] array : matrix) { // print x nodes
-            System.out.print(iterator.next() + " | ");
-            for (Number number : array) { // print x nodes
-                System.out.print((Double.valueOf(number.doubleValue()).isInfinite() ? "Inf" : number) + " \t\t");
-            }
-            System.out.println();
-        }
-    }
-
-    /**
-     * Output for the distance matrix
-     */
-    private void printMatrix(Double[][] matrix) {
-        for (Node node : nodes) { // print x nodes
-            System.out.print("  \t" + node.getId() + " \t");
-        }
-        System.out.println();
-        Iterator<Node> iterator = nodes.iterator();
-        for (Number[] array : matrix) { // print x nodes
-            System.out.print(iterator.next() + " | ");
-            for (Number number : array) { // print x nodes
-                System.out.print((Double.valueOf(number.doubleValue()).isInfinite() ? "Inf" : number) + " \t");
-            }
-            System.out.println();
-        }
-    }
-
 
     // === MAIN ===
     public static void main(String[] args) throws Exception {
