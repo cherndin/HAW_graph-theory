@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -103,7 +104,7 @@ public class FordFulkersonTest {
         fordTestGraph.setSourceAndTarget(testGraph.getNode("S"), testGraph.getNode("T"));
         fordTestGraph.compute();
 
-        assertTrue(cutFromTestGraph.equals(fordTestGraph.maxFlowMinCut));
+        assertEquals(cutFromTestGraph.toString(), fordTestGraph.maxFlowMinCut.toString());
     }
 
 
@@ -111,7 +112,7 @@ public class FordFulkersonTest {
     public void compare_CutTest() throws Exception {
         FordFulkerson fordMaxFminC = new FordFulkerson();
         fordMaxFminC.init(maxFminCGraph);
-        fordMaxFminC.setSourceAndTarget(testGraph.getNode("S"), testGraph.getNode("T"));
+        fordMaxFminC.setSourceAndTarget(maxFminCGraph.getNode("O"), maxFminCGraph.getNode("T"));
         fordMaxFminC.compute();
 
         assertTrue(cutFromMaxFminCGraph.equals(fordMaxFminC.maxFlowMinCut));

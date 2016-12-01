@@ -168,7 +168,7 @@ public class FordFulkerson implements Algorithm {
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     private void compute_Cut() {
         LOG.debug("==== (4) compute_Cut ====");
-        residualNetwork(graph); // Residualnetzwerk(G)
+//        residualNetwork(); // Residualnetzwerk(G)
 
         Set<Node> nodesS = new HashSet<Node>();
         Set<Node> nodesT = new HashSet<Node>();
@@ -193,23 +193,25 @@ public class FordFulkerson implements Algorithm {
         LOG.debug("==== compute_Cut done ====");
     }
 
-    private void residualNetwork(Graph graph) {
-        LOG.debug("==== residualNetwork ====");
+    private void residualNetwork() {
+        LOG.debug(">>> residualNetwork >>>");
         for (Edge e : graph.getEachEdge()) {
             double currCapacity = e.getAttribute("capacity");
-            double currFlow = flow[indexOf(e.getSourceNode())][indexOf(e.getTargetNode())];
+            Node sourceNode = e.getNode0();
+            Node targetNode = e.getNode1();
+            double currFlow = flow[indexOf(sourceNode)][indexOf(targetNode)];
             if (currFlow > 0) {
                 graph.addEdge(
-                        e.getTargetNode().getId() + e.getSourceNode().getId(),
-                        e.getTargetNode().getId(),
-                        e.getSourceNode().getId(),
+                        targetNode.getId() + sourceNode.getId(),
+                        targetNode.getId(),
+                        sourceNode.getId(),
                         true).setAttribute("capacity", currFlow);
                 graph.getEdge(
-                        e.getSourceNode().getId() + e.getTargetNode().getId()
+                        sourceNode.getId() + targetNode.getId()
                 ).setAttribute("capacity", (currCapacity - currFlow));
             }
         }
-        LOG.debug("==== residualNetwork done ====");
+        LOG.debug("<<< residualNetwork done <<<");
     }
 
     /**
