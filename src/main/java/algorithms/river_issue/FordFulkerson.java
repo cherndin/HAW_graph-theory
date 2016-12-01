@@ -7,7 +7,6 @@ import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +47,7 @@ public class FordFulkerson implements Algorithm {
         nodes = ImmutableList.copyOf(graph.getEachNode());
         int size = nodes.size();
         setSourceAndTarget(nodes.get(0), nodes.get(size - 1));
-        this.graph = Graphs.clone(graph); // copy so we can make a residualgraph without editing the original
+        this.graph = graph; // copy so we can make a residualgraph without editing the original
 
         capacity = new Double[size][size];
         flow = new Double[size][size];
@@ -168,7 +167,7 @@ public class FordFulkerson implements Algorithm {
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     private void compute_Cut() {
         LOG.debug("==== (4) compute_Cut ====");
-//        residualNetwork(); // Residualnetzwerk(G)
+        residualNetwork(); // Residualnetzwerk(G)
 
         Set<Node> nodesS = new HashSet<Node>();
         Set<Node> nodesT = new HashSet<Node>();
@@ -195,10 +194,11 @@ public class FordFulkerson implements Algorithm {
 
     private void residualNetwork() {
         LOG.debug(">>> residualNetwork >>>");
+
         for (Edge e : graph.getEachEdge()) {
             double currCapacity = e.getAttribute("capacity");
-            Node sourceNode = e.getNode0();
-            Node targetNode = e.getNode1();
+            Node sourceNode = e.getSourceNode();
+            Node targetNode = e.getTargetNode();
             double currFlow = flow[indexOf(sourceNode)][indexOf(targetNode)];
             if (currFlow > 0) {
                 graph.addEdge(
@@ -250,7 +250,7 @@ public class FordFulkerson implements Algorithm {
     @NotNull
     private Integer indexOf(@NotNull Node node) {
         int i = nodes.indexOf(node);
-        if (i < 0) throw new NoSuchElementException();
+//        if (i < 0) throw new NoSuchElementException();
         return i;
     }
 

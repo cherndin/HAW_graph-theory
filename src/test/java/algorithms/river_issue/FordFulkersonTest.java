@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by MattX7 on 25.11.2016.
@@ -115,7 +114,7 @@ public class FordFulkersonTest {
         fordMaxFminC.setSourceAndTarget(maxFminCGraph.getNode("O"), maxFminCGraph.getNode("T"));
         fordMaxFminC.compute();
 
-        assertTrue(cutFromMaxFminCGraph.equals(fordMaxFminC.maxFlowMinCut));
+        assertEquals(cutFromMaxFminCGraph.toString(), fordMaxFminC.maxFlowMinCut.toString());
     }
 
 
