@@ -302,7 +302,7 @@ public class FordFulkerson implements Algorithm {
         for (int i = 0; i < nodes.size(); i++) {
             inspected[i] = false;
             if (i != indexOf(source)) {
-                mark(i, null, false, 0.0);
+                mark(i, null, false, Double.POSITIVE_INFINITY);
             }
         }
         LOG.debug("<<< DeleteAllMarks done <<<");
