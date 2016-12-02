@@ -101,7 +101,7 @@ public class FordFulkerson implements Algorithm {
             if (!isMarked(targetNode) && flow[i][j] < capacity[i][j]) { // nur unmarkierte Knoten markieren V_j mit f(E_ij) < c(E_ij)
                 LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ij)=%f < c(E_ij))=%f", targetNode.getId(), flow[i][j], capacity[i][j]));
                 // markiere VERTEX_j
-                mark(j, node, true, Math.min(delta[j], capacity[i][j] - flow[i][j]));
+                mark(j, node, true, Math.min(delta[i], capacity[i][j] - flow[i][j]));
 
             }
         }
@@ -114,7 +114,7 @@ public class FordFulkerson implements Algorithm {
             if (!isMarked(sourceNode) && flow[j][i] > 0) { // nur unmarkierter Knoten V_j mit f(E_ji) > 0
                 LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ji)=%f > 0", sourceNode.getId(), flow[j][i]));
                 // markiere V_j
-                mark(j, node, false, Math.min(delta[j], flow[i][j]));
+                mark(j, node, false, Math.min(delta[i], flow[i][j]));
 
             }
         }
