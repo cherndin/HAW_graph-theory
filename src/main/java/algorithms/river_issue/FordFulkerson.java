@@ -192,6 +192,9 @@ public class FordFulkerson implements Algorithm {
         LOG.debug("==== compute_Cut done ====");
     }
 
+    /**
+     * Transforms the given graph to a residual network
+     */
     private void residualNetwork() {
         LOG.debug(">>> residualNetwork >>>");
 
@@ -209,6 +212,7 @@ public class FordFulkerson implements Algorithm {
                 graph.getEdge(
                         sourceNode.getId() + targetNode.getId()
                 ).setAttribute("capacity", (currCapacity - currFlow));
+                LOG.debug(String.format("Edge from %s to %s created with %f capacity", targetNode, sourceNode, (currCapacity - currFlow)));
             }
         }
         LOG.debug("<<< residualNetwork done <<<");
