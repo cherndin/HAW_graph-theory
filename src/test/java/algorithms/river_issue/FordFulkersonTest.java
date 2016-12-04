@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -16,12 +17,13 @@ import static org.junit.Assert.assertEquals;
  */
 public class FordFulkersonTest {
     private Graph testGraph, maxFminCGraph, maxFminCGraphResidual;
-    private Set<Edge> cutFromTestGraph, cutFromMaxFminCGraph;
+    private Set<Edge> cutFromTestGraph, cutv1, cutv2;
 
     @Before
     public void setUp() throws Exception {
         cutFromTestGraph = new HashSet<Edge>();
-        cutFromMaxFminCGraph = new HashSet<Edge>();
+        cutv1 = new HashSet<Edge>();
+        cutv2 = new HashSet<Edge>();
         // https://www.youtube.com/watch?v=Om4j8C6w_SU
         testGraph = new SingleGraph("testGraph");
         testGraph.addNode("S");
@@ -73,8 +75,11 @@ public class FordFulkersonTest {
         maxFminCGraph.addEdge("QT", "Q", "T", true).addAttribute("capacity", 2.0);
         maxFminCGraph.addEdge("RT", "R", "T", true).addAttribute("capacity", 3.0);
 
-        cutFromMaxFminCGraph.add(maxFminCGraph.getEdge("QT"));
-        cutFromMaxFminCGraph.add(maxFminCGraph.getEdge("RT"));
+        cutv1.add(maxFminCGraph.getEdge("QT"));
+        cutv1.add(maxFminCGraph.getEdge("RT"));
+
+        cutv2.add(maxFminCGraph.getEdge("SO"));
+        cutv2.add(maxFminCGraph.getEdge("SP"));
 
         maxFminCGraphResidual = new SingleGraph("maxFminCGraphResidual");
         maxFminCGraphResidual.addNode("O");
@@ -114,7 +119,7 @@ public class FordFulkersonTest {
         fordMaxFminC.setSourceAndTarget(maxFminCGraph.getNode("O"), maxFminCGraph.getNode("T"));
         fordMaxFminC.compute();
 
-        assertEquals(cutFromMaxFminCGraph.toString(), fordMaxFminC.maxFlowMinCut.toString());
+        assertTrue(cutv1.equals(fordMaxFminC.maxFlowMinCut) || cutv2.equals(fordMaxFminC.maxFlowMinCut));
     }
 
 

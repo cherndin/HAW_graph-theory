@@ -167,7 +167,7 @@ public class FordFulkerson implements Algorithm {
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     private void compute_Cut() {
         LOG.debug("==== (4) compute_Cut ====");
-        residualNetwork(); // Residualnetzwerk(G)
+//        residualNetwork(); // Residualnetzwerk(G)
 
         Set<Node> nodesS = new HashSet<Node>();
         Set<Node> nodesT = new HashSet<Node>();
@@ -203,16 +203,18 @@ public class FordFulkerson implements Algorithm {
             Node sourceNode = e.getSourceNode();
             Node targetNode = e.getTargetNode();
             double currFlow = flow[indexOf(sourceNode)][indexOf(targetNode)];
-            if (currFlow > 0 && currFlow < currCapacity) {
+            if (currFlow > 0) {
                 graph.addEdge(
                         targetNode.getId() + sourceNode.getId(),
                         targetNode.getId(),
                         sourceNode.getId(),
                         true).setAttribute("capacity", currFlow);
+                LOG.debug(String.format("Edge %s created with %f capacity", targetNode.getId() + sourceNode.getId(), currFlow));
+
                 graph.getEdge(
                         sourceNode.getId() + targetNode.getId()
                 ).setAttribute("capacity", (currCapacity - currFlow));
-                LOG.debug(String.format("Edge from %s to %s created with %f capacity", targetNode, sourceNode, (currCapacity - currFlow)));
+                LOG.debug(String.format("Capacity from Edge %s decreased from  %f to %f", sourceNode.getId() + targetNode.getId(), currCapacity, (currCapacity - currFlow)));
             }
         }
         LOG.debug("<<< residualNetwork done <<<");
@@ -254,7 +256,7 @@ public class FordFulkerson implements Algorithm {
     @NotNull
     private Integer indexOf(@NotNull Node node) {
         int i = nodes.indexOf(node);
-//        if (i < 0) throw new NoSuchElementException();
+        if (i < 0) throw new NoSuchElementException();
         return i;
     }
 
