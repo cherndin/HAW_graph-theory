@@ -19,7 +19,7 @@ public class FordFulkersonTest {
     private Graph testGraph, maxFminCGraph, maxFminCGraphResidual;
     private Set<Edge> cutFromTestGraph, cutv1, cutv2;
 
-    // TODO test mit negativen Kanten
+    // xTODO test mit negativen Kanten
 
     @Before
     public void setUp() throws Exception {
@@ -123,7 +123,5 @@ public class FordFulkersonTest {
 
         assertTrue(cutv1.equals(fordMaxFminC.maxFlowMinCut) || cutv2.equals(fordMaxFminC.maxFlowMinCut));
     }
-
-
 
 }
