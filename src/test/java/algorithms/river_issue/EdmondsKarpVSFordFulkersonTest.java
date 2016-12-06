@@ -43,11 +43,19 @@ public class EdmondsKarpVSFordFulkersonTest {
     }
 
 
-    // TODO Netzwerk 50 Knoten und 800 Kanten
-
+    // TODO Laufzeitmessung
     // TODO Vergleich des Netzwerkes
 
-    // TODO MegafuckingBigGraph
+    @Test
+    public void smallNetwork() throws Exception {
+        // TODO Netzwerk 50 Knoten und 800 Kanten
+    }
 
-    // TODO Laufzeitmessung
+
+    @Test
+    public void bigNetwork() throws Exception {
+        // TODO MegafuckingBigGraph
+    }
+
+
 }
