@@ -79,6 +79,17 @@ public class FordFulkerson implements Algorithm {
     }
 
     /**
+     * Sets source and target before compute()
+     *
+     * @param source source node
+     * @param target target node
+     */
+    public void setSourceAndTarget(@NotNull Node source, @NotNull Node target) {
+        this.source = source;
+        this.sink = target;
+    }
+
+    /**
      * Run the algorithm. The {@link #init(Graph)} method has to be called
      * before computing.
      *
@@ -146,13 +157,13 @@ public class FordFulkerson implements Algorithm {
 
             if (edge.getTargetNode() == current) { // Wenn Vorwärtskante...
                 int i = indexOf(edge.getSourceNode());
-                flow[i][j] = flow[i][j] + delta_s; // ...dann wird f(E_ij) um d_s erhöhen // TODO ij richtig rum?
+                flow[i][j] = flow[i][j] + delta_s; // ...dann wird f(E_ij) um d_s erhöhen
                 LOG.debug(String.format("%s[%s -> %s] got increased by %f and is now %f", edge.getId(), nodes.get(i), nodes.get(j), delta_s, flow[i][j]));
 
             } else if (edge.getSourceNode() == current) { // Wenn Rückwärtskante...
                 int i = indexOf(edge.getTargetNode());
-                flow[j][i] = flow[j][i] - delta_s; // ...dann wird f(E_ji) um d_s verringert // TODO ij richtig rum?
-                LOG.debug(String.format("%s[%s -> %s] got decreased by %f and is now %f", edge.getId(), nodes.get(j), nodes.get(i), delta_s, flow[j][i])); // TODO test mit negativen Kanten
+                flow[j][i] = flow[j][i] - delta_s; // ...dann wird f(E_ji) um d_s verringert
+                LOG.debug(String.format("%s[%s -> %s] got decreased by %f and is now %f", edge.getId(), nodes.get(j), nodes.get(i), delta_s, flow[j][i]));
 
             } else {
                 throw new IllegalArgumentException("WTF: Something impossible went wrong");
@@ -167,7 +178,7 @@ public class FordFulkerson implements Algorithm {
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     private void compute_Cut() {
         LOG.debug("==== (4) compute_Cut ====");
-//        residualNetwork(); // Residualnetzwerk(G)
+        residualNetwork(); // Residualnetzwerk(G)
 
         Set<Node> nodesS = new HashSet<Node>();
         Set<Node> nodesT = new HashSet<Node>();
@@ -189,6 +200,7 @@ public class FordFulkerson implements Algorithm {
         }
 
         maxFlowMinCut = cut;
+        LOG.debug("Cut[" + cut + "]");
         LOG.debug("==== compute_Cut done ====");
     }
 
@@ -265,17 +277,6 @@ public class FordFulkerson implements Algorithm {
     }
 
     /**
-     * Sets source and target before compute()
-     *
-     * @param source source node
-     * @param target target node
-     */
-    public void setSourceAndTarget(@NotNull Node source, @NotNull Node target) {
-        this.source = source;
-        this.sink = target;
-    }
-
-    /**
      * returns true if given node is marked;
      */
     @NotNull
@@ -318,6 +319,7 @@ public class FordFulkerson implements Algorithm {
 
     // === MAIN ===
     public static void main(String[] args) throws Exception {
+        // Von Folien
         Graph test = new SingleGraph("test");
         test.addNode("q");
         test.addNode("v1");

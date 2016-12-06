@@ -19,6 +19,8 @@ public class FordFulkersonTest {
     private Graph testGraph, maxFminCGraph, maxFminCGraphResidual;
     private Set<Edge> cutFromTestGraph, cutv1, cutv2;
 
+    // TODO test mit negativen Kanten
+
     @Before
     public void setUp() throws Exception {
         cutFromTestGraph = new HashSet<Edge>();

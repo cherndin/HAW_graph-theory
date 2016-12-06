@@ -15,4 +15,13 @@ public class EdmondsKarpVSFordFulkersonTest {
     public void setUp() throws Exception {
 
     }
+    // TODO Graph4
+
+    // TODO Netzwerk 50 Knoten und 800 Kanten
+
+    // TODO Vergleich des Netzwerkes
+
+    // TODO MegafuckingBigGraph
+
+    // TODO Laufzeitmessung
 }
