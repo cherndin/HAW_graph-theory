@@ -31,7 +31,7 @@ public class EdmondsKarpVSFordFulkersonTest {
 
     @Test
     public void graph4Test() throws Exception {
-
+// TODO fixen dass beim einlesen das Attribut nicht standartmäßig weight ist
         StopWatch stopWatch = new StopWatch();
         FordFulkerson ford = new FordFulkerson();
         ford.init(graph4);
