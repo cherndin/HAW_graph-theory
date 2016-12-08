@@ -80,8 +80,8 @@ public class FordFulkersonTest {
         cutv1.add(maxFminCGraph.getEdge("QT"));
         cutv1.add(maxFminCGraph.getEdge("RT"));
 
-        cutv2.add(maxFminCGraph.getEdge("SO"));
-        cutv2.add(maxFminCGraph.getEdge("SP"));
+        cutv2.add(maxFminCGraph.getEdge("OS"));
+        cutv2.add(maxFminCGraph.getEdge("PS"));
 
         maxFminCGraphResidual = new SingleGraph("maxFminCGraphResidual");
         maxFminCGraphResidual.addNode("O");
@@ -118,10 +118,12 @@ public class FordFulkersonTest {
     public void compare_CutTest() throws Exception {
         FordFulkerson fordMaxFminC = new FordFulkerson();
         fordMaxFminC.init(maxFminCGraph);
-        fordMaxFminC.setSourceAndTarget(maxFminCGraph.getNode("O"), maxFminCGraph.getNode("T"));
+        fordMaxFminC.setSourceAndTarget(maxFminCGraph.getNode("S"), maxFminCGraph.getNode("T"));
         fordMaxFminC.compute();
 
-        assertTrue(cutv1.equals(fordMaxFminC.maxFlowMinCut) || cutv2.equals(fordMaxFminC.maxFlowMinCut));
+        Set<Edge> maxFlowMinCut = fordMaxFminC.maxFlowMinCut;
+        assertTrue(cutv2.size() == maxFlowMinCut.size() &&
+                cutv2.containsAll(maxFlowMinCut));
     }
 
 }

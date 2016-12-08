@@ -20,6 +20,8 @@ public class FordFulkerson implements Algorithm {
     private static final Logger LOG = Logger.getLogger(FordFulkerson.class);
     public static boolean preview = true;
 
+    private boolean computable = false;
+
     private Graph graph;
     private List<Node> nodes = new LinkedList<Node>();
     private Node source;
@@ -76,6 +78,7 @@ public class FordFulkerson implements Algorithm {
 //        predecessor[indexOf(source)] = source; TODO ist das richtig?
         delta[indexOf(source)] = Double.POSITIVE_INFINITY;
         mark(indexOf(source), null, true, delta[indexOf(source)]);  //changed this
+        computable = true;
     }
 
     /**
@@ -97,6 +100,8 @@ public class FordFulkerson implements Algorithm {
      */
     public void compute() { // TODO no compute after cut because residualgraph
         LOG.debug("==== (2) compute ====");
+        if (!computable)
+            throw new IllegalStateException("Do init(Graph) before compute()");
         /* (2) Inspektion und Markierung */
         // current setzten wir auch einen bel. markierten aber nicht inspizierten wert
         Node node = getMarkedButNotInspected(); // V_i
@@ -182,12 +187,13 @@ public class FordFulkerson implements Algorithm {
 
         Set<Node> nodesS = new HashSet<Node>();
         Set<Node> nodesT = new HashSet<Node>();
-
         for (Node v : nodes) {
-            if (v.getEdgeBetween(source) != null) { // Wenn ein Pfad(s,v) in G existiert...
+            if (v.hasEdgeBetween(source)) { // Wenn ein Pfad(s,v) in G existiert...
                 nodesS.add(v);
+                LOG.debug("Path(s,v) exists: S <- S v {" + v + "}");
             } else {
                 nodesT.add(v);
+                LOG.debug("Path(s,v) doesn't exists: T <- T v {" + v + "}");
             }
         }
 
@@ -209,12 +215,14 @@ public class FordFulkerson implements Algorithm {
      */
     private void residualNetwork() {
         LOG.debug(">>> residualNetwork >>>");
+        computable = false;
 
         for (Edge e : graph.getEachEdge()) {
             double currCapacity = e.getAttribute("capacity");
             Node sourceNode = e.getSourceNode();
             Node targetNode = e.getTargetNode();
             double currFlow = flow[indexOf(sourceNode)][indexOf(targetNode)];
+
             if (currFlow > 0) {
                 graph.addEdge(
                         targetNode.getId() + sourceNode.getId(),
@@ -223,10 +231,15 @@ public class FordFulkerson implements Algorithm {
                         true).setAttribute("capacity", currFlow);
                 LOG.debug(String.format("Edge %s created with %f capacity", targetNode.getId() + sourceNode.getId(), currFlow));
 
-                graph.getEdge(
-                        sourceNode.getId() + targetNode.getId()
-                ).setAttribute("capacity", (currCapacity - currFlow));
-                LOG.debug(String.format("Capacity from Edge %s decreased from  %f to %f", sourceNode.getId() + targetNode.getId(), currCapacity, (currCapacity - currFlow)));
+                if (currCapacity - currFlow == 0) {
+                    graph.removeEdge(graph.getEdge(sourceNode.getId() + targetNode.getId()));
+                    LOG.debug(String.format("Edge %s deleted because 0 capacity left", sourceNode.getId() + targetNode.getId()));
+                } else {
+                    graph.getEdge(
+                            sourceNode.getId() + targetNode.getId()
+                    ).setAttribute("capacity", (currCapacity - currFlow));
+                    LOG.debug(String.format("Capacity from Edge %s decreased from  %f to %f", sourceNode.getId() + targetNode.getId(), currCapacity, (currCapacity - currFlow)));
+                }
             }
         }
         LOG.debug("<<< residualNetwork done <<<");
@@ -320,28 +333,50 @@ public class FordFulkerson implements Algorithm {
     // === MAIN ===
     public static void main(String[] args) throws Exception {
         // Von Folien
-        Graph test = new SingleGraph("test");
-        test.addNode("q");
-        test.addNode("v1");
-        test.addNode("v2");
-        test.addNode("v3");
-        test.addNode("v5");
-        test.addNode("s");
-        test.addEdge("qv5", "q", "v5", true).addAttribute("capacity", 1.0);
-        test.addEdge("qv1", "q", "v1", true).addAttribute("capacity", 5.0);
-        test.addEdge("qv2", "q", "v2", true).addAttribute("capacity", 4.0);
-        test.addEdge("v2v3", "v2", "v3", true).addAttribute("capacity", 2.0);
-        test.addEdge("v1v3", "v1", "v3", true).addAttribute("capacity", 1.0);
-        test.addEdge("v3s", "v3", "s", true).addAttribute("capacity", 3.0);
-        test.addEdge("v1s", "v1", "s", true).addAttribute("capacity", 3.0);
-        test.addEdge("v1v5", "v1", "v5", true).addAttribute("capacity", 1.0);
-        test.addEdge("v5s", "v5", "s", true).addAttribute("capacity", 3.0);
+//        Graph test = new SingleGraph("test");
+//        test.addNode("q");
+//        test.addNode("v1");
+//        test.addNode("v2");
+//        test.addNode("v3");
+//        test.addNode("v5");
+//        test.addNode("s");
+//        test.addEdge("qv5", "q", "v5", true).addAttribute("capacity", 1.0);
+//        test.addEdge("qv1", "q", "v1", true).addAttribute("capacity", 5.0);
+//        test.addEdge("qv2", "q", "v2", true).addAttribute("capacity", 4.0);
+//        test.addEdge("v2v3", "v2", "v3", true).addAttribute("capacity", 2.0);
+//        test.addEdge("v1v3", "v1", "v3", true).addAttribute("capacity", 1.0);
+//        test.addEdge("v3s", "v3", "s", true).addAttribute("capacity", 3.0);
+//        test.addEdge("v1s", "v1", "s", true).addAttribute("capacity", 3.0);
+//        test.addEdge("v1v5", "v1", "v5", true).addAttribute("capacity", 1.0);
+//        test.addEdge("v5s", "v5", "s", true).addAttribute("capacity", 3.0);
+//
+//        FordFulkerson ford = new FordFulkerson();
+//        ford.init(test);
+//        ford.setSourceAndTarget(test.getNode("q"), test.getNode("s"));
+//        ford.compute();
+
+        // https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
+        Graph maxFminCGraph = new SingleGraph("maxFminCGraph");
+        maxFminCGraph.addNode("O");
+        maxFminCGraph.addNode("P");
+        maxFminCGraph.addNode("Q");
+        maxFminCGraph.addNode("R");
+        maxFminCGraph.addNode("S");
+        maxFminCGraph.addNode("T");
+
+        maxFminCGraph.addEdge("SO", "S", "O", true).addAttribute("capacity", 3.0);
+        maxFminCGraph.addEdge("SP", "S", "P", true).addAttribute("capacity", 3.0);
+        maxFminCGraph.addEdge("OP", "O", "P", true).addAttribute("capacity", 2.0);
+        maxFminCGraph.addEdge("OQ", "O", "Q", true).addAttribute("capacity", 3.0);
+        maxFminCGraph.addEdge("PR", "P", "R", true).addAttribute("capacity", 2.0);
+        maxFminCGraph.addEdge("QR", "Q", "R", true).addAttribute("capacity", 4.0);
+        maxFminCGraph.addEdge("QT", "Q", "T", true).addAttribute("capacity", 2.0);
+        maxFminCGraph.addEdge("RT", "R", "T", true).addAttribute("capacity", 3.0);
 
         FordFulkerson ford = new FordFulkerson();
-        ford.init(test);
-        ford.setSourceAndTarget(test.getNode("q"), test.getNode("s"));
+        ford.init(maxFminCGraph);
+        ford.setSourceAndTarget(maxFminCGraph.getNode("S"), maxFminCGraph.getNode("T"));
         ford.compute();
-
     }
 
 }
