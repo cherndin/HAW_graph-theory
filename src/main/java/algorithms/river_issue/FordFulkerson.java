@@ -35,6 +35,7 @@ public class FordFulkerson implements Algorithm {
     private boolean inspected[];
 
     public Set<Edge> maxFlowMinCut = new HashSet<Edge>();
+    public double maxFlow;
 
     /**
      * Initialization of the algorithm. This method has to be called before the
@@ -57,6 +58,7 @@ public class FordFulkerson implements Algorithm {
         delta = new Double[size];
         forward = new boolean[size];
         inspected = new boolean[size];
+        maxFlow = 0;
 
         // Initialize empty flow & capacity.
         Iterator<Node> iIterator = nodes.iterator();
@@ -152,6 +154,7 @@ public class FordFulkerson implements Algorithm {
     private void compute_AugmentedPath() {
         LOG.debug("==== (3) compute augmentedPath ====");
         Node current = sink;
+        maxFlow += delta[indexOf(sink)];
         while (hasPred(current)) {
             int j = indexOf(current);
             Node pred = predecessor[j];
@@ -232,7 +235,7 @@ public class FordFulkerson implements Algorithm {
                 LOG.debug(String.format("Edge %s created with %f capacity", targetNode.getId() + sourceNode.getId(), currFlow));
 
                 if (currCapacity - currFlow == 0) {
-                    graph.removeEdge(graph.getEdge(sourceNode.getId() + targetNode.getId()));
+                    graph.removeEdge((sourceNode.getId() + targetNode.getId()));
                     LOG.debug(String.format("Edge %s deleted because 0 capacity left", sourceNode.getId() + targetNode.getId()));
                 } else {
                     graph.getEdge(
