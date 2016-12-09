@@ -1,14 +1,10 @@
 package algorithms.river_issue;
 
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.DoubleStream;
 
 import static junit.framework.TestCase.assertTrue;
@@ -19,7 +15,7 @@ import static junit.framework.TestCase.assertTrue;
 public class FordFulkersonTest {
     private Graph graphFromYouTube, graphFromWiki;
 
-    // xTODO test mit negativen Kanten
+    // TODO test mit negativen Kanten
 
     @Before
     public void setUp() throws Exception {
@@ -90,45 +86,27 @@ public class FordFulkersonTest {
     }
 
     @Test
-    public void computeSimpleGraphTest() throws Exception {
-        FordFulkerson fordTestGraph = new FordFulkerson();
-        fordTestGraph.init(graphFromYouTube);
-        fordTestGraph.setSourceAndTarget(graphFromYouTube.getNode("S"), graphFromYouTube.getNode("T"));
-        fordTestGraph.compute();
+    public void testWithMediumGraph() throws Exception {
+        FordFulkerson fordYT = new FordFulkerson();
+        fordYT.init(graphFromYouTube);
+        fordYT.setSourceAndTarget(graphFromYouTube.getNode("S"), graphFromYouTube.getNode("T"));
+        fordYT.compute();
 
-        Set<Edge> cutResult = new HashSet<Edge>(
-                Arrays.asList(
-                        graphFromWiki.getEdge("AS"),
-                        graphFromWiki.getEdge("AB"),
-                        graphFromWiki.getEdge("EB"),
-                        graphFromWiki.getEdge("EF"),
-                        graphFromWiki.getEdge("TF")
-                )
-        );
-
-        assertTrue(fordTestGraph.maxFlowMinCut
-                .stream()
-                .flatMapToDouble(e -> DoubleStream.of(Double.parseDouble(e.getAttribute("capacity").toString())))
-                .sum() == fordTestGraph.maxFlow);
+        double capacity = fordYT.maxFlowMinCut.stream().flatMapToDouble(e -> DoubleStream.of(Double.parseDouble(e.getAttribute("capacity").toString()))).sum();
+        double maxFlow = fordYT.maxFlow;
+        assertTrue(capacity == maxFlow);
     }
 
 
     @Test
-    public void compare_CutTest() throws Exception {
-        FordFulkerson fordMaxFminC = new FordFulkerson();
-        fordMaxFminC.init(graphFromWiki);
-        fordMaxFminC.setSourceAndTarget(graphFromWiki.getNode("S"), graphFromWiki.getNode("T"));
-        fordMaxFminC.compute();
+    public void testWithSmallGraph() throws Exception {
+        FordFulkerson fordWiki = new FordFulkerson();
+        fordWiki.init(graphFromWiki);
+        fordWiki.setSourceAndTarget(graphFromWiki.getNode("S"), graphFromWiki.getNode("T"));
+        fordWiki.compute();
 
-        Set<Edge> cutResult = new HashSet<Edge>(
-                Arrays.asList(
-                        graphFromWiki.getEdge("OS"),
-                        graphFromWiki.getEdge("OP"),
-                        graphFromWiki.getEdge("RP")
-                )
-        );
-
-        assertTrue(fordMaxFminC.maxFlowMinCut.stream().flatMapToDouble(e -> DoubleStream.of(Double.parseDouble(e.getAttribute("capacity").toString()))).sum() == fordMaxFminC.maxFlow);
+        double capacity = fordWiki.maxFlowMinCut.stream().flatMapToDouble(e -> DoubleStream.of(Double.parseDouble(e.getAttribute("capacity").toString()))).sum();
+        assertTrue(capacity == fordWiki.maxFlow);
     }
 
 }

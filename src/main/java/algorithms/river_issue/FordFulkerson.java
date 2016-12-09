@@ -191,7 +191,7 @@ public class FordFulkerson implements Algorithm {
         Set<Node> nodesS = new HashSet<Node>();
         Set<Node> nodesT = new HashSet<Node>();
         for (Node v : nodes) {
-            if (v.hasEdgeBetween(source)) { // Wenn ein Pfad(s,v) in G existiert...
+            if (path(source, v)) { // Wenn ein Pfad(s,v) in G existiert...
                 nodesS.add(v);
                 LOG.debug("Path(s,v) exists: S <- S v {" + v + "}");
             } else {
@@ -211,6 +211,24 @@ public class FordFulkerson implements Algorithm {
         maxFlowMinCut = cut;
         LOG.debug("Cut[" + cut + "]");
         LOG.debug("==== compute_Cut done ====");
+    }
+
+    private boolean path(Node from, Node to) {
+        Queue<Node> toCheckForNeighbors = new LinkedList<>();
+        toCheckForNeighbors.add(from);
+        Set<Node> reachable = new HashSet<>();
+        while (!toCheckForNeighbors.isEmpty()) {
+            Node neighbor = toCheckForNeighbors.poll();
+            Iterator<Node> neighborNodeIterator = neighbor.getNeighborNodeIterator();
+            while (neighborNodeIterator.hasNext()) {
+                Node next = neighborNodeIterator.next();
+                toCheckForNeighbors.add(next);
+                reachable.add(next);
+
+            }
+
+        }
+        return reachable.contains(to);
     }
 
     /**
