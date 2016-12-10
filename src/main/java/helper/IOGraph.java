@@ -25,8 +25,10 @@ import java.util.regex.Pattern;
  * name node1 [ -- name node2] [(edge name)] [: edgeweight]; <br>
  */
 public class IOGraph {
+    private static final Logger LOG = Logger.getLogger(IOGraph.class);
+
     public static boolean throwExc = false;
-    private static Logger logger = Logger.getLogger(IOGraph.class);
+    public static String attributeKeyValue = "weight";
 
     /* Class should not be an instance
      * because it's a helper class with static methods.
@@ -121,7 +123,7 @@ public class IOGraph {
     @NotNull
     public static Graph fromFile(@NotNull String name,
                                  @NotNull File fileToRead) throws FileNotFoundException {
-        logger.info("=== Creating graph from " + fileToRead.getName() + " ===");
+        LOG.info("=== Creating graph from " + fileToRead.getName() + " ===");
         Graph graph = new MultiGraph(name);
         Scanner scanner = new Scanner(fileToRead, "utf-8");
         int ln = 1;
@@ -148,7 +150,7 @@ public class IOGraph {
                     if (lineMatcher.group(6) != null) { // edgeID set?
                         edgeID = lineMatcher.group(6);
                         if (graph.getEdge(edgeID) != null) { // if edgeID does already exists
-                            logger.info("Edge '" + edgeID + "' does already exists. Will be renamed to " + node0 + "_to_" + node1);
+                            LOG.info("Edge '" + edgeID + "' does already exists. Will be renamed to " + node0 + "_to_" + node1);
                             edgeID = node0 + "_to_" + node1;
                         }
                     } else
@@ -159,23 +161,23 @@ public class IOGraph {
                     if (lineMatcher.group(6) != null) { // edgeID is given so we create a node with loop
                         node1 = node0;
                     } else {
-                        logger.debug(ln + ". single node " + node0 + " added");
+                        LOG.debug(ln + ". single node " + node0 + " added");
                         break; // addEdge should NOT be reached
                     }
                 }
                 addEdge(graph, edgeID, node0, node1, isDirected, edgeWeight, ln);
             } else {
                 if (!line.equals("")) { // big big Error
-                    logger.error(ln + ". ERROR: [" + line + "]");
+                    LOG.error(ln + ". ERROR: [" + line + "]");
                     if (throwExc)
                         throw new IllegalArgumentException("Wrong line format at line " + ln);
                 } else // Skip empty Lines
-                    logger.debug(ln + ". is empty");
+                    LOG.debug(ln + ". is empty");
             }
             ln++;
         }
         scanner.close();
-        logger.info(graph.getId() + " created from " + fileToRead.getName() + "\n");
+        LOG.info(graph.getId() + " created from " + fileToRead.getName() + "\n");
         return graph;
     }
 
@@ -231,9 +233,9 @@ public class IOGraph {
         try {
             if (weight.equals("")) // without edgeWeight
                 graph.addEdge(edge, node0, node1, isDirected);
-            else // normal case
-                graph.addEdge(edge, node0, node1, isDirected).setAttribute("weight", Integer.valueOf(weight));
-            logger.debug(ln + ". " + GraphUtil.edgeToLine(graph.getEdge(edge), true, false) + " added.");
+            else  // normal case
+                graph.addEdge(edge, node0, node1, isDirected).setAttribute(attributeKeyValue, Integer.valueOf(weight));
+            LOG.debug(ln + ". " + GraphUtil.edgeToLine(graph.getEdge(edge), true, false) + " added.");
         } catch (EdgeRejectedException e) {
             System.err.println(e);
         }

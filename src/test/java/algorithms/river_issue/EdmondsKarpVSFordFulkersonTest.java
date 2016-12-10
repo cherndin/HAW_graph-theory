@@ -1,5 +1,6 @@
 package algorithms.river_issue;
 
+import helper.IOGraph;
 import helper.NetworkGraph;
 import helper.StopWatch;
 import org.graphstream.graph.Graph;
@@ -23,15 +24,15 @@ public class EdmondsKarpVSFordFulkersonTest {
 
     @Before
     public void setUp() throws Exception {
+        IOGraph.attributeKeyValue = "capacity";
         graph4 = fromFile("graph4", new File("src/main/resources/input/BspGraph/graph04.gka"));
 
 
     }
     // TODO Graph4
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void graph4Test() throws Exception {
-// TODO fixen dass beim einlesen das Attribut nicht standartmäßig weight ist
         StopWatch stopWatch = new StopWatch();
         FordFulkerson ford = new FordFulkerson();
         ford.init(graph4);
@@ -69,8 +70,8 @@ public class EdmondsKarpVSFordFulkersonTest {
         edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + networkGraph.nodes));
         ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + networkGraph.nodes));
 
-        edmond.compute();
         ford.compute();
+        edmond.compute();
     }
 
 
