@@ -5,8 +5,6 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.stream.DoubleStream;
-
 import static junit.framework.TestCase.assertTrue;
 
 /**
@@ -86,27 +84,24 @@ public class FordFulkersonTest {
     }
 
     @Test
-    public void testWithMediumGraph() throws Exception {
-        FordFulkerson fordYT = new FordFulkerson();
-        fordYT.init(graphFromYouTube);
-        fordYT.setSourceAndTarget(graphFromYouTube.getNode("S"), graphFromYouTube.getNode("T"));
-        fordYT.compute();
-
-        double capacity = fordYT.maxFlowMinCut.stream().flatMapToDouble(e -> DoubleStream.of(Double.parseDouble(e.getAttribute("capacity").toString()))).sum();
-        double maxFlow = fordYT.maxFlow;
-        assertTrue(capacity == maxFlow);
-    }
-
-
-    @Test
     public void testWithSmallGraph() throws Exception {
         FordFulkerson fordWiki = new FordFulkerson();
         fordWiki.init(graphFromWiki);
         fordWiki.setSourceAndTarget(graphFromWiki.getNode("S"), graphFromWiki.getNode("T"));
         fordWiki.compute();
 
-        double capacity = fordWiki.maxFlowMinCut.stream().flatMapToDouble(e -> DoubleStream.of(Double.parseDouble(e.getAttribute("capacity").toString()))).sum();
-        assertTrue(capacity == fordWiki.maxFlow);
+        assertTrue(fordWiki.maxFlow == 5);
+    }
+
+
+    @Test
+    public void testWithMediumGraph() throws Exception {
+        FordFulkerson fordYT = new FordFulkerson();
+        fordYT.init(graphFromYouTube);
+        fordYT.setSourceAndTarget(graphFromYouTube.getNode("S"), graphFromYouTube.getNode("T"));
+        fordYT.compute();
+
+        assertTrue(fordYT.maxFlow == 28);
     }
 
 }

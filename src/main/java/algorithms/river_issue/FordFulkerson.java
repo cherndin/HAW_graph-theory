@@ -7,6 +7,7 @@ import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -186,12 +187,12 @@ public class FordFulkerson implements Algorithm {
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     private void compute_Cut() {
         LOG.debug("==== (4) compute_Cut ====");
-        residualNetwork(); // Residualnetzwerk(G)
+        Graph residualGraph = residualNetwork(); // Residualnetzwerk(G)
 
         Set<Node> nodesS = new HashSet<Node>();
         Set<Node> nodesT = new HashSet<Node>();
-        for (Node v : nodes) {
-            if (path(source, v)) { // Wenn ein Pfad(s,v) in G existiert...
+        for (Node v : residualGraph.getEachNode()) {
+            if (path(residualGraph.getNode(source.getId()), v)) { // Wenn ein Pfad(s,v) in G existiert...
                 nodesS.add(v);
                 LOG.debug("Path(s,v) exists: S <- S v {" + v + "}");
             } else {
@@ -202,10 +203,14 @@ public class FordFulkerson implements Algorithm {
 
         Set<Edge> cut = new HashSet<Edge>();
 
-        for (Edge e : graph.getEachEdge()) { // Für jede Kante e aus E
-            if (nodesS.contains(e.getSourceNode()) && nodesT.contains(e.getTargetNode())) { // Wenn startNode(e) aus S und endNode(e) aus T liegt...
+        for (Edge e : residualGraph.getEachEdge()) { // Für jede Kante e aus E
+            Node sourceNode = e.getSourceNode();
+            Node targetNode = e.getTargetNode();
+            if ((nodesS.contains(sourceNode) && nodesT.contains(targetNode)) || (nodesS.contains(targetNode) && nodesT.contains(sourceNode))) { // Wenn startNode(e) aus S und endNode(e) aus T liegt...
                 cut.add(e);
+                LOG.debug(String.format("%s->%s added to Cut", sourceNode, targetNode));
             }
+
         }
 
         maxFlowMinCut = cut;
@@ -213,39 +218,24 @@ public class FordFulkerson implements Algorithm {
         LOG.debug("==== compute_Cut done ====");
     }
 
-    private boolean path(Node from, Node to) {
-        Queue<Node> toCheckForNeighbors = new LinkedList<>();
-        toCheckForNeighbors.add(from);
-        Set<Node> reachable = new HashSet<>();
-        while (!toCheckForNeighbors.isEmpty()) {
-            Node neighbor = toCheckForNeighbors.poll();
-            Iterator<Node> neighborNodeIterator = neighbor.getNeighborNodeIterator();
-            while (neighborNodeIterator.hasNext()) {
-                Node next = neighborNodeIterator.next();
-                toCheckForNeighbors.add(next);
-                reachable.add(next);
 
-            }
-
-        }
-        return reachable.contains(to);
-    }
 
     /**
      * Transforms the given graph to a residual network
      */
-    private void residualNetwork() {
+    private Graph residualNetwork() {
+        Graph residualGraph = Graphs.clone(graph);
         LOG.debug(">>> residualNetwork >>>");
         computable = false;
 
-        for (Edge e : graph.getEachEdge()) {
+        for (Edge e : residualGraph.getEachEdge()) {
             double currCapacity = e.getAttribute("capacity");
             Node sourceNode = e.getSourceNode();
             Node targetNode = e.getTargetNode();
-            double currFlow = flow[indexOf(sourceNode)][indexOf(targetNode)];
+            double currFlow = flow[indexOfWithClone(sourceNode.getId())][indexOfWithClone(targetNode.getId())];
 
             if (currFlow > 0) {
-                graph.addEdge(
+                residualGraph.addEdge(
                         targetNode.getId() + sourceNode.getId(),
                         targetNode.getId(),
                         sourceNode.getId(),
@@ -253,17 +243,37 @@ public class FordFulkerson implements Algorithm {
                 LOG.debug(String.format("Edge %s created with %f capacity", targetNode.getId() + sourceNode.getId(), currFlow));
 
                 if (currCapacity - currFlow == 0) {
-                    graph.removeEdge((sourceNode.getId() + targetNode.getId()));
+                    residualGraph.removeEdge((sourceNode.getId() + targetNode.getId()));
                     LOG.debug(String.format("Edge %s deleted because 0 capacity left", sourceNode.getId() + targetNode.getId()));
                 } else {
-                    graph.getEdge(
+                    residualGraph.getEdge(
                             sourceNode.getId() + targetNode.getId()
                     ).setAttribute("capacity", (currCapacity - currFlow));
                     LOG.debug(String.format("Capacity from Edge %s decreased from  %f to %f", sourceNode.getId() + targetNode.getId(), currCapacity, (currCapacity - currFlow)));
                 }
             }
+
         }
         LOG.debug("<<< residualNetwork done <<<");
+        return residualGraph;
+    }
+
+
+    /**
+     * Returns true if node can be reached
+     *
+     * @param from source node
+     * @param to   target node
+     * @return true if node can be reached
+     */
+    public boolean path(Node from, Node to) {
+        Iterator<Node> breadthFirstIterator = from.getBreadthFirstIterator(true);
+        while (breadthFirstIterator.hasNext()) {
+            Node next = breadthFirstIterator.next();
+            if (next.equals(to))
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -302,6 +312,21 @@ public class FordFulkerson implements Algorithm {
     @NotNull
     private Integer indexOf(@NotNull Node node) {
         int i = nodes.indexOf(node);
+        if (i < 0) throw new NoSuchElementException();
+        return i;
+    }
+
+    /**
+     * Returns index of a Node
+     *
+     * @param nodeId from we want to know the index
+     * @return index
+     * @throws NoSuchElementException no such node in the list
+     */
+    @NotNull
+    private Integer indexOfWithClone(@NotNull String nodeId) {
+        Node first = nodes.stream().filter(e -> e.getId().equals(nodeId)).findFirst().get();
+        int i = nodes.indexOf(first);
         if (i < 0) throw new NoSuchElementException();
         return i;
     }
