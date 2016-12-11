@@ -46,6 +46,9 @@ public class EdmondsKarpVSFordFulkersonTest {
     public void setUp() throws Exception {
         IOGraph.attributeKeyValue = "capacity";
         graph4 = fromFile("graph4", new File("src/main/resources/input/BspGraph/graph04.gka"));
+        FordFulkerson.preview = false;
+        EdmondsKarp.preview = false;
+
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -74,21 +77,15 @@ public class EdmondsKarpVSFordFulkersonTest {
     @Test
     public void smallNetwork() throws Exception {
         // TODO Netzwerk 50 Knoten und 800 Kanten
-
-        Graph big = GraphGenerator.createRandomNetwork(5, 80);
-
+        Graph big = GraphGenerator.createRandomNetwork(50, 800);
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
-
 
         edmond.init(big);
         ford.init(big);
 
-//        edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + 50));
-//        ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + 800));
-
-        ford.compute();
         edmond.compute();
+        ford.compute();
     }
 
 

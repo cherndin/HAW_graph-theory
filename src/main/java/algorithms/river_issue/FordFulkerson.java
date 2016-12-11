@@ -105,15 +105,15 @@ public class FordFulkerson implements Algorithm {
      */
     public void compute() { // TODO no compute after cut because residualgraph
         stopWatch = new StopWatch();
-        LOG.debug("==== (2) compute ====");
+        if (preview) LOG.debug("==== (2) compute ====");
         if (!computable)
             throw new IllegalStateException("Do init(Graph) before compute()");
         /* (2) Inspektion und Markierung */
         // current setzten wir auch einen bel. markierten aber nicht inspizierten wert
         Node node = getMarkedButNotInspected(); // V_i
         Integer i = indexOf(node);
-        LOG.debug("Found marked but not inspected node (v_i): " + node);
-        LOG.debug(">>> Starting inspection >>>");
+        if (preview) LOG.debug("Found marked but not inspected node (v_i): " + node);
+        if (preview) LOG.debug(">>> Starting inspection >>>");
 
         // OUTPUT
         for (Edge leavingEdge : node.getEachLeavingEdge()) {   // E_ij elemOf Output(V_i)
@@ -121,7 +121,8 @@ public class FordFulkerson implements Algorithm {
             Integer j = indexOf(targetNode);
 
             if (!isMarked(targetNode) && flow[i][j] < capacity[i][j]) { // nur unmarkierte Knoten markieren V_j mit f(E_ij) < c(E_ij)
-                LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ij)=%f < c(E_ij))=%f", targetNode.getId(), flow[i][j], capacity[i][j]));
+                if (preview)
+                    LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ij)=%f < c(E_ij))=%f", targetNode.getId(), flow[i][j], capacity[i][j]));
                 // markiere VERTEX_j
                 mark(j, node, true, Math.min(delta[i], capacity[i][j] - flow[i][j]));
 
@@ -134,7 +135,8 @@ public class FordFulkerson implements Algorithm {
             Integer j = indexOf(sourceNode);
 
             if (!isMarked(sourceNode) && flow[j][i] > 0) { // nur unmarkierter Knoten V_j mit f(E_ji) > 0
-                LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ji)=%f > 0", sourceNode.getId(), flow[j][i]));
+                if (preview)
+                    LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ji)=%f > 0", sourceNode.getId(), flow[j][i]));
                 // markiere V_j
                 mark(j, node, false, Math.min(delta[i], flow[i][j]));
 
@@ -142,7 +144,7 @@ public class FordFulkerson implements Algorithm {
         }
 
         inspected[indexOf(node)] = true;
-        LOG.debug("<<< Inspection done <<<");
+        if (preview) LOG.debug("<<< Inspection done <<<");
 
         if (areAllMarkedNodesInspected()) {
             compute_Cut(); // (4) Es gibt keinen vergrößernden Weg
@@ -156,7 +158,7 @@ public class FordFulkerson implements Algorithm {
 
     /* (3) Vergrößerung der Flussstärke */
     void compute_AugmentedPath() {
-        LOG.debug("==== (3) compute augmentedPath ====");
+        if (preview) LOG.debug("==== (3) compute augmentedPath ====");
         Node current = sink;
         maxFlow += delta[indexOf(sink)];
         while (hasPred(current)) {
@@ -170,12 +172,14 @@ public class FordFulkerson implements Algorithm {
             if (edge.getTargetNode() == current) { // Wenn Vorwärtskante...
                 int i = indexOf(edge.getSourceNode());
                 flow[i][j] = flow[i][j] + delta_s; // ...dann wird f(E_ij) um d_s erhöhen
-                LOG.debug(String.format("%s[%s -> %s] got increased by %f and is now %f", edge.getId(), nodes.get(i), nodes.get(j), delta_s, flow[i][j]));
+                if (preview)
+                    LOG.debug(String.format("%s[%s -> %s] got increased by %f and is now %f", edge.getId(), nodes.get(i), nodes.get(j), delta_s, flow[i][j]));
 
             } else if (edge.getSourceNode() == current) { // Wenn Rückwärtskante...
                 int i = indexOf(edge.getTargetNode());
                 flow[j][i] = flow[j][i] - delta_s; // ...dann wird f(E_ji) um d_s verringert
-                LOG.debug(String.format("%s[%s -> %s] got decreased by %f and is now %f", edge.getId(), nodes.get(j), nodes.get(i), delta_s, flow[j][i]));
+                if (preview)
+                    LOG.debug(String.format("%s[%s -> %s] got decreased by %f and is now %f", edge.getId(), nodes.get(j), nodes.get(i), delta_s, flow[j][i]));
 
             } else {
                 throw new IllegalArgumentException("WTF: Something impossible went wrong");
@@ -183,13 +187,13 @@ public class FordFulkerson implements Algorithm {
             current = pred;
         }
         deleteAllMarks();
-        LOG.debug("==== done with augmentedPath ====");
+        if (preview) LOG.debug("==== done with augmentedPath ====");
     }
 
     /* (4) Es gibt keinen vergrößernden Weg ( Max-Flow-Min-Cut-Theorem ) */
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     void compute_Cut() {
-        LOG.debug("==== (4) compute_Cut ====");
+        if (preview) LOG.debug("==== (4) compute_Cut ====");
         computable = false;
         Graph residualGraph = residualNetwork(); // Residualnetzwerk(G)
 
@@ -198,10 +202,10 @@ public class FordFulkerson implements Algorithm {
         for (Node v : residualGraph.getEachNode()) {
             if (hasPath(residualGraph.getNode(source.getId()), v)) { // Wenn ein Pfad(s,v) in G existiert...
                 nodesS.add(v);
-                LOG.debug("Path(s,v) exists: S <- S v {" + v + "}");
+                if (preview) LOG.debug("Path(s,v) exists: S <- S v {" + v + "}");
             } else {
                 nodesT.add(v);
-                LOG.debug("Path(s,v) doesn't exists: T <- T v {" + v + "}");
+                if (preview) LOG.debug("Path(s,v) doesn't exists: T <- T v {" + v + "}");
             }
         }
 
@@ -212,16 +216,16 @@ public class FordFulkerson implements Algorithm {
             Node targetNode = e.getTargetNode();
             if ((nodesS.contains(sourceNode) && nodesT.contains(targetNode)) || (nodesS.contains(targetNode) && nodesT.contains(sourceNode))) { // Wenn startNode(e) aus S und endNode(e) aus T liegt...
                 cut.add(e);
-                LOG.debug(String.format("%s->%s added to Cut", sourceNode, targetNode));
+                if (preview) LOG.debug(String.format("%s->%s added to Cut", sourceNode, targetNode));
             }
 
         }
 
         maxFlowMinCut = cut;
         stopWatch.stop();
-        LOG.debug("Cut[" + cut + "]");
-        LOG.debug("==== compute_Cut done ====");
-        LOG.debug("Algorithms finished in " + stopWatch.getEndTimeString());
+        if (preview) LOG.debug("Cut[" + cut + "]");
+        if (preview) LOG.debug("==== compute_Cut done ====");
+        if (preview) LOG.debug("Algorithms finished in " + stopWatch.getEndTimeString());
     }
 
 
@@ -231,7 +235,7 @@ public class FordFulkerson implements Algorithm {
      */
     Graph residualNetwork() {
         Graph residualGraph = Graphs.clone(graph);
-        LOG.debug(">>> residualNetwork >>>");
+        if (preview) LOG.debug(">>> residualNetwork >>>");
 
         for (Edge e : residualGraph.getEachEdge()) {
             double currCapacity = e.getAttribute("capacity");
@@ -245,21 +249,24 @@ public class FordFulkerson implements Algorithm {
                         targetNode.getId(),
                         sourceNode.getId(),
                         true).setAttribute("capacity", currFlow);
-                LOG.debug(String.format("Edge %s created with %f capacity", targetNode.getId() + sourceNode.getId(), currFlow));
+                if (preview)
+                    LOG.debug(String.format("Edge %s created with %f capacity", targetNode.getId() + sourceNode.getId(), currFlow));
 
                 if (currCapacity - currFlow == 0) {
                     residualGraph.removeEdge(sourceNode.getEdgeToward(targetNode).getId());
-                    LOG.debug(String.format("Edge %s deleted because 0 capacity left", sourceNode.getId() + targetNode.getId()));
+                    if (preview)
+                        LOG.debug(String.format("Edge %s deleted because 0 capacity left", sourceNode.getId() + targetNode.getId()));
                 } else {
                     residualGraph.getEdge(
                             sourceNode.getEdgeToward(targetNode).getId()
                     ).setAttribute("capacity", (currCapacity - currFlow));
-                    LOG.debug(String.format("Capacity from Edge %s decreased from  %f to %f", sourceNode.getId() + targetNode.getId(), currCapacity, (currCapacity - currFlow)));
+                    if (preview)
+                        LOG.debug(String.format("Capacity from Edge %s decreased from  %f to %f", sourceNode.getId() + targetNode.getId(), currCapacity, (currCapacity - currFlow)));
                 }
             }
 
         }
-        LOG.debug("<<< residualNetwork done <<<");
+        if (preview) LOG.debug("<<< residualNetwork done <<<");
         return residualGraph;
     }
 
@@ -285,7 +292,7 @@ public class FordFulkerson implements Algorithm {
      * @return true if all marked nodes are inspected
      */
     private boolean areAllMarkedNodesInspected() {
-        for (Node node : nodes) {
+        for (Node node : graph.getEachNode()) {
             if (isMarked(node) && !inspected[indexOf(node)])
                 return false;
         }
@@ -299,7 +306,7 @@ public class FordFulkerson implements Algorithm {
      */
     @NotNull
     private Node getMarkedButNotInspected() {
-        for (Node node : nodes) {
+        for (Node node : graph.getEachNode()) {
             if (isMarked(node) && !inspected[indexOf(node)]) {
                 return node;
             }
@@ -364,21 +371,22 @@ public class FordFulkerson implements Algorithm {
         this.predecessor[idx] = predecessor;
         this.forward[idx] = forward;
         this.delta[idx] = delta;
-        LOG.debug(String.format("%s (%s%s, %f)", nodes.get(idx), (forward ? "+" : "-"), predecessor, delta));
+        if (preview)
+            LOG.debug(String.format("%s (%s%s, %f)", nodes.get(idx), (forward ? "+" : "-"), predecessor, delta));
     }
 
     /**
      * Reset of the arrays for the mark
      */
     private void deleteAllMarks() {
-        LOG.debug(">>> Starting deleteAllMarks >>>");
+        if (preview) LOG.debug(">>> Starting deleteAllMarks >>>");
         for (int i = 0; i < nodes.size(); i++) {
             inspected[i] = false;
             if (i != indexOf(source)) {
                 mark(i, null, false, Double.POSITIVE_INFINITY);
             }
         }
-        LOG.debug("<<< DeleteAllMarks done <<<");
+        if (preview) LOG.debug("<<< DeleteAllMarks done <<<");
     }
 
     // === MAIN ===
