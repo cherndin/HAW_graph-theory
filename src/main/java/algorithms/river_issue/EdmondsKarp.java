@@ -47,19 +47,21 @@ public class EdmondsKarp extends FordFulkerson implements Algorithm {
             int j = indexOf(v_j);
             Edge e_ij = v_i.getEdgeBetween(v_j);
 
-            if (e_ij.getTargetNode() == v_j) { // OUTPUT
-                if (!isMarked(v_j) && flow[i][j] < capacity[i][j]) { // nur unmarkierte Knoten markieren V_j mit f(E_ij) < c(E_ij)
-                    LOG.debug(String.format("Found unmarked node %s (v_j) from %s with f(E_ij)=%f < c(E_ij))=%f", v_j.getId(), v_i.getId(), flow[i][j], capacity[i][j]));
-                    // markiere VERTEX_j
-                    mark(j, v_i, true, Math.min(delta[i], capacity[i][j] - flow[i][j]));
+            if (e_ij != null) {
+                if (e_ij.getTargetNode() == v_j) { // OUTPUT
+                    if (!isMarked(v_j) && flow[i][j] < capacity[i][j]) { // nur unmarkierte Knoten markieren V_j mit f(E_ij) < c(E_ij)
+                        LOG.debug(String.format("Found unmarked node %s (v_j) from %s with f(E_ij)=%f < c(E_ij))=%f", v_j.getId(), v_i.getId(), flow[i][j], capacity[i][j]));
+                        // markiere VERTEX_j
+                        mark(j, v_i, true, Math.min(delta[i], capacity[i][j] - flow[i][j]));
 
-                }
-            } else if (e_ij.getTargetNode() == v_i) { // INPUT e_ij is actually e_ji
-                if (!isMarked(v_j) && flow[i][j] > 0) { // nur unmarkierter Knoten V_j mit f(E_ji) > 0
-                    LOG.debug(String.format("Found unmarked node %s (v_j) from %s with f(E_ji)=%f > 0", v_j.getId(), v_i.getId(), flow[i][j]));
-                    // markiere V_j
-                    mark(j, v_j, false, Math.min(delta[i], flow[i][j]));
+                    }
+                } else if (e_ij.getTargetNode() == v_i) { // INPUT e_ij is actually e_ji
+                    if (!isMarked(v_j) && flow[i][j] > 0) { // nur unmarkierter Knoten V_j mit f(E_ji) > 0
+                        LOG.debug(String.format("Found unmarked node %s (v_j) from %s with f(E_ji)=%f > 0", v_j.getId(), v_i.getId(), flow[i][j]));
+                        // markiere V_j
+                        mark(j, v_j, false, Math.min(delta[i], flow[i][j]));
 
+                    }
                 }
             }
 

@@ -131,7 +131,7 @@ public class FordFulkersonTest {
         assertTrue(fordYT.maxFlow == 28);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testNegGraph() throws Exception {
         FordFulkerson ford = new FordFulkerson();
         ford.init(negGraph);

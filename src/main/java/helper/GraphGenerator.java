@@ -1,8 +1,10 @@
 package helper;
 
+import algorithms.BreadthFirstSearch;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.generator.Generator;
 import org.graphstream.algorithm.generator.GridGenerator;
+import org.graphstream.algorithm.generator.RandomGenerator;
 import org.graphstream.algorithm.generator.WattsStrogatzGenerator;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
@@ -49,25 +51,20 @@ public class GraphGenerator {
         Generator gen = new GridGenerator(false, false, true, true);
         gen.addSink(graph);
         gen.begin();
-
         for (int i = 0; i < n; i++) {
             gen.nextEvents();
         }
-
         gen.end();
 
-        int i = 0;
-        double j = 1;
+        BreadthFirstSearch bfs = new BreadthFirstSearch();
+        bfs.init(graph);
+        bfs.compute();
         for (Edge edge : graph.getEachEdge()) {
-            if (Math.sqrt(j) == i) {
-                j++;
-                LOG.debug("New j: " + j);
-            }
-            edge.setAttribute("capacity", j);
-            i++;
+            edge.setAttribute("capacity", Double.valueOf(edge.getTargetNode().getAttribute("hits").toString()));
         }
+
         // Nodes already have a position.
-        graph.display(false);
+        GraphUtil.buildForDisplay(graph).display(false);
         return graph;
     }
 
@@ -77,15 +74,31 @@ public class GraphGenerator {
 
         gen.addSink(graph);
         gen.begin();
-        while (gen.nextEvents())
-            gen.end();
+        while (gen.nextEvents()) {
+        }
+        gen.end();
 
         graph.display(false); // Node position is provided.
         return graph;
     }
 
+    public static Graph createRandomNetwork(int nodes, int maxEdges) {
+        Graph graph = new SingleGraph("Random");
+        int averageDegree = maxEdges / nodes;
+        RandomGenerator gen = new RandomGenerator(averageDegree);
+        gen.addSink(graph);
+        gen.addEdgeAttribute("capacity");
+        gen.setDirectedEdges(true, false);
+        gen.begin();
+        for (int i = 0; i < nodes; i++) {
+            gen.nextEvents();
+        }
+        gen.end();
+        return graph;
+    }
+
     public static void main(String[] args) {
-        Graph graph = createGritNetworkGraph(2);
+        Graph graph = createRandomNetwork(50, 300);
         for (Node node : graph.getEachNode()) {
             System.out.println("Node:");
             System.out.println(node + "\n");

@@ -221,7 +221,7 @@ public class FordFulkerson implements Algorithm {
         stopWatch.stop();
         LOG.debug("Cut[" + cut + "]");
         LOG.debug("==== compute_Cut done ====");
-        LOG.debug("Algorithms finished in " + stopWatch.getEndTime());
+        LOG.debug("Algorithms finished in " + stopWatch.getEndTimeString());
     }
 
 
@@ -248,11 +248,11 @@ public class FordFulkerson implements Algorithm {
                 LOG.debug(String.format("Edge %s created with %f capacity", targetNode.getId() + sourceNode.getId(), currFlow));
 
                 if (currCapacity - currFlow == 0) {
-                    residualGraph.removeEdge((sourceNode.getId() + targetNode.getId()));
+                    residualGraph.removeEdge(sourceNode.getEdgeToward(targetNode).getId());
                     LOG.debug(String.format("Edge %s deleted because 0 capacity left", sourceNode.getId() + targetNode.getId()));
                 } else {
                     residualGraph.getEdge(
-                            sourceNode.getId() + targetNode.getId()
+                            sourceNode.getEdgeToward(targetNode).getId()
                     ).setAttribute("capacity", (currCapacity - currFlow));
                     LOG.debug(String.format("Capacity from Edge %s decreased from  %f to %f", sourceNode.getId() + targetNode.getId(), currCapacity, (currCapacity - currFlow)));
                 }

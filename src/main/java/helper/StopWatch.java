@@ -17,18 +17,26 @@ public class StopWatch {
 
     public String stop() {
         timeEnd = System.currentTimeMillis();
-        return getEndTime();
+        return getEndTimeString();
     }
 
-    public String getActualTime() {
+    public String getActualTimeString() {
         return runtimeToString(System.currentTimeMillis() - timeStart);
     }
 
-    public String getEndTime() {
+    public long getActualTime() {
+        return System.currentTimeMillis() - timeStart;
+    }
+
+    public String getEndTimeString() {
         return runtimeToString(timeEnd - timeStart);
     }
 
-    private String runtimeToString(long runtime) {
+    public long getEndTime() {
+        return timeEnd - timeStart;
+    }
+
+    public String runtimeToString(long runtime) {
         String output = "error";
         if (runtime < 1000) {
             output = runtime + " ms";
