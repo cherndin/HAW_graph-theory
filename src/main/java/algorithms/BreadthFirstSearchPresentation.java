@@ -92,7 +92,7 @@ public class BreadthFirstSearchPresentation implements Algorithm {
      *
      * @param s source node
      * @param t target node
-     */ // TODO macht es sinn diese methode iwie auszulagern!?
+     */
     public void setSourceAndTarget(@NotNull Node s,
                                    @NotNull Node t) {
         if (this.source != null && this.source.hasAttribute("title"))
@@ -162,14 +162,13 @@ public class BreadthFirstSearchPresentation implements Algorithm {
         return (!target.getAttribute("hits").equals(-1));
     }
 
-
     public static void main(String[] args) throws Exception {
         Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
 
         BreadthFirstSearchPresentation bfs = new BreadthFirstSearchPresentation();
         bfs.init(graph);
 //        bfs.setSourceAndTarget(graph.getNode("a"),graph.getNode("d"));
-        preview = false;
+        preview = true;
         bfs.compute();
         GraphUtil.sleepLong();
         System.out.println(bfs.getShortestPath().toString());

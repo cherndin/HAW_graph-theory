@@ -51,7 +51,7 @@ public class FordFulkerson implements Algorithm {
         nodes = ImmutableList.copyOf(graph.getEachNode());
         int size = nodes.size();
         setSourceAndTarget(nodes.get(0), nodes.get(size - 1));
-        this.graph = graph; // copy so we can make a residualgraph without editing the original
+        this.graph = graph;
 
         capacity = new Double[size][size];
         flow = new Double[size][size];
@@ -187,6 +187,7 @@ public class FordFulkerson implements Algorithm {
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
     private void compute_Cut() {
         LOG.debug("==== (4) compute_Cut ====");
+        computable = false;
         Graph residualGraph = residualNetwork(); // Residualnetzwerk(G)
 
         Set<Node> nodesS = new HashSet<Node>();
@@ -226,7 +227,6 @@ public class FordFulkerson implements Algorithm {
     Graph residualNetwork() {
         Graph residualGraph = Graphs.clone(graph);
         LOG.debug(">>> residualNetwork >>>");
-        computable = false;
 
         for (Edge e : residualGraph.getEachEdge()) {
             double currCapacity = e.getAttribute("capacity");
