@@ -50,8 +50,8 @@ public class Preconditions {
         for (Edge edge : graph.getEachEdge()) {
             if (edgeHasNoCapacity(edge))
                 throw new IllegalArgumentException("Graph has edge without capacity attribute");
-            if (edgeHasNegativeCapacity(edge))
-                throw new IllegalArgumentException("Graph has edge with negative capacity!");
+//            if (edgeHasNegativeCapacity(edge))
+//                throw new IllegalArgumentException("Graph has edge with negative capacity!");
             if (isUndirected(edge))
                 throw new IllegalArgumentException("Graph has nonDirected edges");
             // TODO keine schleifen, da schlicht

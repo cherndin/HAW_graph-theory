@@ -11,7 +11,7 @@ import static junit.framework.TestCase.assertTrue;
  * Created by MattX7 on 25.11.2016.
  */
 public class EdmondsKarpTest {
-    private Graph graphFromYouTube, graphFromWiki;
+    private Graph graphFromYouTube, graphFromWiki, negGraph, triangleGraph;
 
     // TODO test mit negativen Kanten
 
@@ -61,6 +61,31 @@ public class EdmondsKarpTest {
         graphFromWiki.addEdge("QR", "Q", "R", true).addAttribute("capacity", 4.0);
         graphFromWiki.addEdge("QT", "Q", "T", true).addAttribute("capacity", 2.0);
         graphFromWiki.addEdge("RT", "R", "T", true).addAttribute("capacity", 3.0);
+
+        negGraph = new SingleGraph("negGraph");
+        negGraph.addNode("S");
+        negGraph.addNode("v2");
+        negGraph.addNode("v3");
+        negGraph.addNode("v4");
+        negGraph.addNode("T");
+
+        negGraph.addEdge("Sv2", "S", "v2", true).addAttribute("capacity", -3.0);
+        negGraph.addEdge("v2v3", "v2", "v3", true).addAttribute("capacity", -11.0);
+        negGraph.addEdge("v3v4", "v3", "v4", true).addAttribute("capacity", 4.0);
+        negGraph.addEdge("v4v2", "v4", "v2", true).addAttribute("capacity", 3.0);
+        negGraph.addEdge("Tv4", "T", "v4", true).addAttribute("capacity", -2.0);
+
+        triangleGraph = new SingleGraph("triangleGraph");
+        triangleGraph.addNode("S");
+        triangleGraph.addNode("v2");
+        triangleGraph.addNode("T");
+
+        triangleGraph.addEdge("Sv2", "S", "v2", true).addAttribute("capacity", -3.0);
+        triangleGraph.addEdge("v2T", "v2", "T", true).addAttribute("capacity", -11.0);
+        triangleGraph.addEdge("TS", "T", "S", true).addAttribute("capacity", 4.0);
+
+
+
 //          like graphFromWiki but residual
 //        maxFminCGraphResidual = new SingleGraph("maxFminCGraphResidual");
 //        maxFminCGraphResidual.addNode("O");
@@ -104,4 +129,21 @@ public class EdmondsKarpTest {
         assertTrue(edmondsYT.maxFlow == 28);
     }
 
+    @Test
+    public void testNegGraph() throws Exception {
+        EdmondsKarp edmonds = new EdmondsKarp();
+        edmonds.init(negGraph);
+        edmonds.setSourceAndTarget(negGraph.getNode("S"), negGraph.getNode("T"));
+        edmonds.compute();
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTriangleGraph() throws Exception {
+        EdmondsKarp edmonds = new EdmondsKarp();
+        edmonds.init(triangleGraph);
+        edmonds.setSourceAndTarget(triangleGraph.getNode("S"), triangleGraph.getNode("T"));
+        edmonds.compute();
+
+    }
 }
