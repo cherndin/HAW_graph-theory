@@ -8,12 +8,12 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by MattX7 on 11.12.2016.
+ * Created by Neak on 23.10.2016.
  */
-public class BreadthFirstSearchTest {
+public class BreadthFirstSearchPresentationTest {
     @Before
     public void setUp() throws Exception {
-        BreadthFirstSearch.preview = false;
+        BreadthFirstSearchPresentation.preview = false;
     }
 
     @Test
@@ -63,21 +63,21 @@ public class BreadthFirstSearchTest {
         penta.addEdge("ec", "e", "c");
         penta.addEdge("bd", "b", "d");
 
-        BreadthFirstSearch.preview = false;
+        BreadthFirstSearchPresentation.preview = false;
 
-        BreadthFirstSearch bfs = new BreadthFirstSearch();
+        BreadthFirstSearchPresentation bfs = new BreadthFirstSearchPresentation();
         bfs.init(circle);
-        bfs.setSourceAndTarget(circle.getNode("a"),circle.getNode("c"));
+        bfs.setSourceAndTarget(circle.getNode("a"), circle.getNode("c"));
         bfs.compute();
 
-        BreadthFirstSearch bfs2 = new BreadthFirstSearch();
+        BreadthFirstSearchPresentation bfs2 = new BreadthFirstSearchPresentation();
         bfs2.init(pentaCircle);
-        bfs2.setSourceAndTarget(pentaCircle.getNode("a"),pentaCircle.getNode("c"));
+        bfs2.setSourceAndTarget(pentaCircle.getNode("a"), pentaCircle.getNode("c"));
         bfs2.compute();
 
-        BreadthFirstSearch bfs3 = new BreadthFirstSearch();
+        BreadthFirstSearchPresentation bfs3 = new BreadthFirstSearchPresentation();
         bfs3.init(penta);
-        bfs3.setSourceAndTarget(penta.getNode("a"),penta.getNode("e"));
+        bfs3.setSourceAndTarget(penta.getNode("a"), penta.getNode("e"));
         bfs3.compute();
 
         assertEquals(2, bfs.steps);
@@ -104,8 +104,8 @@ public class BreadthFirstSearchTest {
             bigGraph.addNode("" + i);
             bigGraph.addEdge("" + (i - 1) + i, "" + (i - 1), "" + i);
         }
-        BreadthFirstSearch.preview = false;
-        BreadthFirstSearch bfs = new BreadthFirstSearch();
+        BreadthFirstSearchPresentation.preview = false;
+        BreadthFirstSearchPresentation bfs = new BreadthFirstSearchPresentation();
         bfs.init(bigGraph);
         bfs.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
         bfs.compute();

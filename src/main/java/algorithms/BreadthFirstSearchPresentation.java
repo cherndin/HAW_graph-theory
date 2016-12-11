@@ -3,6 +3,7 @@ package algorithms;
 import helper.GraphUtil;
 import helper.IOGraph;
 import org.apache.log4j.Logger;
+import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -13,10 +14,10 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Created by MattX7 on 11.12.2016.
+ * Created by MattX7 on 23.10.2016.
  */
-public class BreadthFirstSearch {
-    private static Logger logger = Logger.getLogger(algorithms.BreadthFirstSearch.class);
+public class BreadthFirstSearchPresentation implements Algorithm {
+    private static Logger logger = Logger.getLogger(BreadthFirstSearchPresentation.class);
     public static boolean preview = true;
     public int steps = -1;
     private Graph graph;
@@ -31,19 +32,22 @@ public class BreadthFirstSearch {
     public void compute() {
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException();
+        if (preview) GraphUtil.buildForDisplay(graph).display();
         reset();
         logger.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph, false, false));
         Queue<Node> queue = new LinkedList<Node>();
         queue.add(tag(source, -1)); // start with source
-
+        source.setAttribute("ui.class", "markBlue");
         while (!queue.isEmpty()) {
             Node next = queue.peek();
-
+            next.setAttribute("ui.class", "markRed");
+            if (preview) GraphUtil.sleepLong();
             queue.addAll(getUntaggedNeighborsAndTagThem(next));
             if (isTargetTagged()) {
                 steps = target.getAttribute("hits");
                 break;
             }
+            next.setAttribute("ui.class", "markBlue");
             logger.debug("queue:" + queue.toString());
             queue.remove(next);
         }
@@ -57,9 +61,15 @@ public class BreadthFirstSearch {
         if (target.getAttribute("hits").equals(-1))
             throw new IllegalArgumentException("do compute before this method");
         LinkedList<Node> shortestWay = new LinkedList<Node>();
+        for (Node node : graph.getEachNode()) {
+            node.setAttribute("ui.class", "");
+        }
         shortestWay.add(target);
+        target.setAttribute("ui.class", "markRed");
         while (!shortestWay.getLast().getAttribute("hits").equals(0)) { // TODO noch eine Abbruchbedingung
             Node next = getShortestNode(shortestWay.getLast()); // TODO Nullable
+            if (preview) GraphUtil.sleepShort();
+            next.setAttribute("ui.class", "markRed");
             shortestWay.add(next);
         }
         return shortestWay;
@@ -82,10 +92,17 @@ public class BreadthFirstSearch {
      *
      * @param s source node
      * @param t target node
-     */
-    public void setSourceAndTarget(@NotNull Node s, @NotNull Node t) {
+     */ // TODO macht es sinn diese methode iwie auszulagern!?
+    public void setSourceAndTarget(@NotNull Node s,
+                                   @NotNull Node t) {
+        if (this.source != null && this.source.hasAttribute("title"))
+            this.source.removeAttribute("title");
+        if (this.target != null && this.target.hasAttribute("title"))
+            this.target.removeAttribute("title");
         this.source = s;
         this.target = t;
+        source.setAttribute("title", "source");
+        target.setAttribute("title", "target");
     }
 
     // ====== PRIVATE =========
@@ -110,6 +127,8 @@ public class BreadthFirstSearch {
             if (nextNode.getAttribute("hits").toString().equals("-1")) {
                 newTaggedNeighbors.add(
                         tag(nextNode, Integer.valueOf(node.getAttribute("hits").toString())));
+                nextNode.setAttribute("ui.class", "markBlue");
+                if (preview) GraphUtil.sleepShort();
             }
 
         }
@@ -131,8 +150,10 @@ public class BreadthFirstSearch {
      * @return the node param for inline use
      */
     @NotNull
-    private Node tag(@NotNull Node node, @NotNull Integer steps) {
+    private Node tag(@NotNull Node node,
+                     @NotNull Integer steps) {
         node.setAttribute("hits", steps + 1);
+        node.setAttribute("ui.label", node.getAttribute("ui.label") + " | " + (steps + 1) + " |");
         return node;
     }
 
@@ -145,16 +166,14 @@ public class BreadthFirstSearch {
     public static void main(String[] args) throws Exception {
         Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
 
-        algorithms.BreadthFirstSearch bfs = new algorithms.BreadthFirstSearch();
+        BreadthFirstSearchPresentation bfs = new BreadthFirstSearchPresentation();
         bfs.init(graph);
 //        bfs.setSourceAndTarget(graph.getNode("a"),graph.getNode("d"));
+        preview = false;
         bfs.compute();
+        GraphUtil.sleepLong();
         System.out.println(bfs.getShortestPath().toString());
         System.out.println("Steps" + bfs.steps);
 
     }
-
-
 }
-
-

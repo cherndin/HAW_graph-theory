@@ -23,17 +23,17 @@ public class FordFulkerson implements Algorithm {
 
     private boolean computable = false;
 
-    private Graph graph;
-    private List<Node> nodes = new LinkedList<Node>();
-    private Node source;
-    private Node sink;
+    Graph graph;
+    List<Node> nodes = new LinkedList<Node>();
+    Node source;
+    Node sink;
 
-    private Double capacity[][]; // capacity
-    private Double flow[][]; // flow
-    private Node predecessor[]; // predecessor
-    private Double delta[]; // delta
-    private boolean forward[];
-    private boolean inspected[];
+    Double capacity[][]; // capacity
+    Double flow[][]; // flow
+    Node predecessor[]; // predecessor
+    Double delta[]; // delta
+    boolean forward[];
+    boolean inspected[];
 
     public Set<Edge> maxFlowMinCut = new HashSet<Edge>();
     public double maxFlow;
@@ -192,7 +192,7 @@ public class FordFulkerson implements Algorithm {
         Set<Node> nodesS = new HashSet<Node>();
         Set<Node> nodesT = new HashSet<Node>();
         for (Node v : residualGraph.getEachNode()) {
-            if (path(residualGraph.getNode(source.getId()), v)) { // Wenn ein Pfad(s,v) in G existiert...
+            if (hasPath(residualGraph.getNode(source.getId()), v)) { // Wenn ein Pfad(s,v) in G existiert...
                 nodesS.add(v);
                 LOG.debug("Path(s,v) exists: S <- S v {" + v + "}");
             } else {
@@ -223,7 +223,7 @@ public class FordFulkerson implements Algorithm {
     /**
      * Transforms the given graph to a residual network
      */
-    private Graph residualNetwork() {
+    Graph residualNetwork() {
         Graph residualGraph = Graphs.clone(graph);
         LOG.debug(">>> residualNetwork >>>");
         computable = false;
@@ -266,7 +266,24 @@ public class FordFulkerson implements Algorithm {
      * @param to   target node
      * @return true if node can be reached
      */
-    public boolean path(Node from, Node to) {
+    boolean hasPath(Node from, Node to) {
+        Iterator<Node> breadthFirstIterator = from.getBreadthFirstIterator(true);
+        while (breadthFirstIterator.hasNext()) {
+            Node next = breadthFirstIterator.next();
+            if (next.equals(to))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if node can be reached
+     *
+     * @param from source node
+     * @param to   target node
+     * @return true if node can be reached
+     */
+    boolean shortestPath(Node from, Node to) {
         Iterator<Node> breadthFirstIterator = from.getBreadthFirstIterator(true);
         while (breadthFirstIterator.hasNext()) {
             Node next = breadthFirstIterator.next();
@@ -279,7 +296,7 @@ public class FordFulkerson implements Algorithm {
     /**
      * @return true if all marked nodes are inspected
      */
-    private boolean areAllMarkedNodesInspected() {
+    boolean areAllMarkedNodesInspected() {
         for (Node node : nodes) {
             if (isMarked(node) && !inspected[indexOf(node)])
                 return false;
@@ -293,7 +310,7 @@ public class FordFulkerson implements Algorithm {
      * @return marked but not inspected node
      */
     @NotNull
-    private Node getMarkedButNotInspected() {
+    Node getMarkedButNotInspected() {
         for (Node node : nodes) {
             if (isMarked(node) && !inspected[indexOf(node)]) {
                 return node;
@@ -310,7 +327,7 @@ public class FordFulkerson implements Algorithm {
      * @throws NoSuchElementException no such node in the list
      */
     @NotNull
-    private Integer indexOf(@NotNull Node node) {
+    Integer indexOf(@NotNull Node node) {
         int i = nodes.indexOf(node);
         if (i < 0) throw new NoSuchElementException();
         return i;
@@ -324,14 +341,14 @@ public class FordFulkerson implements Algorithm {
      * @throws NoSuchElementException no such node in the list
      */
     @NotNull
-    private Integer indexOfWithClone(@NotNull String nodeId) {
+    Integer indexOfWithClone(@NotNull String nodeId) {
         Node first = nodes.stream().filter(e -> e.getId().equals(nodeId)).findFirst().get();
         int i = nodes.indexOf(first);
         if (i < 0) throw new NoSuchElementException();
         return i;
     }
 
-    private boolean hasPred(Node node) {
+    boolean hasPred(Node node) {
         return (predecessor[indexOf(node)] != null);
     }
 
@@ -339,7 +356,7 @@ public class FordFulkerson implements Algorithm {
      * returns true if given node is marked;
      */
     @NotNull
-    private Boolean isMarked(@NotNull Node node) {
+    Boolean isMarked(@NotNull Node node) {
         int i = indexOf(node);
         return node == source || (delta[i] != Double.POSITIVE_INFINITY && predecessor[i] != null);
     }
@@ -352,10 +369,10 @@ public class FordFulkerson implements Algorithm {
      * @param forward     True if Edge goes forward
      * @param delta       Delta value
      */
-    private void mark(@NotNull Integer idx,
-                      @Nullable Node predecessor,
-                      @NotNull Boolean forward,
-                      @NotNull Double delta) {
+    void mark(@NotNull Integer idx,
+              @Nullable Node predecessor,
+              @NotNull Boolean forward,
+              @NotNull Double delta) {
         this.predecessor[idx] = predecessor;
         this.forward[idx] = forward;
         this.delta[idx] = delta;
@@ -365,7 +382,7 @@ public class FordFulkerson implements Algorithm {
     /**
      * Reset of the arrays for the mark
      */
-    private void deleteAllMarks() {
+    void deleteAllMarks() {
         LOG.debug(">>> Starting deleteAllMarks >>>");
         for (int i = 0; i < nodes.size(); i++) {
             inspected[i] = false;

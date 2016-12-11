@@ -2,7 +2,8 @@ package algorithms.river_issue;
 
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
-import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by MattX7 on 25.11.2016.
@@ -11,29 +12,18 @@ public class EdmondsKarp extends FordFulkerson implements Algorithm {
     private static Logger logger = Logger.getLogger(EdmondsKarp.class);
     static boolean preview = true;
 
-    private Graph graph;
-
     /**
-     * Initialization of the algorithm. This method has to be called before the
-     * {@link #compute()} method to initialize or reset the algorithm according
-     * to the new given graph.
+     * Returns marked but not inspected node
      *
-     * @param graph The graph this algorithm is using.
+     * @return marked but not inspected node
      */
-    public void init(Graph graph) throws IllegalArgumentException {
-        // Preconditions
-
-        //Implementation
-        this.graph = graph;
-    }
-
-    /**
-     * Run the algorithm. The {@link #init(Graph)} method has to be called
-     * before computing.
-     *
-     * @see #init(Graph)
-     */
-    public void compute() {
-
+    @NotNull
+    Node getMarkedButNotInspected() {
+        for (Node node : nodes) {
+            if (isMarked(node) && !inspected[indexOf(node)]) {
+                return node;
+            }
+        }
+        throw new IllegalArgumentException("no node found");
     }
 }
