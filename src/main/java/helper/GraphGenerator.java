@@ -46,12 +46,12 @@ public class GraphGenerator {
         return NetworkGraph;
     }
 
-    public static Graph createGritNetworkGraph(int n) {
+    public static Graph createGritNetworkGraph(int nodes) {
         Graph graph = new SingleGraph("Random");
         Generator gen = new GridGenerator(false, false, true, true);
         gen.addSink(graph);
         gen.begin();
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < Math.sqrt(nodes); i++) {
             gen.nextEvents();
         }
         gen.end();
@@ -62,10 +62,11 @@ public class GraphGenerator {
         for (Edge edge : graph.getEachEdge()) {
             edge.setAttribute("capacity", Double.valueOf(edge.getTargetNode().getAttribute("hits").toString()));
         }
-
-        // Nodes already have a position.
-        GraphUtil.buildForDisplay(graph).display(false);
         return graph;
+    }
+
+    public static int gritNetworkEdges(int nodes) {
+        return (int) Math.pow((nodes + Math.sqrt(nodes)), 2) / 4;
     }
 
     public static Graph createSmallWorldGraph(int n, int k, double beta) {

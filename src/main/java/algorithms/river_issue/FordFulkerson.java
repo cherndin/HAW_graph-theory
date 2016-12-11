@@ -109,8 +109,8 @@ public class FordFulkerson implements Algorithm {
             throw new IllegalStateException("Do init(Graph) before compute()");
         /* (2) Inspektion und Markierung */
         // current setzten wir auch einen bel. markierten aber nicht inspizierten wert
-        Node node = getMarkedButNotInspected(); // V_i
         while (!areAllMarkedNodesInspected()) {
+            Node node = getMarkedButNotInspected(); // V_i
             Integer i = indexOf(node);
             if (preview) LOG.debug("Found marked but not inspected node (v_i): " + node);
             if (preview) LOG.debug(">>> Starting inspection >>>");

@@ -1,9 +1,16 @@
 package algorithms.river_issue;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 
@@ -13,7 +20,16 @@ import static junit.framework.TestCase.assertTrue;
 public class EdmondsKarpTest {
     private Graph graphFromYouTube, graphFromWiki, negGraph, triangleGraph;
 
-    // TODO test mit negativen Kanten
+    @BeforeClass
+    public static void closeLogger() throws Exception {
+        List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
+        loggers.add(LogManager.getRootLogger());
+        for (Logger logger : loggers) {
+            if (Logger.getLogger(EdmondsKarpTest.class) != logger) {
+                logger.setLevel(Level.OFF);
+            }
+        }
+    }
 
     @Before
     public void setUp() throws Exception {

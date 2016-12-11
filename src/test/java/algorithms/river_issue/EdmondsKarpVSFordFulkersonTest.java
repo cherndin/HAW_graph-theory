@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static helper.IOGraph.fromFile;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * Created by MattX7 on 25.11.2016.
@@ -47,7 +48,7 @@ public class EdmondsKarpVSFordFulkersonTest {
         IOGraph.attributeKeyValue = "capacity";
         graph4 = fromFile("graph4", new File("src/main/resources/input/BspGraph/graph04.gka"));
         FordFulkerson.preview = false;
-        EdmondsKarp.preview = false;
+        EdmondsKarp.preview = true;
 
     }
 
@@ -72,12 +73,11 @@ public class EdmondsKarpVSFordFulkersonTest {
         System.out.println(stopWatch2.getEndTimeString());
 
     }
-    // TODO Vergleich des Netzwerkes
 
     @Test
     public void smallNetwork() throws Exception {
         // Netzwerk 50 Knoten und 800 Kanten
-        Graph big = GraphGenerator.createRandomNetwork(50, 800);
+        Graph big = GraphGenerator.createGritNetworkGraph(50);
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
@@ -86,6 +86,12 @@ public class EdmondsKarpVSFordFulkersonTest {
 
         edmond.compute();
         ford.compute();
+
+        assertTrue(edmond.maxFlow == 2);
+        assertTrue(ford.maxFlow == 2);
+//        long endTime = edmond.stopWatch.getEndTime();
+//        long actualTime = ford.stopWatch.getEndTime();
+//        assertTrue(endTime < actualTime);
     }
 
 
@@ -94,15 +100,14 @@ public class EdmondsKarpVSFordFulkersonTest {
         // MegafuckingnetworkGraph 100x run
         List<Long> fordRuntimes = new ArrayList<>();
         List<Long> edmondRuntimes = new ArrayList<>();
-        Graph big = GraphGenerator.createRandomNetwork(800, 30000);
+        Graph big = GraphGenerator.createGritNetworkGraph(800);
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
-        ford.init(big);
-        edmond.init(big);
-
         int rounds = 10;
         for (int i = 0; i <= rounds; i++) {
+            ford.init(big);
+            edmond.init(big);
             ford.compute();
             fordRuntimes.add(ford.stopWatch.getEndTime());
             edmond.compute();
@@ -120,22 +125,27 @@ public class EdmondsKarpVSFordFulkersonTest {
         // SupermegafuckingnetworkGraph 100x run
         List<Long> fordRuntimes = new ArrayList<>();
         List<Long> edmondRuntimes = new ArrayList<>();
-        Graph big = GraphGenerator.createRandomNetwork(2500, 2000000);
+        Graph big = GraphGenerator.createGritNetworkGraph(2500);
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
         ford.init(big);
         edmond.init(big);
 
-        ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + 2000000));
-        edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + 2500));
-
-        for (int i = 0; i <= 100; i++) {
+        int rounds = 10;
+        for (int i = 0; i <= rounds; i++) {
+            ford.init(big);
+            edmond.init(big);
             ford.compute();
             fordRuntimes.add(ford.stopWatch.getEndTime());
             edmond.compute();
             edmondRuntimes.add(edmond.stopWatch.getEndTime());
         }
+
+        LOG.debug(String.format("Min: %s/%s (FordFulkerson/EdmondsKarp)", Collections.min(fordRuntimes), Collections.min(edmondRuntimes)));
+        LOG.debug(String.format("AVG: %s/%s (FordFulkerson/EdmondsKarp)", (fordRuntimes.stream().reduce(0l, (x, y) -> x + y)) / rounds, (edmondRuntimes.stream().reduce(0l, (x, y) -> x + y)) / rounds));
+        LOG.debug(String.format("Max: %s/%s (FordFulkerson/EdmondsKarp)", Collections.max(fordRuntimes), Collections.max(edmondRuntimes)));
+
     }
 
 }
