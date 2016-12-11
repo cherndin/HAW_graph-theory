@@ -62,6 +62,7 @@ public class BreadthFirstSearch {
             Node next = getShortestNode(shortestWay.getLast()); // TODO Nullable
             shortestWay.add(next);
         }
+        Collections.reverse(shortestWay);
         return shortestWay;
     }
 
@@ -145,12 +146,11 @@ public class BreadthFirstSearch {
     public static void main(String[] args) throws Exception {
         Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
 
-        algorithms.BreadthFirstSearch bfs = new algorithms.BreadthFirstSearch();
+        BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(graph);
-//        bfs.setSourceAndTarget(graph.getNode("a"),graph.getNode("d"));
         bfs.compute();
         System.out.println(bfs.getShortestPath().toString());
-        System.out.println("Steps" + bfs.steps);
+        System.out.println("Steps: " + bfs.steps);
 
     }
 
