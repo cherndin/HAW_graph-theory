@@ -129,7 +129,7 @@ public class EdmondsKarpTest {
         assertTrue(edmondsYT.maxFlow == 28);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testNegGraph() throws Exception {
         EdmondsKarp edmonds = new EdmondsKarp();
         edmonds.init(negGraph);

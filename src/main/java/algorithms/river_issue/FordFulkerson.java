@@ -159,8 +159,6 @@ public class FordFulkerson implements Algorithm {
         LOG.debug("==== (3) compute augmentedPath ====");
         Node current = sink;
         maxFlow += delta[indexOf(sink)];
-        if (maxFlow < 0) // Kreis mit negativer Länge gefunden
-            throw new IllegalArgumentException("Graph has negative circles");
         while (hasPred(current)) {
             int j = indexOf(current);
             Node pred = predecessor[j];
