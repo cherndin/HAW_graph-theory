@@ -77,12 +77,16 @@ public class FordFulkersonTest {
 
         triangleGraph = new SingleGraph("triangleGraph");
         triangleGraph.addNode("S");
-        triangleGraph.addNode("v2");
+        triangleGraph.addNode("1");
+        triangleGraph.addNode("2");
+        triangleGraph.addNode("3");
         triangleGraph.addNode("T");
 
-        triangleGraph.addEdge("Sv2", "S", "v2", true).addAttribute("capacity", -3.0);
-        triangleGraph.addEdge("v2T", "v2", "T", true).addAttribute("capacity", -11.0);
-        triangleGraph.addEdge("TS", "T", "S", true).addAttribute("capacity", 4.0);
+        triangleGraph.addEdge("S1", "S", "1", true).addAttribute("capacity", 1.0);
+        triangleGraph.addEdge("12", "1", "2", true).addAttribute("capacity", -3.0);
+        triangleGraph.addEdge("23", "2", "3", true).addAttribute("capacity", -11.0);
+        triangleGraph.addEdge("31", "3", "1", true).addAttribute("capacity", 4.0);
+        triangleGraph.addEdge("2T", "2", "T", true).addAttribute("capacity", 1.0);
 
 //          like graphFromWiki but residual
 //        maxFminCGraphResidual = new SingleGraph("maxFminCGraphResidual");

@@ -47,7 +47,6 @@ public class EdmondsKarp extends FordFulkerson implements Algorithm {
             int j = indexOf(v_j);
             Edge e_ij = v_i.getEdgeBetween(v_j);
 
-
             if (e_ij.getTargetNode() == v_j) { // OUTPUT
                 if (!isMarked(v_j) && flow[i][j] < capacity[i][j]) { // nur unmarkierte Knoten markieren V_j mit f(E_ij) < c(E_ij)
                     LOG.debug(String.format("Found unmarked node %s (v_j) from %s with f(E_ij)=%f < c(E_ij))=%f", v_j.getId(), v_i.getId(), flow[i][j], capacity[i][j]));
@@ -63,7 +62,6 @@ public class EdmondsKarp extends FordFulkerson implements Algorithm {
 
                 }
             }
-
 
             inspected[indexOf(v_j)] = true;
         }

@@ -1,7 +1,9 @@
 package helper;
 
+import org.apache.log4j.Logger;
 import org.graphstream.algorithm.generator.Generator;
 import org.graphstream.algorithm.generator.GridGenerator;
+import org.graphstream.algorithm.generator.WattsStrogatzGenerator;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
@@ -14,6 +16,7 @@ import java.util.Random;
  * Created by Neak on 22.11.2016.
  */
 public class GraphGenerator {
+    private static final Logger LOG = Logger.getLogger(GraphGenerator.class);
 
     private static Random random;
 
@@ -53,14 +56,36 @@ public class GraphGenerator {
 
         gen.end();
 
+        int i = 0;
+        double j = 1;
+        for (Edge edge : graph.getEachEdge()) {
+            if (Math.sqrt(j) == i) {
+                j++;
+                LOG.debug("New j: " + j);
+            }
+            edge.setAttribute("capacity", j);
+            i++;
+        }
         // Nodes already have a position.
         graph.display(false);
         return graph;
     }
 
+    public static Graph createSmallWorldGraph(int n, int k, double beta) {
+        Graph graph = new SingleGraph("This is a small world!");
+        Generator gen = new WattsStrogatzGenerator(n, k, beta);
+
+        gen.addSink(graph);
+        gen.begin();
+        while (gen.nextEvents())
+            gen.end();
+
+        graph.display(false); // Node position is provided.
+        return graph;
+    }
 
     public static void main(String[] args) {
-        Graph graph = createGritNetworkGraph(1);
+        Graph graph = createGritNetworkGraph(2);
         for (Node node : graph.getEachNode()) {
             System.out.println("Node:");
             System.out.println(node + "\n");
