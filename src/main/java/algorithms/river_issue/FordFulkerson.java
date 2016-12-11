@@ -17,7 +17,6 @@ import java.util.*;
 
 /**
  * Created by MattX7 on 25.11.2016.
- *
  */
 public class FordFulkerson implements Algorithm {
     private static final Logger LOG = Logger.getLogger(FordFulkerson.class);
@@ -111,49 +110,45 @@ public class FordFulkerson implements Algorithm {
         /* (2) Inspektion und Markierung */
         // current setzten wir auch einen bel. markierten aber nicht inspizierten wert
         Node node = getMarkedButNotInspected(); // V_i
-        Integer i = indexOf(node);
-        if (preview) LOG.debug("Found marked but not inspected node (v_i): " + node);
-        if (preview) LOG.debug(">>> Starting inspection >>>");
+        while (!areAllMarkedNodesInspected()) {
+            Integer i = indexOf(node);
+            if (preview) LOG.debug("Found marked but not inspected node (v_i): " + node);
+            if (preview) LOG.debug(">>> Starting inspection >>>");
 
-        // OUTPUT
-        for (Edge leavingEdge : node.getEachLeavingEdge()) {   // E_ij elemOf Output(V_i)
-            Node targetNode = leavingEdge.getTargetNode();
-            Integer j = indexOf(targetNode);
+            // OUTPUT
+            for (Edge leavingEdge : node.getEachLeavingEdge()) {   // E_ij elemOf Output(V_i)
+                Node targetNode = leavingEdge.getTargetNode();
+                Integer j = indexOf(targetNode);
 
-            if (!isMarked(targetNode) && flow[i][j] < capacity[i][j]) { // nur unmarkierte Knoten markieren V_j mit f(E_ij) < c(E_ij)
-                if (preview)
-                    LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ij)=%f < c(E_ij))=%f", targetNode.getId(), flow[i][j], capacity[i][j]));
-                // markiere VERTEX_j
-                mark(j, node, true, Math.min(delta[i], capacity[i][j] - flow[i][j]));
+                if (!isMarked(targetNode) && flow[i][j] < capacity[i][j]) { // nur unmarkierte Knoten markieren V_j mit f(E_ij) < c(E_ij)
+                    if (preview)
+                        LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ij)=%f < c(E_ij))=%f", targetNode.getId(), flow[i][j], capacity[i][j]));
+                    // markiere VERTEX_j
+                    mark(j, node, true, Math.min(delta[i], capacity[i][j] - flow[i][j]));
+                }
+            }
 
+            // INPUT
+            for (Edge enteringEdge : node.getEachEnteringEdge()) {   // E_ji elemOf Input(V_i)
+                Node sourceNode = enteringEdge.getSourceNode();
+                Integer j = indexOf(sourceNode);
+
+                if (!isMarked(sourceNode) && flow[j][i] > 0) { // nur unmarkierter Knoten V_j mit f(E_ji) > 0
+                    if (preview)
+                        LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ji)=%f > 0", sourceNode.getId(), flow[j][i]));
+                    // markiere V_j
+                    mark(j, node, false, Math.min(delta[i], flow[i][j]));
+                }
+            }
+
+            inspected[indexOf(node)] = true;
+            if (preview) LOG.debug("<<< Inspection done <<<");
+
+            if (isMarked(sink)) {
+                compute_AugmentedPath(); // (3) Vergrößerung der Flussstärke
             }
         }
-
-        // INPUT
-        for (Edge enteringEdge : node.getEachEnteringEdge()) {   // E_ji elemOf Input(V_i)
-            Node sourceNode = enteringEdge.getSourceNode();
-            Integer j = indexOf(sourceNode);
-
-            if (!isMarked(sourceNode) && flow[j][i] > 0) { // nur unmarkierter Knoten V_j mit f(E_ji) > 0
-                if (preview)
-                    LOG.debug(String.format("Found unmarked node %s (v_j) with f(E_ji)=%f > 0", sourceNode.getId(), flow[j][i]));
-                // markiere V_j
-                mark(j, node, false, Math.min(delta[i], flow[i][j]));
-
-            }
-        }
-
-        inspected[indexOf(node)] = true;
-        if (preview) LOG.debug("<<< Inspection done <<<");
-
-        if (areAllMarkedNodesInspected()) {
-            compute_Cut(); // (4) Es gibt keinen vergrößernden Weg
-        } else if (isMarked(sink)) {
-            compute_AugmentedPath(); // (3) Vergrößerung der Flussstärke
-            compute();
-        } else {
-            compute(); // (2) Inspektion und Markierung
-        }
+        compute_Cut(); // (4) Es gibt keinen vergrößernden Weg
     }
 
     /* (3) Vergrößerung der Flussstärke */
@@ -227,7 +222,6 @@ public class FordFulkerson implements Algorithm {
         if (preview) LOG.debug("==== compute_Cut done ====");
         if (preview) LOG.debug("Algorithms finished in " + stopWatch.getEndTimeString());
     }
-
 
 
     /**
@@ -311,7 +305,7 @@ public class FordFulkerson implements Algorithm {
                 return node;
             }
         }
-        throw new IllegalArgumentException("no node found");
+        throw new IllegalArgumentException("no node found!");
     }
 
     /**

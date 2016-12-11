@@ -76,7 +76,7 @@ public class EdmondsKarpVSFordFulkersonTest {
 
     @Test
     public void smallNetwork() throws Exception {
-        // TODO Netzwerk 50 Knoten und 800 Kanten
+        // Netzwerk 50 Knoten und 800 Kanten
         Graph big = GraphGenerator.createRandomNetwork(50, 800);
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
@@ -94,7 +94,7 @@ public class EdmondsKarpVSFordFulkersonTest {
         // MegafuckingnetworkGraph 100x run
         List<Long> fordRuntimes = new ArrayList<>();
         List<Long> edmondRuntimes = new ArrayList<>();
-        Graph big = GraphGenerator.createRandomNetwork(80, 3000);
+        Graph big = GraphGenerator.createRandomNetwork(800, 30000);
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
