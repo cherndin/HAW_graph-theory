@@ -2,6 +2,7 @@ package algorithms.river_issue;
 
 import algorithms.Preconditions;
 import com.google.common.collect.ImmutableList;
+import helper.StopWatch;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
@@ -16,27 +17,28 @@ import java.util.*;
 
 /**
  * Created by MattX7 on 25.11.2016.
+ *
  */
 public class FordFulkerson implements Algorithm {
     private static final Logger LOG = Logger.getLogger(FordFulkerson.class);
     public static boolean preview = true;
-
-    private boolean computable = false;
+    StopWatch stopWatch;
+    boolean computable = false;
 
     Graph graph;
-    List<Node> nodes = new LinkedList<Node>();
+    private List<Node> nodes = new LinkedList<>();
     Node source;
     Node sink;
 
     Double capacity[][]; // capacity
     Double flow[][]; // flow
-    Node predecessor[]; // predecessor
+    private Node predecessor[]; // predecessor
     Double delta[]; // delta
-    boolean forward[];
+    private boolean forward[];
     boolean inspected[];
 
-    public Set<Edge> maxFlowMinCut = new HashSet<Edge>();
-    public double maxFlow;
+    Set<Edge> maxFlowMinCut = new HashSet<>();
+    double maxFlow;
 
     /**
      * Initialization of the algorithm. This method has to be called before the
@@ -102,6 +104,7 @@ public class FordFulkerson implements Algorithm {
      * @see #init(Graph)
      */
     public void compute() { // TODO no compute after cut because residualgraph
+        stopWatch = new StopWatch();
         LOG.debug("==== (2) compute ====");
         if (!computable)
             throw new IllegalStateException("Do init(Graph) before compute()");
@@ -152,7 +155,7 @@ public class FordFulkerson implements Algorithm {
     }
 
     /* (3) Vergrößerung der Flussstärke */
-    private void compute_AugmentedPath() {
+    void compute_AugmentedPath() {
         LOG.debug("==== (3) compute augmentedPath ====");
         Node current = sink;
         maxFlow += delta[indexOf(sink)];
@@ -185,13 +188,13 @@ public class FordFulkerson implements Algorithm {
 
     /* (4) Es gibt keinen vergrößernden Weg ( Max-Flow-Min-Cut-Theorem ) */
     // from: https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
-    private void compute_Cut() {
+    void compute_Cut() {
         LOG.debug("==== (4) compute_Cut ====");
         computable = false;
         Graph residualGraph = residualNetwork(); // Residualnetzwerk(G)
 
-        Set<Node> nodesS = new HashSet<Node>();
-        Set<Node> nodesT = new HashSet<Node>();
+        Set<Node> nodesS = new HashSet<>();
+        Set<Node> nodesT = new HashSet<>();
         for (Node v : residualGraph.getEachNode()) {
             if (hasPath(residualGraph.getNode(source.getId()), v)) { // Wenn ein Pfad(s,v) in G existiert...
                 nodesS.add(v);
@@ -202,7 +205,7 @@ public class FordFulkerson implements Algorithm {
             }
         }
 
-        Set<Edge> cut = new HashSet<Edge>();
+        Set<Edge> cut = new HashSet<>();
 
         for (Edge e : residualGraph.getEachEdge()) { // Für jede Kante e aus E
             Node sourceNode = e.getSourceNode();
@@ -215,8 +218,10 @@ public class FordFulkerson implements Algorithm {
         }
 
         maxFlowMinCut = cut;
+        stopWatch.stop();
         LOG.debug("Cut[" + cut + "]");
         LOG.debug("==== compute_Cut done ====");
+        LOG.debug("Algorithms finished in " + stopWatch.getEndTime());
     }
 
 
@@ -266,24 +271,7 @@ public class FordFulkerson implements Algorithm {
      * @param to   target node
      * @return true if node can be reached
      */
-    boolean hasPath(Node from, Node to) {
-        Iterator<Node> breadthFirstIterator = from.getBreadthFirstIterator(true);
-        while (breadthFirstIterator.hasNext()) {
-            Node next = breadthFirstIterator.next();
-            if (next.equals(to))
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if node can be reached
-     *
-     * @param from source node
-     * @param to   target node
-     * @return true if node can be reached
-     */
-    boolean shortestPath(Node from, Node to) {
+    private boolean hasPath(Node from, Node to) {
         Iterator<Node> breadthFirstIterator = from.getBreadthFirstIterator(true);
         while (breadthFirstIterator.hasNext()) {
             Node next = breadthFirstIterator.next();
@@ -296,7 +284,7 @@ public class FordFulkerson implements Algorithm {
     /**
      * @return true if all marked nodes are inspected
      */
-    boolean areAllMarkedNodesInspected() {
+    private boolean areAllMarkedNodesInspected() {
         for (Node node : nodes) {
             if (isMarked(node) && !inspected[indexOf(node)])
                 return false;
@@ -310,7 +298,7 @@ public class FordFulkerson implements Algorithm {
      * @return marked but not inspected node
      */
     @NotNull
-    Node getMarkedButNotInspected() {
+    private Node getMarkedButNotInspected() {
         for (Node node : nodes) {
             if (isMarked(node) && !inspected[indexOf(node)]) {
                 return node;
@@ -341,14 +329,14 @@ public class FordFulkerson implements Algorithm {
      * @throws NoSuchElementException no such node in the list
      */
     @NotNull
-    Integer indexOfWithClone(@NotNull String nodeId) {
+    private Integer indexOfWithClone(@NotNull String nodeId) {
         Node first = nodes.stream().filter(e -> e.getId().equals(nodeId)).findFirst().get();
         int i = nodes.indexOf(first);
         if (i < 0) throw new NoSuchElementException();
         return i;
     }
 
-    boolean hasPred(Node node) {
+    private boolean hasPred(Node node) {
         return (predecessor[indexOf(node)] != null);
     }
 
@@ -382,7 +370,7 @@ public class FordFulkerson implements Algorithm {
     /**
      * Reset of the arrays for the mark
      */
-    void deleteAllMarks() {
+    private void deleteAllMarks() {
         LOG.debug(">>> Starting deleteAllMarks >>>");
         for (int i = 0; i < nodes.size(); i++) {
             inspected[i] = false;

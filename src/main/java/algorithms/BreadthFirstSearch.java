@@ -22,6 +22,7 @@ public class BreadthFirstSearch {
     private Graph graph;
     private Node source;
     private Node target;
+    private boolean noTargetFound;
 
     public void init(Graph graph) {
         this.graph = graph;
@@ -49,13 +50,18 @@ public class BreadthFirstSearch {
         }
         if (!isTargetTagged()) {
             logger.error("Target not found!");
-        } else
+            noTargetFound = true;
+        } else {
             logger.info("Target found!");
+            noTargetFound = false;
+        }
     }
 
+    @NotNull
     public List<Node> getShortestPath() {
-        if (target.getAttribute("hits").equals(-1))
-            throw new IllegalArgumentException("do compute before this method");
+        if (noTargetFound)
+            return Collections.emptyList();
+
         LinkedList<Node> shortestWay = new LinkedList<Node>();
         shortestWay.add(target);
         while (!shortestWay.getLast().getAttribute("hits").equals(0)) { // TODO noch eine Abbruchbedingung
