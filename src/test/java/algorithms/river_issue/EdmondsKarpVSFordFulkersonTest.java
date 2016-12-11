@@ -1,7 +1,7 @@
 package algorithms.river_issue;
 
+import helper.GraphGenerator;
 import helper.IOGraph;
-import helper.NetworkGraph;
 import helper.StopWatch;
 import org.graphstream.graph.Graph;
 import org.junit.Before;
@@ -57,8 +57,8 @@ public class EdmondsKarpVSFordFulkersonTest {
     @Test
     public void smallNetwork() throws Exception {
         // TODO Netzwerk 50 Knoten und 800 Kanten
-        NetworkGraph networkGraph = new NetworkGraph(50, 800);
-        Graph big = networkGraph.createNetworkGraph();
+
+        Graph big = GraphGenerator.createNetworkGraph(50, 800);
 
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
@@ -67,8 +67,8 @@ public class EdmondsKarpVSFordFulkersonTest {
         edmond.init(big);
         ford.init(big);
 
-        edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + networkGraph.nodes));
-        ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + networkGraph.nodes));
+        edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + 50));
+        ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + 800));
 
         ford.compute();
         edmond.compute();
@@ -78,8 +78,7 @@ public class EdmondsKarpVSFordFulkersonTest {
     @Test
     public void bigNetwork() throws Exception {
         // TODO MegafuckingnetworkGraph 100x run
-        NetworkGraph networkGraph = new NetworkGraph(800, 30000);
-        Graph big = networkGraph.createNetworkGraph();
+        Graph big = GraphGenerator.createNetworkGraph(800, 30000);
 
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
@@ -88,8 +87,8 @@ public class EdmondsKarpVSFordFulkersonTest {
         edmond.init(big);
         ford.init(big);
 
-        edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + networkGraph.nodes));
-        ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + networkGraph.nodes));
+        edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + 800));
+        ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + 30000));
 
         for (int i = 0; i <= 100; i++) {
             edmond.compute();
@@ -100,8 +99,7 @@ public class EdmondsKarpVSFordFulkersonTest {
     @Test
     public void superBigNetwork() throws Exception {
         // TODO SupermegafuckingnetworkGraph 100x run
-        NetworkGraph networkGraph = new NetworkGraph(2500, 2000000);
-        Graph big = networkGraph.createNetworkGraph();
+        Graph big = GraphGenerator.createNetworkGraph(2500, 2000000);
 
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
@@ -110,8 +108,8 @@ public class EdmondsKarpVSFordFulkersonTest {
         edmond.init(big);
         ford.init(big);
 
-        edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + networkGraph.nodes));
-        ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + networkGraph.nodes));
+        edmond.setSourceAndTarget(big.getNode("1"), big.getNode("" + 2500));
+        ford.setSourceAndTarget(big.getNode("1"), big.getNode("" + 2000000));
 
         for (int i = 0; i <= 100; i++) {
             edmond.compute();
