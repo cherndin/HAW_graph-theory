@@ -81,11 +81,11 @@ public class BreadthFirstSearchTest {
         bfs3.compute();
 
         assertEquals(2, bfs.steps);
-        assertEquals("[c, d, a]", bfs.getShortestPath().toString());
+        assertEquals("[a, d, c]", bfs.getShortestPath().toString());
         assertEquals(1, bfs2.steps);
-        assertEquals("[c, a]", bfs2.getShortestPath().toString());
+        assertEquals("[a, c]", bfs2.getShortestPath().toString());
         assertEquals(2, bfs3.steps);
-        assertEquals("[e, c, a]", bfs3.getShortestPath().toString());
+        assertEquals("[a, c, e]", bfs3.getShortestPath().toString());
 
         //assertEquals(bfs.sumWeight, 3); // {shortestWay, anzKanten}
         //Graph graph1 = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka"));
