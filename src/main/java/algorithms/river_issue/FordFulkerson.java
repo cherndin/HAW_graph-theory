@@ -102,7 +102,7 @@ public class FordFulkerson implements Algorithm {
      *
      * @see #init(Graph)
      */
-    public void compute() { // TODO no compute after cut because residualgraph
+    public void compute() {
         stopWatch = new StopWatch();
         if (preview) LOG.debug("==== (2) compute ====");
         if (!computable)
@@ -144,11 +144,14 @@ public class FordFulkerson implements Algorithm {
             inspected[indexOf(node)] = true;
             if (preview) LOG.debug("<<< Inspection done <<<");
 
+            // (3) Vergrößerung der Flussstärke
             if (isMarked(sink)) {
-                compute_AugmentedPath(); // (3) Vergrößerung der Flussstärke
+                compute_AugmentedPath();
             }
         }
-        compute_Cut(); // (4) Es gibt keinen vergrößernden Weg
+
+        // (4) Es gibt keinen vergrößernden Weg
+        compute_Cut();
     }
 
     /* (3) Vergrößerung der Flussstärke */

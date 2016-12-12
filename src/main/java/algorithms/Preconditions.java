@@ -54,8 +54,6 @@ public class Preconditions {
                 throw new IllegalArgumentException("Graph has edge with negative capacity!");
             if (isUndirected(edge))
                 throw new IllegalArgumentException("Graph has nonDirected edges");
-            // TODO keine schleifen, da schlicht
-            // TODO ? schwach zusammenh¨angenden ?
         }
     }
 
