@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static helper.IOGraph.fromFile;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by MattX7 on 25.11.2016.
@@ -75,8 +75,10 @@ public class EdmondsKarpVSFordFulkersonTest {
 
     @Test
     public void smallNetwork() throws Exception {
-        // Netzwerk 50 Knoten und 800 Kanten
-        Graph big = GraphGenerator.createGritNetworkGraph(50);
+        // 50 nodes and 814 Edges
+        int nodes = 50;
+        Graph big = GraphGenerator.createGritNetworkGraph(nodes);
+        LOG.debug(String.format("BigNetwork with %d nodes and %d edges started", nodes, GraphGenerator.gritNetworkEdges(nodes)));
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
@@ -86,20 +88,21 @@ public class EdmondsKarpVSFordFulkersonTest {
         edmond.compute();
         ford.compute();
 
-        assertTrue(edmond.maxFlow == 2);
-        assertTrue(ford.maxFlow == 2);
+        assertEquals(edmond.maxFlow, 2.0, 0.001);
+        assertEquals(ford.maxFlow, 2.0, 0.001);
 //        long endTime = edmond.stopWatch.getEndTime();
 //        long actualTime = ford.stopWatch.getEndTime();
 //        assertTrue(endTime < actualTime);
     }
 
-
     @Test
     public void bigNetwork() throws Exception {
-        // MegafuckingnetworkGraph 100x run
+        // 100x 800 Nodes and 171.513 Edges
         List<Long> fordRuntimes = new ArrayList<>();
         List<Long> edmondRuntimes = new ArrayList<>();
-        Graph big = GraphGenerator.createGritNetworkGraph(800);
+        int nodes = 800;
+        Graph big = GraphGenerator.createGritNetworkGraph(nodes);
+        LOG.debug(String.format("BigNetwork with %d nodes and %d edges started", nodes, GraphGenerator.gritNetworkEdges(nodes)));
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
@@ -121,10 +124,12 @@ public class EdmondsKarpVSFordFulkersonTest {
     @Ignore
     @Test
     public void superBigNetwork() throws Exception {
-        // SupermegafuckingnetworkGraph 100x run
+        // 100x 2500 Nodes and 1.625.625 Edges
         List<Long> fordRuntimes = new ArrayList<>();
         List<Long> edmondRuntimes = new ArrayList<>();
-        Graph big = GraphGenerator.createGritNetworkGraph(2500);
+        int nodes = 2500;
+        Graph big = GraphGenerator.createGritNetworkGraph(nodes);
+        LOG.debug(String.format("BigNetwork with %d nodes and %d edges started", nodes, GraphGenerator.gritNetworkEdges(nodes)));
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
