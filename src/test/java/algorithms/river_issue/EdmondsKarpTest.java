@@ -25,10 +25,9 @@ public class EdmondsKarpTest {
         List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
         loggers.add(LogManager.getRootLogger());
         for (Logger logger : loggers) {
-            if (Logger.getLogger(EdmondsKarpTest.class) != logger) {
-                logger.setLevel(Level.OFF);
-            }
+            logger.setLevel(Level.OFF);
         }
+        Logger.getLogger(EdmondsKarp.class).setLevel(Level.DEBUG);
     }
 
     @Before
