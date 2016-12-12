@@ -75,13 +75,11 @@ public class FordFulkerson implements Algorithm {
                 }
                 flow[i][j] = 0.0;
             }
-            delta[i] = Double.POSITIVE_INFINITY;  // TODO right?
+            delta[i] = Double.POSITIVE_INFINITY;
         }
 
-        // Markiere q mit (undef, Inf.)
-//        predecessor[indexOf(source)] = source; TODO ist das richtig?
         delta[indexOf(source)] = Double.POSITIVE_INFINITY;
-        mark(indexOf(source), null, true, delta[indexOf(source)]);  //changed this
+        mark(indexOf(source), null, true, delta[indexOf(source)]);
         computable = true;
     }
 
