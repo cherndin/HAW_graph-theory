@@ -37,10 +37,9 @@ public class EdmondsKarpVSFordFulkersonTest {
         List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
         loggers.add(LogManager.getRootLogger());
         for (Logger logger : loggers) {
-            if (Logger.getLogger(EdmondsKarpVSFordFulkersonTest.class) != logger) {
                 logger.setLevel(Level.OFF);
-            }
         }
+        Logger.getLogger(EdmondsKarpVSFordFulkersonTest.class).setLevel(Level.DEBUG);
     }
 
     @Before

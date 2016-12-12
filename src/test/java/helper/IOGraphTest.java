@@ -88,7 +88,7 @@ public class IOGraphTest {
         Graph graph09_2 = fromFile("graph09", new File("src/main/resources/output/graph09.gka"));
         Graph graph10_2 = fromFile("graph10", new File("src/main/resources/output/graph10.gka"));
 
-        graph01_2.display();
+//        graph01_2.display();
 
 //        assertEquals(graph01, graph01_2);
 //        assertEquals(graph02, graph02_2);
