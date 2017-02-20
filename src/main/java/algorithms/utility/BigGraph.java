@@ -11,32 +11,30 @@ import java.util.Random;
  */
 public class BigGraph {
     public int nodes;
-    public int edges;
+    private int edges;
     public int edgeCount = 1;
     private Random random = new Random();
 
     public BigGraph() {
     }
 
-    public BigGraph(int nodes, int edges) {
+    public BigGraph(final int nodes, final int edges) {
         this.nodes = nodes;
         this.edges = edges;
     }
 
-    ;
-
     public Graph createBigGraph() {
-        Graph bigGraph = new SingleGraph("bigGraph");
+        final Graph bigGraph = new SingleGraph("bigGraph");
         for (int i = 1; i <= nodes; i++) {
             bigGraph.addNode("" + i);
         }
         bigGraph.addEdge("1_100", "1", "100", true).addAttribute("weight", 1);
         for (int i = 2; i <= edges; i++) {
-            int x = random.nextInt(nodes - 1) + 1;
-            int y = random.nextInt(nodes - 1) + 1;
+            final int x = random.nextInt(nodes - 1) + 1;
+            final int y = random.nextInt(nodes - 1) + 1;
             try {
                 bigGraph.addEdge(x + "_" + y + "| " + edgeCount + " |", x + "", y + "", true).addAttribute("weight", 1);
-            } catch (EdgeRejectedException o) {
+            } catch (final EdgeRejectedException o) {
                 i--;
                 continue;
             }

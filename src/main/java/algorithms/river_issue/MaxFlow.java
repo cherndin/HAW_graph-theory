@@ -23,7 +23,7 @@ public class MaxFlow {
      *
      * @param strategy not null.
      */
-    public MaxFlow(@NotNull MaxFlowStrategy strategy) {
+    public MaxFlow(@NotNull final MaxFlowStrategy strategy) {
         this.strategy = checkNotNull(strategy, "strategy has to be not null!");
     }
 
@@ -35,9 +35,9 @@ public class MaxFlow {
      * @param target not null.
      * @return graph for inline use;
      */
-    public Graph executeStrategy(@NotNull Graph graph,
-                                 @NotNull Node source,
-                                 @NotNull Node target) {
+    public Graph executeStrategy(@NotNull final Graph graph,
+                                 @NotNull final Node source,
+                                 @NotNull final Node target) {
         checkNotNull(graph, "graph has to be not null!");
         checkNotNull(source, "source has to be not null!");
         checkNotNull(target, "target has to be not null!");

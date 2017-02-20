@@ -25,18 +25,18 @@ public class EdmondsKarp extends FordFulkerson implements MaxFlowStrategy {
         if (!computable)
             throw new IllegalStateException("Do init(Graph) before compute()");
         /* (2) Inspektion und Markierung */
-        List<String> bfs = bfs(); // aktueller Pfad angegeben durch ids der Nodes
+        final List<String> bfs = bfs(); // aktueller Pfad angegeben durch ids der Nodes
 
         LOG.debug("Starting with path:" + bfs);
         LOG.debug(">>> Starting inspection >>>");
 
 
         for (int k = 0; k < bfs.size() - 1; k++) {
-            Node v_i = graph.getNode(bfs.get(k));
-            Node v_j = graph.getNode(bfs.get(k + 1));
-            int i = indexOf(v_i);
-            int j = indexOf(v_j);
-            Edge e_ij = v_i.getEdgeBetween(v_j);
+            final Node v_i = graph.getNode(bfs.get(k));
+            final Node v_j = graph.getNode(bfs.get(k + 1));
+            final int i = indexOf(v_i);
+            final int j = indexOf(v_j);
+            final Edge e_ij = v_i.getEdgeBetween(v_j);
 
             if (e_ij != null) {
                 if (e_ij.getTargetNode() == v_j) { // OUTPUT
@@ -79,18 +79,18 @@ public class EdmondsKarp extends FordFulkerson implements MaxFlowStrategy {
      */
     @NotNull
     private List<String> bfs() {
-        BreadthFirstSearch bfs = new BreadthFirstSearch();
-        Graph residual = residualNetwork();
+        final BreadthFirstSearch bfs = new BreadthFirstSearch();
+        final Graph residual = residualNetwork();
         bfs.init(residual, residual.getNode(source.getId()), residual.getNode(sink.getId()));
         bfs.compute();
-        List<Node> shortestPath = bfs.getShortestPath();
+        final List<Node> shortestPath = bfs.getShortestPath();
         return shortestPath.stream().map(Element::getId).collect(Collectors.toList());
     }
 
     // === MAIN ===
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
-        Graph maxFminCGraph = new SingleGraph("maxFminCGraph");
+        final Graph maxFminCGraph = new SingleGraph("maxFminCGraph");
         maxFminCGraph.addNode("O");
         maxFminCGraph.addNode("P");
         maxFminCGraph.addNode("Q");
@@ -107,7 +107,7 @@ public class EdmondsKarp extends FordFulkerson implements MaxFlowStrategy {
         maxFminCGraph.addEdge("QT", "Q", "T", true).addAttribute("capacity", 2.0);
         maxFminCGraph.addEdge("RT", "R", "T", true).addAttribute("capacity", 3.0);
 
-        EdmondsKarp edmonds = new EdmondsKarp();
+        final EdmondsKarp edmonds = new EdmondsKarp();
         edmonds.init(maxFminCGraph, maxFminCGraph.getNode("S"), maxFminCGraph.getNode("T"));
         edmonds.compute();
     }

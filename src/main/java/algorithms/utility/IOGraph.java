@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public class IOGraph {
     private static final Logger LOG = Logger.getLogger(IOGraph.class);
 
-    public static boolean throwExc = false;
+    private static boolean throwExc = false;
     public static String attributeKeyValue = "weight";
 
     /* Class should not be an instance
@@ -56,11 +56,11 @@ public class IOGraph {
      * @param filename
      * @throws IOException
      */
-    public static void save(@NotNull Graph graph,
-                            @NotNull String filename) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter("src/main/resources/output/" + filename + ".gka"));
+    public static void save(@NotNull final Graph graph,
+                            @NotNull final String filename) throws IOException {
+        final BufferedWriter bw = new BufferedWriter(new FileWriter("src/main/resources/output/" + filename + ".gka"));
         Boolean enableWeight = false;
-        for (Edge edge : graph.getEachEdge()) {
+        for (final Edge edge : graph.getEachEdge()) {
             if (edge.getAttribute("weight") != null)
                 enableWeight = true;
             bw.write(GraphUtil.edgeToLine(edge, true, enableWeight));
@@ -79,13 +79,13 @@ public class IOGraph {
      * @param enableWeight true if you wanna save the weight of the edges
      * @throws IOException if export fails
      */
-    public static void save(@NotNull Graph graph,
-                            @NotNull String filename,
-                            @NotNull Boolean enableName,
-                            @NotNull Boolean enableWeight) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter("src/main/resources/output/" + filename + ".gka"));
+    public static void save(@NotNull final Graph graph,
+                            @NotNull final String filename,
+                            @NotNull final Boolean enableName,
+                            @NotNull final Boolean enableWeight) throws IOException {
+        final BufferedWriter bw = new BufferedWriter(new FileWriter("src/main/resources/output/" + filename + ".gka"));
 
-        for (Edge edge : graph.getEachEdge()) {
+        for (final Edge edge : graph.getEachEdge()) {
             bw.write(GraphUtil.edgeToLine(edge, enableName, enableWeight));
             bw.newLine();
         }
@@ -100,10 +100,10 @@ public class IOGraph {
      * @throws FileNotFoundException selected file could not be found
      */
     @Nullable
-    public static Graph fromFileWithFileChooser(@NotNull String name) throws RuntimeException, FileNotFoundException {
-        JFileChooser fc = new JFileChooser();
-        File fileToRead = fc.getSelectedFile();
-        int state = fc.showOpenDialog(null);
+    public static Graph fromFileWithFileChooser(@NotNull final String name) throws RuntimeException, FileNotFoundException {
+        final JFileChooser fc = new JFileChooser();
+        final File fileToRead = fc.getSelectedFile();
+        final int state = fc.showOpenDialog(null);
 
         if (state == JFileChooser.APPROVE_OPTION)
             return fromFile(name, fileToRead);
@@ -120,24 +120,24 @@ public class IOGraph {
      * @throws FileNotFoundException fileToRead could not be found
      */
     @NotNull
-    public static Graph fromFile(@NotNull String name,
-                                 @NotNull File fileToRead) throws FileNotFoundException {
+    public static Graph fromFile(@NotNull final String name,
+                                 @NotNull final File fileToRead) throws FileNotFoundException {
         LOG.info("=== Creating graph from " + fileToRead.getName() + " ===");
-        Graph graph = new MultiGraph(name);
-        Scanner scanner = new Scanner(fileToRead, "utf-8");
+        final Graph graph = new MultiGraph(name);
+        final Scanner scanner = new Scanner(fileToRead, "utf-8");
         int ln = 1;
-        String uml = "[_öÖäÄüÜßa-zA-Z0-9]";
-        String ws = "\\p{Blank}*";
-        String edgePattern = "(" + uml + "+)(" + ws + "(-[->])" + ws + "(" + uml + "+))?(" + ws + "\\((" + uml + "*)\\))?(" + ws + ":" + ws + "(\\d+))?" + ws + ";";
+        final String uml = "[_öÖäÄüÜßa-zA-Z0-9]";
+        final String ws = "\\p{Blank}*";
+        final String edgePattern = "(" + uml + "+)(" + ws + "(-[->])" + ws + "(" + uml + "+))?(" + ws + "\\((" + uml + "*)\\))?(" + ws + ":" + ws + "(\\d+))?" + ws + ";";
 
         while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            Matcher lineMatcher = Pattern.compile(edgePattern).matcher(line);
+            final String line = scanner.nextLine();
+            final Matcher lineMatcher = Pattern.compile(edgePattern).matcher(line);
 
             if (lineMatcher.matches()) {
                 Boolean isDirected = false;
                 String edgeID = "", edgeWeight = "", arrow = "", node1 = ""; // Nullable
-                String node0 = lineMatcher.group(1); // NotNull
+                final String node0 = lineMatcher.group(1); // NotNull
                 createNodeIfDoesntExist(graph, node0);
 
                 // NORMAL EDGE with two different edges
@@ -185,7 +185,7 @@ public class IOGraph {
      *
      * @param graph
      */
-    public static void display(Graph graph) {
+    private static void display(final Graph graph) {
         GraphUtil.buildForDisplay(graph);
         graph.display();
     }
@@ -201,10 +201,10 @@ public class IOGraph {
      * @param enableName   with name from edges?
      * @param enableWeight with weight from edges?
      */
-    private static void preview(@NotNull Graph graph,
-                                @NotNull Boolean enableName,
-                                @NotNull Boolean enableWeight) {
-        for (Edge edge : graph.getEachEdge()) {
+    private static void preview(@NotNull final Graph graph,
+                                @NotNull final Boolean enableName,
+                                @NotNull final Boolean enableWeight) {
+        for (final Edge edge : graph.getEachEdge()) {
             System.out.println(GraphUtil.edgeToLine(edge, enableName, enableWeight));
         }
     }
@@ -221,21 +221,21 @@ public class IOGraph {
      * @param weight     "" for no weight
      * @param ln         line number
      */
-    private static void addEdge(@NotNull Graph graph,
-                                @NotNull String edge,
-                                @NotNull String node0,
-                                @NotNull String node1,
-                                @NotNull Boolean isDirected,
-                                @NotNull String weight,
-                                @NotNull Integer ln) {
-        String loop = "";
+    private static void addEdge(@NotNull final Graph graph,
+                                @NotNull final String edge,
+                                @NotNull final String node0,
+                                @NotNull final String node1,
+                                @NotNull final Boolean isDirected,
+                                @NotNull final String weight,
+                                @NotNull final Integer ln) {
+        final String loop = "";
         try {
             if (weight.equals("")) // without edgeWeight
                 graph.addEdge(edge, node0, node1, isDirected);
             else  // normal case
                 graph.addEdge(edge, node0, node1, isDirected).setAttribute(attributeKeyValue, Integer.valueOf(weight));
             LOG.debug(ln + ". " + GraphUtil.edgeToLine(graph.getEdge(edge), true, false) + " added.");
-        } catch (EdgeRejectedException e) {
+        } catch (final EdgeRejectedException e) {
             System.err.println(e);
         }
     }
@@ -247,7 +247,7 @@ public class IOGraph {
      * @param graph
      * @param node0
      */
-    private static void createNodeIfDoesntExist(Graph graph, String node0) {
+    private static void createNodeIfDoesntExist(final Graph graph, final String node0) {
         if (graph.getNode(node0) == null) graph.addNode(node0);
     }
 
@@ -255,7 +255,7 @@ public class IOGraph {
 
     public static void main(String[] args) throws Exception {
 //        throwExc = false;
-        Graph graph3 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
+        final Graph graph3 = fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
         display(graph3);
 
 //        Graph pentaCircle = new MultiGraph("pentaCircle");

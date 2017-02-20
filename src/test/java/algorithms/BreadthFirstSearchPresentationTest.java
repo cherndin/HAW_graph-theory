@@ -1,12 +1,9 @@
 package algorithms;
 
-import algorithms.optimal_ways.BreadthFirstSearchPresentation;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Neak on 23.10.2016.

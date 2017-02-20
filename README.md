@@ -1,7 +1,14 @@
 # Graphentheorie
-Contains following algorithm:
-- Breathe First Search
+
+## Algorithms
+#### Shortest Path
+- Breathe-First Search
 - Dijkstra
-- Flyd Warshall
-- Edmonds Karp
-- Ford Fulkerson
+- Floyd-Warshall
+
+#### Max Flow
+- Edmonds–Karp
+- Ford–Fulkerson
+
+## Utility
+- Input/Output with gka-files

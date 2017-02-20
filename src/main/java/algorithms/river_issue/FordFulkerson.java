@@ -36,12 +36,11 @@ public class FordFulkerson implements MaxFlowStrategy {
     private boolean forward[];
     boolean inspected[];
 
-    Set<Edge> maxFlowMinCut = new HashSet<>();
     double maxFlow;
 
-    public void init(@NotNull Graph graph,
-                     @NotNull Node source,
-                     @NotNull Node sink) throws IllegalArgumentException {
+    public void init(@NotNull final Graph graph,
+                     @NotNull final Node source,
+                     @NotNull final Node sink) throws IllegalArgumentException {
         Preconditions.checkNotNull(graph, "graph has to be not null!");
         Preconditions.checkNotNull(source, "source has to be not null!");
         Preconditions.checkNotNull(sink, "target has to be not null!");
@@ -50,7 +49,7 @@ public class FordFulkerson implements MaxFlowStrategy {
         this.source = source;
         this.sink = sink;
         nodes = ImmutableList.copyOf(graph.getEachNode());
-        int size = nodes.size();
+        final int size = nodes.size();
         this.graph = graph;
 
         capacity = new Double[size][size];
@@ -62,13 +61,13 @@ public class FordFulkerson implements MaxFlowStrategy {
         maxFlow = 0;
 
         // Initialize empty flow & capacity.
-        Iterator<Node> iIterator = nodes.iterator();
+        final Iterator<Node> iIterator = nodes.iterator();
         for (int i = 0; i < size; i++) {
-            Node nodeI = iIterator.next();
-            Iterator<Node> jIterator = nodes.iterator();
+            final Node nodeI = iIterator.next();
+            final Iterator<Node> jIterator = nodes.iterator();
             for (int j = 0; j < size; j++) {
-                Node nodeJ = jIterator.next();
-                Edge edgeBetween = nodeI.getEdgeBetween(nodeJ);
+                final Node nodeJ = jIterator.next();
+                final Edge edgeBetween = nodeI.getEdgeBetween(nodeJ);
                 if (edgeBetween != null) {
                     capacity[i][j] = edgeBetween.getAttribute("capacity");
                 }
@@ -90,15 +89,15 @@ public class FordFulkerson implements MaxFlowStrategy {
         /* (2) Inspektion und Markierung */
         // current setzten wir auch einen bel. markierten aber nicht inspizierten wert
         while (!areAllMarkedNodesInspected()) {
-            Node node = getMarkedButNotInspected(); // V_i
-            Integer i = indexOf(node);
+            final Node node = getMarkedButNotInspected(); // V_i
+            final Integer i = indexOf(node);
             if (preview) LOG.debug("Found marked but not inspected node (v_i): " + node);
             if (preview) LOG.debug(">>> Starting inspection >>>");
 
             // OUTPUT
-            for (Edge leavingEdge : node.getEachLeavingEdge()) {   // E_ij elemOf Output(V_i)
-                Node targetNode = leavingEdge.getTargetNode();
-                Integer j = indexOf(targetNode);
+            for (final Edge leavingEdge : node.getEachLeavingEdge()) {   // E_ij elemOf Output(V_i)
+                final Node targetNode = leavingEdge.getTargetNode();
+                final Integer j = indexOf(targetNode);
 
                 if (!isMarked(targetNode) && flow[i][j] < capacity[i][j]) { // nur unmarkierte Knoten markieren V_j mit f(E_ij) < c(E_ij)
                     if (preview)
@@ -109,9 +108,9 @@ public class FordFulkerson implements MaxFlowStrategy {
             }
 
             // INPUT
-            for (Edge enteringEdge : node.getEachEnteringEdge()) {   // E_ji elemOf Input(V_i)
-                Node sourceNode = enteringEdge.getSourceNode();
-                Integer j = indexOf(sourceNode);
+            for (final Edge enteringEdge : node.getEachEnteringEdge()) {   // E_ji elemOf Input(V_i)
+                final Node sourceNode = enteringEdge.getSourceNode();
+                final Integer j = indexOf(sourceNode);
 
                 if (!isMarked(sourceNode) && flow[j][i] > 0) { // nur unmarkierter Knoten V_j mit f(E_ji) > 0
                     if (preview)
@@ -140,21 +139,21 @@ public class FordFulkerson implements MaxFlowStrategy {
         Node current = sink;
         maxFlow += delta[indexOf(sink)];
         while (hasPred(current)) {
-            int j = indexOf(current);
-            Node pred = predecessor[j];
+            final int j = indexOf(current);
+            final Node pred = predecessor[j];
             Edge edge = pred.getEdgeBetween(current);
             if (edge == null)
                 edge = current.getEdgeBetween(pred);
-            Double delta_s = delta[indexOf(sink)]; // DELTA_s
+            final Double delta_s = delta[indexOf(sink)]; // DELTA_s
 
             if (edge.getTargetNode() == current) { // Wenn Vorwärtskante...
-                int i = indexOf(edge.getSourceNode());
+                final int i = indexOf(edge.getSourceNode());
                 flow[i][j] = flow[i][j] + delta_s; // ...dann wird f(E_ij) um d_s erhöhen
                 if (preview)
                     LOG.debug(String.format("%s[%s -> %s] got increased by %f and is now %f", edge.getId(), nodes.get(i), nodes.get(j), delta_s, flow[i][j]));
 
             } else if (edge.getSourceNode() == current) { // Wenn Rückwärtskante...
-                int i = indexOf(edge.getTargetNode());
+                final int i = indexOf(edge.getTargetNode());
                 flow[j][i] = flow[j][i] - delta_s; // ...dann wird f(E_ji) um d_s verringert
                 if (preview)
                     LOG.debug(String.format("%s[%s -> %s] got decreased by %f and is now %f", edge.getId(), nodes.get(j), nodes.get(i), delta_s, flow[j][i]));
@@ -173,11 +172,11 @@ public class FordFulkerson implements MaxFlowStrategy {
     void compute_Cut() {
         if (preview) LOG.debug("==== (4) compute_Cut ====");
         computable = false;
-        Graph residualGraph = residualNetwork(); // Residualnetzwerk(G)
+        final Graph residualGraph = residualNetwork(); // Residualnetzwerk(G)
 
         Set<Node> nodesS = new HashSet<>();
         Set<Node> nodesT = new HashSet<>();
-        for (Node v : residualGraph.getEachNode()) {
+        for (final Node v : residualGraph.getEachNode()) {
             if (hasPath(residualGraph.getNode(source.getId()), v)) { // Wenn ein Pfad(s,v) in G existiert...
                 nodesS.add(v);
                 if (preview) LOG.debug("Path(s,v) exists: S <- S v {" + v + "}");
@@ -187,11 +186,11 @@ public class FordFulkerson implements MaxFlowStrategy {
             }
         }
 
-        Set<Edge> cut = new HashSet<>();
+        final Set<Edge> cut = new HashSet<>();
 
-        for (Edge e : residualGraph.getEachEdge()) { // Für jede Kante e aus E
-            Node sourceNode = e.getSourceNode();
-            Node targetNode = e.getTargetNode();
+        for (final Edge e : residualGraph.getEachEdge()) { // Für jede Kante e aus E
+            final Node sourceNode = e.getSourceNode();
+            final Node targetNode = e.getTargetNode();
             if ((nodesS.contains(sourceNode) && nodesT.contains(targetNode)) || (nodesS.contains(targetNode) && nodesT.contains(sourceNode))) { // Wenn startNode(e) aus S und endNode(e) aus T liegt...
                 cut.add(e);
                 if (preview) LOG.debug(String.format("%s->%s added to Cut", sourceNode, targetNode));
@@ -199,7 +198,6 @@ public class FordFulkerson implements MaxFlowStrategy {
 
         }
 
-        maxFlowMinCut = cut;
         stopWatch.stop();
         if (preview) LOG.debug("Cut[" + cut + "]");
         if (preview) LOG.debug("==== compute_Cut done ====");
@@ -211,14 +209,14 @@ public class FordFulkerson implements MaxFlowStrategy {
      * Transforms the given graph to a residual network
      */
     Graph residualNetwork() {
-        Graph residualGraph = Graphs.clone(graph);
+        final Graph residualGraph = Graphs.clone(graph);
         if (preview) LOG.debug(">>> residualNetwork >>>");
 
-        for (Edge e : residualGraph.getEachEdge()) {
-            double currCapacity = e.getAttribute("capacity");
-            Node sourceNode = e.getSourceNode();
-            Node targetNode = e.getTargetNode();
-            double currFlow = flow[indexOfWithClone(sourceNode.getId())][indexOfWithClone(targetNode.getId())];
+        for (final Edge e : residualGraph.getEachEdge()) {
+            final double currCapacity = e.getAttribute("capacity");
+            final Node sourceNode = e.getSourceNode();
+            final Node targetNode = e.getTargetNode();
+            final double currFlow = flow[indexOfWithClone(sourceNode.getId())][indexOfWithClone(targetNode.getId())];
 
             if (currFlow > 0) {
                 residualGraph.addEdge(
@@ -255,10 +253,10 @@ public class FordFulkerson implements MaxFlowStrategy {
      * @param to   target node
      * @return true if node can be reached
      */
-    private boolean hasPath(Node from, Node to) {
-        Iterator<Node> breadthFirstIterator = from.getBreadthFirstIterator(true);
+    private boolean hasPath(final Node from, final Node to) {
+        final Iterator<Node> breadthFirstIterator = from.getBreadthFirstIterator(true);
         while (breadthFirstIterator.hasNext()) {
-            Node next = breadthFirstIterator.next();
+            final Node next = breadthFirstIterator.next();
             if (next.equals(to))
                 return true;
         }
@@ -269,7 +267,7 @@ public class FordFulkerson implements MaxFlowStrategy {
      * @return true if all marked nodes are inspected
      */
     private boolean areAllMarkedNodesInspected() {
-        for (Node node : graph.getEachNode()) {
+        for (final Node node : graph.getEachNode()) {
             if (isMarked(node) && !inspected[indexOf(node)])
                 return false;
         }
@@ -283,7 +281,7 @@ public class FordFulkerson implements MaxFlowStrategy {
      */
     @NotNull
     private Node getMarkedButNotInspected() {
-        for (Node node : graph.getEachNode()) {
+        for (final Node node : graph.getEachNode()) {
             if (isMarked(node) && !inspected[indexOf(node)]) {
                 return node;
             }
@@ -299,8 +297,8 @@ public class FordFulkerson implements MaxFlowStrategy {
      * @throws NoSuchElementException no such node in the list
      */
     @NotNull
-    Integer indexOf(@NotNull Node node) {
-        int i = nodes.indexOf(node);
+    Integer indexOf(@NotNull final Node node) {
+        final int i = nodes.indexOf(node);
         if (i < 0) throw new NoSuchElementException();
         return i;
     }
@@ -313,14 +311,14 @@ public class FordFulkerson implements MaxFlowStrategy {
      * @throws NoSuchElementException no such node in the list
      */
     @NotNull
-    private Integer indexOfWithClone(@NotNull String nodeId) {
-        Node first = nodes.stream().filter(e -> e.getId().equals(nodeId)).findFirst().get();
-        int i = nodes.indexOf(first);
+    private Integer indexOfWithClone(@NotNull final String nodeId) {
+        final Node first = nodes.stream().filter(e -> e.getId().equals(nodeId)).findFirst().get();
+        final int i = nodes.indexOf(first);
         if (i < 0) throw new NoSuchElementException();
         return i;
     }
 
-    private boolean hasPred(Node node) {
+    private boolean hasPred(final Node node) {
         return (predecessor[indexOf(node)] != null);
     }
 
@@ -328,8 +326,8 @@ public class FordFulkerson implements MaxFlowStrategy {
      * returns true if given node is marked;
      */
     @NotNull
-    Boolean isMarked(@NotNull Node node) {
-        int i = indexOf(node);
+    Boolean isMarked(@NotNull final Node node) {
+        final int i = indexOf(node);
         return node == source || (delta[i] != Double.POSITIVE_INFINITY && predecessor[i] != null);
     }
 
@@ -341,10 +339,10 @@ public class FordFulkerson implements MaxFlowStrategy {
      * @param forward     True if Edge goes forward
      * @param delta       Delta value
      */
-    void mark(@NotNull Integer idx,
-              @Nullable Node predecessor,
-              @NotNull Boolean forward,
-              @NotNull Double delta) {
+    void mark(@NotNull final Integer idx,
+              @Nullable final Node predecessor,
+              @NotNull final Boolean forward,
+              @NotNull final Double delta) {
         Preconditions.checkNotNull(idx, "idx has to be not null!");
         Preconditions.checkNotNull(forward, "forward has to be not null!");
         Preconditions.checkNotNull(delta, "delta has to be not null!");
@@ -373,7 +371,7 @@ public class FordFulkerson implements MaxFlowStrategy {
     // === MAIN ===
     public static void main(String[] args) throws Exception {
         // https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
-        Graph maxFminCGraph = new SingleGraph("maxFminCGraph");
+        final Graph maxFminCGraph = new SingleGraph("maxFminCGraph");
         maxFminCGraph.addNode("O");
         maxFminCGraph.addNode("P");
         maxFminCGraph.addNode("Q");
@@ -390,7 +388,7 @@ public class FordFulkerson implements MaxFlowStrategy {
         maxFminCGraph.addEdge("QT", "Q", "T", true).addAttribute("capacity", 2.0);
         maxFminCGraph.addEdge("RT", "R", "T", true).addAttribute("capacity", 3.0);
 
-        FordFulkerson ford = new FordFulkerson();
+        final FordFulkerson ford = new FordFulkerson();
         ford.init(maxFminCGraph, maxFminCGraph.getNode("S"), maxFminCGraph.getNode("T"));
         ford.compute();
     }

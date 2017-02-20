@@ -37,9 +37,9 @@ public class Dijkstra implements ShortestWayStrategy {
     private Node target;
 
     @Override
-    public void init(@NotNull Graph graph,
-                     @NotNull Node source,
-                     @NotNull Node target) throws IllegalArgumentException {
+    public void init(@NotNull final Graph graph,
+                     @NotNull final Node source,
+                     @NotNull final Node target) throws IllegalArgumentException {
         checkNotNull(graph, "graph has to be not null!");
         checkNotNull(source, "source has to be not null!");
         checkNotNull(target, "target has to be not null!");
@@ -50,7 +50,7 @@ public class Dijkstra implements ShortestWayStrategy {
         this.source = source;
         this.target = target;
         this.hits = 0;
-        int size = graph.getNodeCount();
+        final int size = graph.getNodeCount();
         this.nodes = new Node[size];
         this.entf = new Double[size];
         this.vorg = new Node[size];
@@ -59,7 +59,7 @@ public class Dijkstra implements ShortestWayStrategy {
 
     @Override
     public void compute() {
-        LOG.debug("Starting Dijkstra with " + GraphUtil.graphToString(graph, false, false));
+        LOG.debug("Starting Dijkstra with " + GraphUtil.graphToString(graph));
         // GraphPreconditions
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException("Attributes are missing");
@@ -71,7 +71,7 @@ public class Dijkstra implements ShortestWayStrategy {
         calcNewDistance(source);
         do {
             // Knoten mit minimaler Distanz auswählen
-            Node currentNode = withMinDistance();
+            final Node currentNode = withMinDistance();
             // Setze OKh := true.
             ok[getIndex(currentNode)] = true;
 
@@ -97,7 +97,7 @@ public class Dijkstra implements ShortestWayStrategy {
         if (hits == 0)
             throw new IllegalArgumentException("do compute before this method");
 
-        List<Node> shortestPath = new LinkedList<>();
+        final List<Node> shortestPath = new LinkedList<>();
         // TODO was wenn kein kürzester Weg gefunden wurde?
         shortestPath.add(target);
         Node current = target;
@@ -109,7 +109,7 @@ public class Dijkstra implements ShortestWayStrategy {
     }
 
     @Nullable
-    public Double getDistance() {
+    Double getDistance() {
         return distance;
     }
 
@@ -123,17 +123,17 @@ public class Dijkstra implements ShortestWayStrategy {
      * @return boolean
      */
     private boolean asLongAsWeHaveNodesWithFalse() {
-        for (Boolean anOk : ok) {
+        for (final Boolean anOk : ok) {
             if (!anOk) return true;
         }
         return false;
     }
 
-    private Node getPred(Node node) {
+    private Node getPred(final Node node) {
         return vorg[getIndex(node)];
     }
 
-    private boolean hasPred(Node node) {
+    private boolean hasPred(final Node node) {
         return node != vorg[getIndex(node)];
 
     }
@@ -143,10 +143,10 @@ public class Dijkstra implements ShortestWayStrategy {
     private void setUp() {
         // nodes
         nodes[0] = source;
-        Iterator<Node> nodeIterator = graph.getNodeIterator();
+        final Iterator<Node> nodeIterator = graph.getNodeIterator();
         int n = 1;
         while (nodeIterator.hasNext()) {
-            Node next = nodeIterator.next();
+            final Node next = nodeIterator.next();
             if (source != next) {
                 nodes[n] = next;
                 n++;
@@ -166,18 +166,18 @@ public class Dijkstra implements ShortestWayStrategy {
         }
     }
 
-    private void calcNewDistance(@NotNull Node currNode) {
+    private void calcNewDistance(@NotNull final Node currNode) {
         // Berechne für alle noch unbesuchten Nachbarknoten die Summe des jeweiligen Kantengewichtes und der Distanz.
-        Iterator<Edge> leavingEdgeIterator = currNode.getLeavingEdgeIterator();
+        final Iterator<Edge> leavingEdgeIterator = currNode.getLeavingEdgeIterator();
         while (leavingEdgeIterator.hasNext()) {
-            Edge leavingEdge = leavingEdgeIterator.next();
-            Node leavingNode = getRightNode(currNode, leavingEdge);
+            final Edge leavingEdge = leavingEdgeIterator.next();
+            final Node leavingNode = getRightNode(currNode, leavingEdge);
             hits += 2;
 
             if (!ok[getIndex(leavingNode)]) {
-                Double entfCurr = entf[getIndex(currNode)]; // entf von aktuellen Knoten aus der Matrix holen
-                Double entfLeaving = entf[getIndex(leavingNode)]; // entf vom neuten Knoten holen
-                Double weightLeavingEdge = leavingEdge.getAttribute("weight");
+                final Double entfCurr = entf[getIndex(currNode)]; // entf von aktuellen Knoten aus der Matrix holen
+                final Double entfLeaving = entf[getIndex(leavingNode)]; // entf vom neuten Knoten holen
+                final Double weightLeavingEdge = leavingEdge.getAttribute("weight");
                 hits++;
 
                 if (entfLeaving > entfCurr + weightLeavingEdge) {
@@ -197,7 +197,7 @@ public class Dijkstra implements ShortestWayStrategy {
      * @return index
      */
     @NotNull
-    private Integer getIndex(@NotNull Node node) {
+    private Integer getIndex(@NotNull final Node node) {
         for (int i = 0; i <= nodes.length; i++) {
             if (nodes[i] == node)
                 return i;
@@ -206,8 +206,8 @@ public class Dijkstra implements ShortestWayStrategy {
     }
 
     @NotNull
-    private Node getRightNode(@NotNull Node currNode, @NotNull Edge leavingEdge) {
-        Node node;
+    private Node getRightNode(@NotNull final Node currNode, @NotNull final Edge leavingEdge) {
+        final Node node;
         if (leavingEdge.getNode1().equals(currNode))
             node = leavingEdge.getNode0();
         else
@@ -244,7 +244,7 @@ public class Dijkstra implements ShortestWayStrategy {
      */
     private void printMatrix() {
         System.out.print("\t\t");
-        for (Node node : nodes) { // print x nodes
+        for (final Node node : nodes) { // print x nodes
             System.out.print(node.getId() + "\t\t\t");
         }
         System.out.println();
@@ -269,10 +269,10 @@ public class Dijkstra implements ShortestWayStrategy {
 
     // === MAIN ===
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Graph aus den Folien
         // 02_GKA-Optimale Wege.pdf Folie 2 und 6
-        Graph graph = new SingleGraph("graph");
+        final Graph graph = new SingleGraph("graph");
 
         graph.addNode("v1");
         graph.addNode("v2");
@@ -293,7 +293,7 @@ public class Dijkstra implements ShortestWayStrategy {
         graph.addEdge("v5v4", "v5", "v4", true).addAttribute("weight", 3.0);
         graph.addEdge("v5v6", "v5", "v6", true).addAttribute("weight", 1.0);
 
-        Dijkstra dijk = new Dijkstra();
+        final Dijkstra dijk = new Dijkstra();
         dijk.init(graph, graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         dijk.compute();
     }

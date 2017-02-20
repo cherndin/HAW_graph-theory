@@ -20,9 +20,9 @@ public interface ShortestWayStrategy {
      * @param source not null.
      * @param target not null.
      */
-    void init(@NotNull Graph graph,
-              @NotNull Node source,
-              @NotNull Node target) throws IllegalArgumentException;
+    void init(@NotNull final Graph graph,
+              @NotNull final Node source,
+              @NotNull final Node target) throws IllegalArgumentException;
 
     /**
      * Run the algorithm. The {@link #init(Graph, Node, Node)} method has to be called

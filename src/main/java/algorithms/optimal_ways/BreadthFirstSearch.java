@@ -26,11 +26,10 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
     private Node source;
     private Node target;
     private boolean noTargetFound;
-    private Double distance;
 
-    public void init(@NotNull Graph graph,
-                     @NotNull Node source,
-                     @NotNull Node target) {
+    public void init(@NotNull final Graph graph,
+                     @NotNull final Node source,
+                     @NotNull final Node target) {
         this.graph = checkNotNull(graph, "graph has to be not null!");
         this.source = checkNotNull(source, "source has to be not null!");
         this.target = checkNotNull(target, "target has to be not null!");
@@ -41,12 +40,12 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
             throw new IllegalArgumentException("Do init() before compute()");
 
         reset();
-        LOG.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph, false, false));
-        Queue<Node> queue = new LinkedList<>();
+        LOG.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph));
+        final Queue<Node> queue = new LinkedList<>();
         queue.add(tag(source, -1)); // start with source
 
         while (!queue.isEmpty()) {
-            Node next = queue.peek();
+            final Node next = queue.peek();
 
             queue.addAll(getUntaggedNeighborsAndTagThem(next));
             if (isTargetTagged()) {
@@ -70,10 +69,10 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
         if (noTargetFound)
             return Collections.emptyList();
         // TODO was wenn compute noch nicht ausgeführt wurde?
-        LinkedList<Node> shortestWay = new LinkedList<>();
+        final LinkedList<Node> shortestWay = new LinkedList<>();
         shortestWay.add(target);
         while (!shortestWay.getLast().getAttribute("hits").equals(0)) { // TODO noch eine Abbruchbedingung
-            Node next = getShortestNode(shortestWay.getLast()); // TODO Nullable
+            final Node next = getShortestNode(shortestWay.getLast()); // TODO Nullable
             shortestWay.add(next);
         }
         Collections.reverse(shortestWay);
@@ -81,10 +80,10 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
     }
 
     @Nullable
-    private Node getShortestNode(Node node) {
-        Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
+    private Node getShortestNode(final Node node) {
+        final Iterator<Node> nodeIterator = node.getNeighborNodeIterator();
         while (nodeIterator.hasNext()) {
-            Node next = nodeIterator.next();
+            final Node next = nodeIterator.next();
             if (next.getAttribute("hits").equals((((Integer) node.getAttribute("hits")) - 1))) {
                 return next;
             }
@@ -101,12 +100,12 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
      * @return isEmpty if no neighbors are left.
      */
     @NotNull
-    private List<Node> getUntaggedNeighborsAndTagThem(@NotNull Node node) {
-        List<Node> newTaggedNeighbors = new ArrayList<>();
-        Iterator<Edge> edgeIterator = node.getLeavingEdgeIterator();
+    private List<Node> getUntaggedNeighborsAndTagThem(@NotNull final Node node) {
+        final List<Node> newTaggedNeighbors = new ArrayList<>();
+        final Iterator<Edge> edgeIterator = node.getLeavingEdgeIterator();
         while (edgeIterator.hasNext()) {
-            Edge nextEdge = edgeIterator.next();
-            Node nextNode;
+            final Edge nextEdge = edgeIterator.next();
+            final Node nextNode;
             if (node != nextEdge.getNode1())
                 nextNode = nextEdge.getNode1();
             else
@@ -122,7 +121,7 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
 
     private void reset() {
         this.steps = -1;
-        for (Node node : graph.getEachNode()) {
+        for (final Node node : graph.getEachNode()) {
             node.setAttribute("hits", -1);
         }
     }
@@ -135,7 +134,7 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
      * @return the node param for inline use
      */
     @NotNull
-    private Node tag(@NotNull Node node, @NotNull Integer steps) {
+    private Node tag(@NotNull final Node node, @NotNull final Integer steps) {
         checkNotNull(node, "node has to be not null!");
         checkNotNull(steps, "steps has to be not null!");
 
@@ -149,10 +148,10 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
     }
 
 
-    public static void main(String[] args) throws Exception {
-        Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
+    public static void main(final String[] args) throws Exception {
+        final Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
 
-        BreadthFirstSearch bfs = new BreadthFirstSearch();
+        final BreadthFirstSearch bfs = new BreadthFirstSearch();
         bfs.init(graph, graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         bfs.compute();
         System.out.println(bfs.getShortestPath().toString());

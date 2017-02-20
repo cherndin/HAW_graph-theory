@@ -22,44 +22,44 @@ import java.util.List;
 public class FacadeImpl implements Facade {
 
     @Override
-    public List<Node> findShortestWay(@NotNull ShortestWayStrategy strategy,
-                                      @NotNull Graph graph,
-                                      @NotNull Node source,
-                                      @NotNull Node target) {
+    public List<Node> findShortestWay(@NotNull final ShortestWayStrategy strategy,
+                                      @NotNull final Graph graph,
+                                      @NotNull final Node source,
+                                      @NotNull final Node target) {
         Preconditions.checkNotNull(strategy, "strategy has to be not null!");
         Preconditions.checkNotNull(graph, "graph has to be not null!");
         Preconditions.checkNotNull(source, "source has to be not null!");
         Preconditions.checkNotNull(target, "target has to be not null!");
 
-        ShortestWay shortestWay = new ShortestWay(strategy);
+        final ShortestWay shortestWay = new ShortestWay(strategy);
         shortestWay.executeStrategy(graph, source, target);
         return shortestWay.getShortestPath();
     }
 
     @Override
-    public Graph applyMaxFlow(@NotNull MaxFlowStrategy strategy,
-                              @NotNull Graph graph,
-                              @NotNull Node source,
-                              @NotNull Node sink) {
+    public Graph applyMaxFlow(@NotNull final MaxFlowStrategy strategy,
+                              @NotNull final Graph graph,
+                              @NotNull final Node source,
+                              @NotNull final Node sink) {
         Preconditions.checkNotNull(strategy, "strategy has to be not null!");
         Preconditions.checkNotNull(graph, "graph has to be not null!");
         Preconditions.checkNotNull(source, "source has to be not null!");
         Preconditions.checkNotNull(sink, "target has to be not null!");
 
-        MaxFlow maxFlow = new MaxFlow(strategy);
+        final MaxFlow maxFlow = new MaxFlow(strategy);
         return maxFlow.executeStrategy(graph, source, sink);
     }
 
     @Override
-    public void saveGraph(@NotNull Graph graph) throws IOException {
+    public void saveGraph(@NotNull final Graph graph) throws IOException {
         Preconditions.checkNotNull(graph, "graph has to be not null!");
 
         IOGraph.save(graph);
     }
 
     @Override
-    public Graph graphFromFile(@NotNull String name,
-                               @NotNull File fileToRead) throws FileNotFoundException {
+    public Graph graphFromFile(@NotNull final String name,
+                               @NotNull final File fileToRead) throws FileNotFoundException {
         Preconditions.checkNotNull(name, "name has to be not null!");
         Preconditions.checkNotNull(fileToRead, "fileToRead has to be not null!");
 
@@ -67,7 +67,7 @@ public class FacadeImpl implements Facade {
     }
 
     @Override
-    public Graph styleGraphForDisplay(@NotNull Graph graph) {
+    public Graph styleGraphForDisplay(@NotNull final Graph graph) {
         Preconditions.checkNotNull(graph, "graph has to be not null!");
 
         return GraphUtil.buildForDisplay(graph);

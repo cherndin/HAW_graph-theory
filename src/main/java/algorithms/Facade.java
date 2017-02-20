@@ -27,12 +27,11 @@ public interface Facade {
      * @param target   Not null.
      * @return shortest path from source to target.
      */
-    List<Node> findShortestWay(@NotNull ShortestWayStrategy strategy,
-                               @NotNull Graph graph,
-                               @NotNull Node source,
-                               @NotNull Node target);
+    List<Node> findShortestWay(@NotNull final ShortestWayStrategy strategy,
+                               @NotNull final Graph graph,
+                               @NotNull final Node source,
+                               @NotNull final Node target);
 
-    // TODO was gebe ich hier zurück?
 
     /**
      * Marks every edge with the max flow.
@@ -43,10 +42,10 @@ public interface Facade {
      * @param sink     Not null.
      * @return graph for inline use.
      */
-    Graph applyMaxFlow(@NotNull MaxFlowStrategy strategy,
-                       @NotNull Graph graph,
-                       @NotNull Node source,
-                       @NotNull Node sink);
+    Graph applyMaxFlow(@NotNull final MaxFlowStrategy strategy,
+                       @NotNull final Graph graph,
+                       @NotNull final Node source,
+                       @NotNull final Node sink);
 
 
     /**
@@ -55,7 +54,7 @@ public interface Facade {
      * @param graph Not null.
      * @see algorithms.utility.IOGraph#save(Graph)
      */
-    void saveGraph(@NotNull Graph graph) throws IOException;
+    void saveGraph(@NotNull final Graph graph) throws IOException;
 
     /**
      * Reads a graph from a gka-file.
@@ -65,8 +64,8 @@ public interface Facade {
      * @return the new created graph from file
      * @throws FileNotFoundException file could not be found
      */
-    Graph graphFromFile(@NotNull String name,
-                        @NotNull File fileToRead) throws FileNotFoundException;
+    Graph graphFromFile(@NotNull final String name,
+                        @NotNull final File fileToRead) throws FileNotFoundException;
 
     /**
      * Adds stylesheets for presentation.
@@ -74,5 +73,5 @@ public interface Facade {
      * @param graph Not null.
      * @return graph for inline use.
      */
-    Graph styleGraphForDisplay(@NotNull Graph graph);
+    Graph styleGraphForDisplay(@NotNull final Graph graph);
 }

@@ -25,7 +25,7 @@ public class ShortestWay {
      *
      * @param strategy not null.
      */
-    public ShortestWay(@NotNull ShortestWayStrategy strategy) {
+    public ShortestWay(@NotNull final ShortestWayStrategy strategy) {
         this.strategy = checkNotNull(strategy, "strategy has to be not null!");
     }
 
@@ -37,9 +37,9 @@ public class ShortestWay {
      * @param target not null.
      * @return Shortest Path
      */
-    public List<Node> executeStrategy(@NotNull Graph graph,
-                                      @NotNull Node source,
-                                      @NotNull Node target) {
+    public List<Node> executeStrategy(@NotNull final Graph graph,
+                                      @NotNull final Node source,
+                                      @NotNull final Node target) {
         checkNotNull(graph, "graph has to be not null!");
         checkNotNull(source, "source has to be not null!");
         checkNotNull(target, "target has to be not null!");

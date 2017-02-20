@@ -36,7 +36,7 @@ public class StopWatch {
         return timeEnd - timeStart;
     }
 
-    public String runtimeToString(long runtime) {
+    private String runtimeToString(final long runtime) {
         String output = "error";
         if (runtime < 1000) {
             output = runtime + " ms";

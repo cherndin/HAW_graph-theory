@@ -43,9 +43,9 @@ public class FloydWarshall implements ShortestWayStrategy {
     private List<Node> nodes = new LinkedList<Node>();
 
     @Override
-    public void init(@NotNull Graph graph,
-                     @NotNull Node source,
-                     @NotNull Node target) throws IllegalArgumentException {
+    public void init(@NotNull final Graph graph,
+                     @NotNull final Node source,
+                     @NotNull final Node target) throws IllegalArgumentException {
         checkNotNull(graph, "graph has to be not null!");
         checkNotNull(source, "source has to be not null!");
         checkNotNull(target, "target has to be not null!");
@@ -77,16 +77,16 @@ public class FloydWarshall implements ShortestWayStrategy {
             for (int i = 0; i < n; i++) { // Spalte
 
                 if (i == k) continue; // Kann mit sich selbst addiert nicht kleiner sein
-                Double rowValue = distances[i][k];
+                final Double rowValue = distances[i][k];
                 if (rowValue.isInfinite()) continue; // Spalte mit Inf. überspringen
 
                 for (int j = 0; j < n; j++) { // Zeile
 
                     if (j == k) continue;
-                    Double columnValue = distances[k][j];
+                    final Double columnValue = distances[k][j];
                     if (columnValue.isInfinite()) continue; // Zeile mit Inf. überspringen
 
-                    double oldDistance = distances[i][j];
+                    final double oldDistance = distances[i][j];
                     distances[i][j] = min(distances[i][j], rowValue + columnValue);// Wenn kleiner, dann ersetzten
 
                     if (oldDistance != distances[i][j]) // Falls Dij verändert wurde, setzt Tij := k
@@ -108,7 +108,7 @@ public class FloydWarshall implements ShortestWayStrategy {
         if (hits == 0)
             throw new IllegalArgumentException("do compute before this method");
 
-        LinkedList<Node> shortestPath = new LinkedList<>();
+        final LinkedList<Node> shortestPath = new LinkedList<>();
 
         shortestPath.add(target);
         Node current = target;
@@ -121,7 +121,7 @@ public class FloydWarshall implements ShortestWayStrategy {
     }
 
     @Nullable
-    public Double getDistance() {
+    Double getDistance() {
         return distance;
     }
 
@@ -133,18 +133,18 @@ public class FloydWarshall implements ShortestWayStrategy {
      * initialises arrays for FloydWarshall
      */
     private void setUp() {
-        Iterator<Node> nodesForI = graph.getNodeIterator();
+        final Iterator<Node> nodesForI = graph.getNodeIterator();
         for (int i = 0; i < n; i++) {
-            Iterator<Node> nodesForJ = graph.getNodeIterator();
-            Node NodeI = nodesForI.next();
+            final Iterator<Node> nodesForJ = graph.getNodeIterator();
+            final Node NodeI = nodesForI.next();
             for (int j = 0; j < n; j++) {
-                Node NodeJ = nodesForJ.next();
+                final Node NodeJ = nodesForJ.next();
                 transits[i][j] = -1;
                 if (NodeI == NodeJ) {
                     distances[i][j] = 0.0;
                 } else {
                     if (NodeI.hasEdgeBetween(NodeJ)) {
-                        String weight = NodeI.getEdgeBetween(NodeJ).getAttribute("weight").toString();
+                        final String weight = NodeI.getEdgeBetween(NodeJ).getAttribute("weight").toString();
                         distances[i][j] = Double.parseDouble(weight);
                     } else {
                         distances[i][j] = Double.POSITIVE_INFINITY;
@@ -169,7 +169,7 @@ public class FloydWarshall implements ShortestWayStrategy {
      * @throws IllegalArgumentException if node has no predecessor
      */
     @NotNull
-    private Node getPred(Node node) throws IllegalArgumentException {
+    private Node getPred(final Node node) throws IllegalArgumentException {
         return nodes.get(transits[getIndex(source)][getIndex(node)]);
     }
 
@@ -180,7 +180,7 @@ public class FloydWarshall implements ShortestWayStrategy {
      * @return true if node has predecessor
      */
     @NotNull
-    private Boolean hasPred(Node node) {
+    private Boolean hasPred(final Node node) {
         return transits[getIndex(source)][getIndex(node)] >= 0;
     }
 
@@ -192,20 +192,20 @@ public class FloydWarshall implements ShortestWayStrategy {
      * @throws NoSuchElementException no such node in the list
      */
     @NotNull
-    private Integer getIndex(@NotNull Node node) {
-        int i = nodes.indexOf(node);
+    private Integer getIndex(@NotNull final Node node) {
+        final int i = nodes.indexOf(node);
         if (i < 0) throw new NoSuchElementException();
         return i;
     }
 
     @NotNull
-    private Double min(@NotNull Double x, @NotNull Double y) {
+    private Double min(@NotNull final Double x, @NotNull final Double y) {
         return ((x < y) ? x : y);
     }
 
     // === MAIN ===
-    public static void main(String[] args) throws Exception {
-        Graph test = new SingleGraph("test");
+    public static void main(final String[] args) throws Exception {
+        final Graph test = new SingleGraph("test");
         test.addNode("0");
         test.addNode("1");
         test.addNode("2");
@@ -226,7 +226,7 @@ public class FloydWarshall implements ShortestWayStrategy {
         test.addEdge("56", "5", "6", true).addAttribute("weight", 2);
         test.addEdge("67", "6", "7", true).addAttribute("weight", 1);
 
-        FloydWarshall floydTest = new FloydWarshall();
+        final FloydWarshall floydTest = new FloydWarshall();
         floydTest.init(test, test.getNode("0"), test.getNode("7"));
         floydTest.compute();
 

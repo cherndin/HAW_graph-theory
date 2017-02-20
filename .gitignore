@@ -2,7 +2,7 @@
 *.log
 # IDEA
 .idea/*
-*.iml
+!.idea/encodings.xml
 # BUILD TOOLS
 .gradle/*
 build/*
