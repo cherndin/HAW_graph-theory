@@ -1,11 +1,10 @@
-package helper;
+package algorithms.utility;
 
-import algorithms.BreadthFirstSearch;
+import algorithms.optimal_ways.BreadthFirstSearch;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.generator.Generator;
 import org.graphstream.algorithm.generator.GridGenerator;
 import org.graphstream.algorithm.generator.RandomGenerator;
-import org.graphstream.algorithm.generator.WattsStrogatzGenerator;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
@@ -40,7 +39,6 @@ public class GraphGenerator {
                 NetworkGraph.addEdge(x + "_" + y, x + "", y + "", true).addAttribute("capacity", 1.0);
             } catch (EdgeRejectedException o) {
                 i--;
-                continue;
             }
         }
         return NetworkGraph;
@@ -57,7 +55,7 @@ public class GraphGenerator {
         gen.end();
 
         BreadthFirstSearch bfs = new BreadthFirstSearch();
-        bfs.init(graph);
+        bfs.init(graph, graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         bfs.compute();
         for (Edge edge : graph.getEachEdge()) {
             edge.setAttribute("capacity", Double.valueOf(edge.getTargetNode().getAttribute("hits").toString()));
@@ -69,19 +67,6 @@ public class GraphGenerator {
         return (int) Math.pow((nodes + Math.sqrt(nodes)), 2) / 4;
     }
 
-    public static Graph createSmallWorldGraph(int n, int k, double beta) {
-        Graph graph = new SingleGraph("This is a small world!");
-        Generator gen = new WattsStrogatzGenerator(n, k, beta);
-
-        gen.addSink(graph);
-        gen.begin();
-        while (gen.nextEvents()) {
-        }
-        gen.end();
-
-        graph.display(false); // Node position is provided.
-        return graph;
-    }
 
     public static Graph createRandomNetwork(int nodes, int maxEdges) {
         Graph graph = new SingleGraph("Random");

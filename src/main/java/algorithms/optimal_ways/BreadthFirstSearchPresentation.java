@@ -1,7 +1,7 @@
-package algorithms;
+package algorithms.optimal_ways;
 
-import helper.GraphUtil;
-import helper.IOGraph;
+import algorithms.utility.GraphUtil;
+import algorithms.utility.IOGraph;
 import org.apache.log4j.Logger;
 import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;

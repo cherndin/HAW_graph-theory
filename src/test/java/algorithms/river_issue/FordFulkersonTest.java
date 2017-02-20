@@ -128,8 +128,7 @@ public class FordFulkersonTest {
     @Test
     public void testWithSmallGraph() throws Exception {
         FordFulkerson fordWiki = new FordFulkerson();
-        fordWiki.init(graphFromWiki);
-        fordWiki.setSourceAndTarget(graphFromWiki.getNode("S"), graphFromWiki.getNode("T"));
+        fordWiki.init(graphFromWiki, graphFromWiki.getNode("S"), graphFromWiki.getNode("T"));
         fordWiki.compute();
 
         assertTrue(fordWiki.maxFlow == 5);
@@ -139,8 +138,7 @@ public class FordFulkersonTest {
     @Test
     public void testWithMediumGraph() throws Exception {
         FordFulkerson fordYT = new FordFulkerson();
-        fordYT.init(graphFromYouTube);
-        fordYT.setSourceAndTarget(graphFromYouTube.getNode("S"), graphFromYouTube.getNode("T"));
+        fordYT.init(graphFromYouTube, graphFromYouTube.getNode("S"), graphFromYouTube.getNode("T"));
         fordYT.compute();
 
         assertTrue(fordYT.maxFlow == 28);
@@ -149,16 +147,14 @@ public class FordFulkersonTest {
     @Test(expected = IllegalArgumentException.class)
     public void testNegGraph() throws Exception {
         FordFulkerson ford = new FordFulkerson();
-        ford.init(negGraph);
-        ford.setSourceAndTarget(negGraph.getNode("S"), negGraph.getNode("T"));
+        ford.init(negGraph, negGraph.getNode("S"), negGraph.getNode("T"));
         ford.compute();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testTriangleGraph() throws Exception {
         FordFulkerson ford = new FordFulkerson();
-        ford.init(triangleGraph);
-        ford.setSourceAndTarget(triangleGraph.getNode("S"), triangleGraph.getNode("T"));
+        ford.init(triangleGraph, triangleGraph.getNode("S"), triangleGraph.getNode("T"));
         ford.compute();
     }
 }

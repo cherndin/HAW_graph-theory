@@ -1,10 +1,10 @@
 package algorithms.river_issue;
 
-import algorithms.Preconditions;
+import algorithms.utility.GraphPreconditions;
+import algorithms.utility.StopWatch;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import helper.StopWatch;
 import org.apache.log4j.Logger;
-import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -16,11 +16,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * Created by MattX7 on 25.11.2016.
+ * Ford Folkerson algorithm for max flow in a graph with capacities.
  */
-public class FordFulkerson implements Algorithm {
+public class FordFulkerson implements MaxFlowStrategy {
     private static final Logger LOG = Logger.getLogger(FordFulkerson.class);
-    public static boolean preview = true;
+    public static boolean preview = false;
     StopWatch stopWatch;
     boolean computable = false;
 
@@ -39,19 +39,18 @@ public class FordFulkerson implements Algorithm {
     Set<Edge> maxFlowMinCut = new HashSet<>();
     double maxFlow;
 
-    /**
-     * Initialization of the algorithm. This method has to be called before the
-     * {@link #compute()} method to initialize or reset the algorithm according
-     * to the new given graph.
-     *
-     * @param graph The graph this algorithm is using.
-     */
-    public void init(Graph graph) throws IllegalArgumentException {
-        Preconditions.isNetwork(graph);
+    public void init(@NotNull Graph graph,
+                     @NotNull Node source,
+                     @NotNull Node sink) throws IllegalArgumentException {
+        Preconditions.checkNotNull(graph, "graph has to be not null!");
+        Preconditions.checkNotNull(source, "source has to be not null!");
+        Preconditions.checkNotNull(sink, "target has to be not null!");
+        GraphPreconditions.isNetwork(graph);
 
+        this.source = source;
+        this.sink = sink;
         nodes = ImmutableList.copyOf(graph.getEachNode());
         int size = nodes.size();
-        setSourceAndTarget(nodes.get(0), nodes.get(size - 1));
         this.graph = graph;
 
         capacity = new Double[size][size];
@@ -83,23 +82,6 @@ public class FordFulkerson implements Algorithm {
         computable = true;
     }
 
-    /**
-     * Sets source and target before compute()
-     *
-     * @param source source node
-     * @param target target node
-     */
-    public void setSourceAndTarget(@NotNull Node source, @NotNull Node target) {
-        this.source = source;
-        this.sink = target;
-    }
-
-    /**
-     * Run the algorithm. The {@link #init(Graph)} method has to be called
-     * before computing.
-     *
-     * @see #init(Graph)
-     */
     public void compute() {
         stopWatch = new StopWatch();
         if (preview) LOG.debug("==== (2) compute ====");
@@ -363,6 +345,10 @@ public class FordFulkerson implements Algorithm {
               @Nullable Node predecessor,
               @NotNull Boolean forward,
               @NotNull Double delta) {
+        Preconditions.checkNotNull(idx, "idx has to be not null!");
+        Preconditions.checkNotNull(forward, "forward has to be not null!");
+        Preconditions.checkNotNull(delta, "delta has to be not null!");
+
         this.predecessor[idx] = predecessor;
         this.forward[idx] = forward;
         this.delta[idx] = delta;
@@ -386,29 +372,6 @@ public class FordFulkerson implements Algorithm {
 
     // === MAIN ===
     public static void main(String[] args) throws Exception {
-        // Von Folien
-//        Graph test = new SingleGraph("test");
-//        test.addNode("q");
-//        test.addNode("v1");
-//        test.addNode("v2");
-//        test.addNode("v3");
-//        test.addNode("v5");
-//        test.addNode("s");
-//        test.addEdge("qv5", "q", "v5", true).addAttribute("capacity", 1.0);
-//        test.addEdge("qv1", "q", "v1", true).addAttribute("capacity", 5.0);
-//        test.addEdge("qv2", "q", "v2", true).addAttribute("capacity", 4.0);
-//        test.addEdge("v2v3", "v2", "v3", true).addAttribute("capacity", 2.0);
-//        test.addEdge("v1v3", "v1", "v3", true).addAttribute("capacity", 1.0);
-//        test.addEdge("v3s", "v3", "s", true).addAttribute("capacity", 3.0);
-//        test.addEdge("v1s", "v1", "s", true).addAttribute("capacity", 3.0);
-//        test.addEdge("v1v5", "v1", "v5", true).addAttribute("capacity", 1.0);
-//        test.addEdge("v5s", "v5", "s", true).addAttribute("capacity", 3.0);
-//
-//        FordFulkerson ford = new FordFulkerson();
-//        ford.init(test);
-//        ford.setSourceAndTarget(test.getNode("q"), test.getNode("s"));
-//        ford.compute();
-
         // https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
         Graph maxFminCGraph = new SingleGraph("maxFminCGraph");
         maxFminCGraph.addNode("O");
@@ -428,8 +391,7 @@ public class FordFulkerson implements Algorithm {
         maxFminCGraph.addEdge("RT", "R", "T", true).addAttribute("capacity", 3.0);
 
         FordFulkerson ford = new FordFulkerson();
-        ford.init(maxFminCGraph);
-        ford.setSourceAndTarget(maxFminCGraph.getNode("S"), maxFminCGraph.getNode("T"));
+        ford.init(maxFminCGraph, maxFminCGraph.getNode("S"), maxFminCGraph.getNode("T"));
         ford.compute();
     }
 

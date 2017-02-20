@@ -1,5 +1,6 @@
 package algorithms;
 
+import algorithms.optimal_ways.BreadthFirstSearchPresentation;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;

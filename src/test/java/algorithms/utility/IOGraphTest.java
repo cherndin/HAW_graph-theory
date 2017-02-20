@@ -1,4 +1,4 @@
-package helper;
+package algorithms.utility;
 
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static helper.IOGraph.fromFile;
+import static algorithms.utility.IOGraph.fromFile;
 import static org.junit.Assert.assertTrue;
 
 /**

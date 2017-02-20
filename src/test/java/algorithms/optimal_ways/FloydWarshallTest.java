@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static helper.IOGraph.fromFile;
+import static algorithms.utility.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
 
 /**

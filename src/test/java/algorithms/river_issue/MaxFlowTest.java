@@ -1,8 +1,8 @@
 package algorithms.river_issue;
 
-import helper.GraphGenerator;
-import helper.IOGraph;
-import helper.StopWatch;
+import algorithms.utility.GraphGenerator;
+import algorithms.utility.IOGraph;
+import algorithms.utility.StopWatch;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static helper.IOGraph.fromFile;
+import static algorithms.utility.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -28,9 +28,9 @@ import static org.junit.Assert.assertEquals;
  * 3.) Lassen Sie bitte beide Algorithmen auf dem Netzwerk BigNet Gruppe TeamNr, den maximalen Fluss berechnen und vergleichen diese.
  * 4.) Benutzen Sie bitte unterschiedlich große Big-Net-Graphen mit 800 Knoten und 300.000 Kanten und mit 2.500 Knoten und 2.000.000 Kanten. Und lassen Sie bitte Ihre die Algorithmen jeweils 100 durchlaufen.
  */
-public class EdmondsKarpVSFordFulkersonTest {
+public class MaxFlowTest {
     private Graph graph4;
-    private final Logger LOG = Logger.getLogger(EdmondsKarpVSFordFulkersonTest.class);
+    private final Logger LOG = Logger.getLogger(MaxFlowTest.class);
 
     @BeforeClass
     public static void closeLogger() throws Exception {
@@ -39,7 +39,7 @@ public class EdmondsKarpVSFordFulkersonTest {
         for (Logger logger : loggers) {
                 logger.setLevel(Level.OFF);
         }
-        Logger.getLogger(EdmondsKarpVSFordFulkersonTest.class).setLevel(Level.DEBUG);
+        Logger.getLogger(MaxFlowTest.class).setLevel(Level.DEBUG);
     }
 
     @Before
@@ -55,8 +55,7 @@ public class EdmondsKarpVSFordFulkersonTest {
     public void graph4Test() throws Exception {
         StopWatch stopWatch = new StopWatch();
         FordFulkerson ford = new FordFulkerson();
-        ford.init(graph4);
-        ford.setSourceAndTarget(graph4.getNode("q"), graph4.getNode("s"));
+        ford.init(graph4, graph4.getNode("q"), graph4.getNode("s"));
         ford.compute();
         stopWatch.stop();
         System.out.println(stopWatch.getActualTimeString());
@@ -64,8 +63,7 @@ public class EdmondsKarpVSFordFulkersonTest {
 
         StopWatch stopWatch2 = new StopWatch();
         EdmondsKarp edmond = new EdmondsKarp();
-        edmond.init(graph4);
-        edmond.setSourceAndTarget(graph4.getNode("q"), graph4.getNode("s"));
+        edmond.init(graph4, graph4.getNode("q"), graph4.getNode("s"));
         edmond.compute();
         stopWatch2.stop();
         System.out.println(stopWatch2.getActualTimeString());
@@ -82,8 +80,8 @@ public class EdmondsKarpVSFordFulkersonTest {
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
-        edmond.init(big);
-        ford.init(big);
+        edmond.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
+        ford.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
 
         edmond.compute();
         ford.compute();
@@ -108,8 +106,8 @@ public class EdmondsKarpVSFordFulkersonTest {
 
         int rounds = 10;
         for (int i = 0; i <= rounds; i++) {
-            ford.init(big);
-            edmond.init(big);
+            ford.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
+            edmond.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
             ford.compute();
             fordRuntimes.add(ford.stopWatch.getEndTime());
             edmond.compute();
@@ -133,13 +131,13 @@ public class EdmondsKarpVSFordFulkersonTest {
         FordFulkerson ford = new FordFulkerson();
         EdmondsKarp edmond = new EdmondsKarp();
 
-        ford.init(big);
-        edmond.init(big);
+        ford.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
+        edmond.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
 
         int rounds = 10;
         for (int i = 0; i <= rounds; i++) {
-            ford.init(big);
-            edmond.init(big);
+            ford.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
+            edmond.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
             ford.compute();
             fordRuntimes.add(ford.stopWatch.getEndTime());
             edmond.compute();

@@ -1,26 +1,32 @@
-package algorithms;
+package algorithms.utility;
 
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by MattX7 on 25.11.2016.
+ * Preconditions for graphs.
  */
-public class Preconditions {
+public class GraphPreconditions {
 
     // ====== EXC-METHODS FOR GRAPHS ======
 
     public static void mustHaveWeights(@NotNull Graph graph) throws IllegalArgumentException {
         for (Edge edge : graph.getEachEdge()) {
-            if (edgeHasNoWeight(edge))
+            if (!edgeHasWeight(edge))
                 throw new IllegalArgumentException("Graph has edge without weight attribute");
+            if (!isNumeric(edge))
+                throw new IllegalArgumentException("Edge weight attribute is not a rational number");
         }
+    }
+
+    private static boolean isNumeric(Edge edge) {
+        return edge.getAttribute("weight") instanceof Number;
     }
 
     public static void mustHaveDirectedEdges(@NotNull Graph graph) throws IllegalArgumentException {
         for (Edge edge : graph.getEachEdge()) {
-            if (isUndirected(edge))
+            if (!isDirected(edge))
                 throw new IllegalArgumentException("Graph has nonDirected edges");
         }
     }
@@ -52,7 +58,7 @@ public class Preconditions {
                 throw new IllegalArgumentException("Graph has edge without capacity attribute");
             if (edgeHasNegativeCapacity(edge))
                 throw new IllegalArgumentException("Graph has edge with negative capacity!");
-            if (isUndirected(edge))
+            if (!isDirected(edge))
                 throw new IllegalArgumentException("Graph has nonDirected edges");
         }
     }
@@ -70,16 +76,16 @@ public class Preconditions {
         return ((Double.valueOf(edge.getAttribute("capacity").toString())) < 0.0);
     }
 
-    private static boolean edgeHasNoWeight(Edge edge) {
-        return !edge.hasAttribute("weight");
+    private static boolean edgeHasWeight(Edge edge) {
+        return edge.hasAttribute("weight");
     }
 
     private static boolean edgeHasNegativeWeight(Edge edge) {
         return ((Double.valueOf(edge.getAttribute("weight").toString())) < 0.0);
     }
 
-    private static boolean isUndirected(Edge edge) {
-        return !edge.isDirected();
+    private static boolean isDirected(Edge edge) {
+        return edge.isDirected();
     }
 
 

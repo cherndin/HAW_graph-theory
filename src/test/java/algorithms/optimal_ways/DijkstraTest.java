@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static helper.IOGraph.fromFile;
+import static algorithms.utility.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -91,8 +91,7 @@ public class DijkstraTest {
         graph.getEdge("v5v4").addAttribute("weight", 3.0);
         graph.getEdge("v5v6").addAttribute("weight", 1.0);
         graph.getEdge("v6v3").addAttribute("weight", 2.0);
-        dijk.init(graph);
-        dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
+        dijk.init(graph, graph.getNode("v1"), graph.getNode("v4"));
         dijk.compute();
 
         assertEquals(Double.valueOf(6), dijk.distance);

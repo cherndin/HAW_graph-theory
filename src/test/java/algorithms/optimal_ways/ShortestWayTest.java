@@ -1,6 +1,6 @@
 package algorithms.optimal_ways;
 
-import helper.BigGraph;
+import algorithms.utility.BigGraph;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -11,13 +11,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static helper.IOGraph.fromFile;
+import static algorithms.utility.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by abw286 on 21.11.2016.
+ * Test for {@link ShortestWay}
  */
-public class DijkstraVSFloydTest {
+public class ShortestWayTest {
     private Graph graph;
     private Graph graph3;
     private Graph graph9;
@@ -92,42 +92,33 @@ public class DijkstraVSFloydTest {
         graph9 = fromFile("graph09", new File("src/main/resources/input/BspGraph/graph09.gka"));
     }
 
+    /**
+     * Test for graph without weights.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void graphWithNoWeightTest() throws Exception {
-        Dijkstra dijk = new Dijkstra();
-        FloydWarshall floyd = new FloydWarshall();
+        ShortestWay dijk = new ShortestWay(new Dijkstra());
+        ShortestWay floyd = new ShortestWay(new FloydWarshall());
 
-        Dijkstra.preview = false;
-        FloydWarshall.preview = false;
-
-        dijk.init(graph9);
-        floyd.init(graph9);
-        dijk.setSourceAndTarget(graph9.getNode("a"), graph9.getNode("d"));
-        floyd.setSourceAndTarget(graph9.getNode("a"), graph9.getNode("d"));
-
-        dijk.compute();
-        floyd.compute();
+        dijk.executeStrategy(graph9, graph9.getNode("a"), graph9.getNode("d"));
+        floyd.executeStrategy(graph9, graph9.getNode("a"), graph9.getNode("d"));
     }
 
+    /**
+     * Test for shortest path.
+     */
     @Test
     public void getShortestPathTest() { //TODO rausziehen
         Dijkstra dijk = new Dijkstra();
         FloydWarshall floyd = new FloydWarshall();
 
-        Dijkstra.preview = false;
-        FloydWarshall.preview = false;
-
-        dijk.init(test);
-        floyd.init(test);
-
-        dijk.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
-        floyd.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
+        dijk.init(test, test.getNode("0"), test.getNode("7"));
+        floyd.init(test, test.getNode("0"), test.getNode("7"));
 
         dijk.compute();
         floyd.compute();
 
-        assertEquals(Double.valueOf(9), dijk.getDistance());
-        assertEquals(Double.valueOf(9), floyd.getDistance());
+        assertEquals(dijk.getDistance(), floyd.getDistance());
 
         assertEquals(list, dijk.getShortestPath());
         assertEquals(list, floyd.getShortestPath());
@@ -138,27 +129,11 @@ public class DijkstraVSFloydTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void graph03test() throws Exception {
-        FloydWarshall floyd = new FloydWarshall();
-        Dijkstra dijk = new Dijkstra();
+        ShortestWay dijk = new ShortestWay(new Dijkstra());
+        ShortestWay floyd = new ShortestWay(new FloydWarshall());
 
-        Dijkstra.preview = false;
-        FloydWarshall.preview = false;
-
-        dijk.init(graph3);
-        floyd.init(graph3);
-
-        dijk.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
-        floyd.setSourceAndTarget(graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
-
-        dijk.compute();
-        floyd.compute();
-
-//        assertEquals(Double.valueOf(170.0), dijk.distance);
-//        assertEquals(Double.valueOf(170.0), floyd.distance);
-//        assertEquals(floyd.distance, dijk.distance);
-//
-//        System.out.println("Hits: " + dijk.hits);
-//        System.out.println("Hits: " + floyd.hits);
+        dijk.executeStrategy(graph3, graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
+        floyd.executeStrategy(graph3, graph3.getNode("Hamburg"), graph3.getNode("Lübeck"));
     }
 
     @Test
@@ -172,11 +147,8 @@ public class DijkstraVSFloydTest {
         Dijkstra.preview = false;
         FloydWarshall.preview = false;
 
-        dijk.init(big);
-        floyd.init(big);
-
-        dijk.setSourceAndTarget(big.getNode("1"), big.getNode("" + bigGraph.nodes));
-        floyd.setSourceAndTarget(big.getNode("1"), big.getNode("" + bigGraph.nodes));
+        dijk.init(big, big.getNode("1"), big.getNode("" + bigGraph.nodes));
+        floyd.init(big, big.getNode("1"), big.getNode("" + bigGraph.nodes));
 
         dijk.compute();
         floyd.compute();

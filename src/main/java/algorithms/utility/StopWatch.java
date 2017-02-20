@@ -1,4 +1,4 @@
-package helper;
+package algorithms.utility;
 
 /**
  * Created by abw286 on 06.10.2016.

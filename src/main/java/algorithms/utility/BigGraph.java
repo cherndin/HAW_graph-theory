@@ -1,4 +1,4 @@
-package helper;
+package algorithms.utility;
 
 import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;

@@ -1,5 +1,6 @@
-package helper;
+package algorithms.utility;
 
+import com.google.common.base.Preconditions;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -20,7 +21,9 @@ public class GraphUtil {
      * @param graph
      * @return graph for inline use
      */
-    public static Graph buildForDisplay(Graph graph) {
+    public static Graph buildForDisplay(@NotNull Graph graph) {
+        Preconditions.checkNotNull(graph, "graph has to be not null!");
+
         graph.addAttribute("ui.stylesheet", styleSheet);
         graph.setAutoCreate(true);
         graph.setStrict(false);

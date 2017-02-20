@@ -1,4 +1,4 @@
-package helper;
+package algorithms.utility;
 
 import org.apache.log4j.Logger;
 import org.graphstream.graph.Edge;
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  * name node1 [ -> name node2] [(edge name)] [: edgeweight]; <br>
  * <b>Format of undirected</b><br>
  * name node1 [ -- name node2] [(edge name)] [: edgeweight]; <br>
- */
+ */ // TODO Als Service einrichten
 public class IOGraph {
     private static final Logger LOG = Logger.getLogger(IOGraph.class);
 
@@ -31,7 +31,7 @@ public class IOGraph {
     public static String attributeKeyValue = "weight";
 
     /* Class should not be an instance
-     * because it's a helper class with static methods.
+     * because it's a utility class with static methods.
      */
     private IOGraph() {
     }
@@ -113,7 +113,6 @@ public class IOGraph {
 
     /**
      * Reads a graph from a .gka file.
-     * <p>
      *
      * @param name       name of the new graph
      * @param fileToRead file to read

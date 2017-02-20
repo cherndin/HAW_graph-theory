@@ -1,7 +1,7 @@
-package algorithms;
+package algorithms.optimal_ways;
 
-import helper.GraphUtil;
-import helper.IOGraph;
+import algorithms.utility.GraphUtil;
+import algorithms.utility.IOGraph;
 import org.apache.log4j.Logger;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -12,29 +12,37 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * Created by MattX7 on 11.12.2016.
+ * Implementation of the breath-first search algorithm.
  */
-public class BreadthFirstSearch {
-    private static Logger logger = Logger.getLogger(algorithms.BreadthFirstSearch.class);
-    public static boolean preview = true;
-    public int steps = -1;
+public class BreadthFirstSearch implements ShortestWayStrategy {
+    private static final Logger LOG = Logger.getLogger(BreadthFirstSearch.class);
+    public static boolean preview = false;
+
+    private int steps = -1;
     private Graph graph;
     private Node source;
     private Node target;
     private boolean noTargetFound;
+    private Double distance;
 
-    public void init(Graph graph) {
-        this.graph = graph;
-        setSourceAndTarget(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
+    public void init(@NotNull Graph graph,
+                     @NotNull Node source,
+                     @NotNull Node target) {
+        this.graph = checkNotNull(graph, "graph has to be not null!");
+        this.source = checkNotNull(source, "source has to be not null!");
+        this.target = checkNotNull(target, "target has to be not null!");
     }
 
     public void compute() {
         if (graph == null || source == null || target == null) // have to be set
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Do init() before compute()");
+
         reset();
-        logger.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph, false, false));
-        Queue<Node> queue = new LinkedList<Node>();
+        LOG.debug("Starting BFS with graph:" + GraphUtil.graphToString(graph, false, false));
+        Queue<Node> queue = new LinkedList<>();
         queue.add(tag(source, -1)); // start with source
 
         while (!queue.isEmpty()) {
@@ -45,14 +53,14 @@ public class BreadthFirstSearch {
                 steps = target.getAttribute("hits");
                 break;
             }
-            logger.debug("queue:" + queue.toString());
+            LOG.debug("queue:" + queue.toString());
             queue.remove(next);
         }
         if (!isTargetTagged()) {
-            logger.error("Target not found!");
+            LOG.error("Target not found!");
             noTargetFound = true;
         } else {
-            logger.info("Target found!");
+            LOG.info("Target found!");
             noTargetFound = false;
         }
     }
@@ -61,8 +69,8 @@ public class BreadthFirstSearch {
     public List<Node> getShortestPath() {
         if (noTargetFound)
             return Collections.emptyList();
-
-        LinkedList<Node> shortestWay = new LinkedList<Node>();
+        // TODO was wenn compute noch nicht ausgeführt wurde?
+        LinkedList<Node> shortestWay = new LinkedList<>();
         shortestWay.add(target);
         while (!shortestWay.getLast().getAttribute("hits").equals(0)) { // TODO noch eine Abbruchbedingung
             Node next = getShortestNode(shortestWay.getLast()); // TODO Nullable
@@ -84,28 +92,17 @@ public class BreadthFirstSearch {
         return null;
     }
 
-    /**
-     * Sets source and target before compute()
-     *
-     * @param s source node
-     * @param t target node
-     */
-    public void setSourceAndTarget(@NotNull Node s, @NotNull Node t) {
-        this.source = s;
-        this.target = t;
-    }
-
     // ====== PRIVATE =========
 
     /**
      * All untagged shortestWay that ar neighbors.
      *
-     * @param node
+     * @param node not null.
      * @return isEmpty if no neighbors are left.
      */
     @NotNull
     private List<Node> getUntaggedNeighborsAndTagThem(@NotNull Node node) {
-        List<Node> newTaggedNeighbors = new ArrayList<Node>();
+        List<Node> newTaggedNeighbors = new ArrayList<>();
         Iterator<Edge> edgeIterator = node.getLeavingEdgeIterator();
         while (edgeIterator.hasNext()) {
             Edge nextEdge = edgeIterator.next();
@@ -133,12 +130,15 @@ public class BreadthFirstSearch {
     /**
      * tag Node
      *
-     * @param node
-     * @param steps
+     * @param node not null.
+     * @param steps not null.
      * @return the node param for inline use
      */
     @NotNull
     private Node tag(@NotNull Node node, @NotNull Integer steps) {
+        checkNotNull(node, "node has to be not null!");
+        checkNotNull(steps, "steps has to be not null!");
+
         node.setAttribute("hits", steps + 1);
         return node;
     }
@@ -153,7 +153,7 @@ public class BreadthFirstSearch {
         Graph graph = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph02.gka"));
 
         BreadthFirstSearch bfs = new BreadthFirstSearch();
-        bfs.init(graph);
+        bfs.init(graph, graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         bfs.compute();
         System.out.println(bfs.getShortestPath().toString());
         System.out.println("Steps: " + bfs.steps);

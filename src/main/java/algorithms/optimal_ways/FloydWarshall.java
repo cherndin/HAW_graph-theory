@@ -1,35 +1,38 @@
 package algorithms.optimal_ways;
 
-import algorithms.Preconditions;
+import algorithms.utility.GraphUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import helper.GraphUtil;
 import org.apache.log4j.Logger;
-import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static algorithms.utility.GraphPreconditions.mustHaveDirectedEdges;
+import static algorithms.utility.GraphPreconditions.mustHaveWeights;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * Created by MattX7 on 04.11.2016.
+ * Floyd Warshall algorithm for shortest way in a graph with weights.
  * <p>
  * Ref:
  * http://www.orklaert.de/floyd-warshall-algorithmus.php
  * https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html (gute Erklärung)
  * https://www.cs.usfca.edu/~galles/visualization/Floyd.html
  */
-public class FloydWarshall implements Algorithm {
-    private static Logger logger = Logger.getLogger(FloydWarshall.class);
-    static boolean preview = true;
+public class FloydWarshall implements ShortestWayStrategy {
+    private static final Logger LOG = Logger.getLogger(FloydWarshall.class);
+    static boolean preview = false;
 
     Double distance;
-    Integer hits = 0;
+    Integer hits;
 
     private Graph graph;
     private Node source;
@@ -39,34 +42,32 @@ public class FloydWarshall implements Algorithm {
     private Integer[][] transits;
     private List<Node> nodes = new LinkedList<Node>();
 
-    /**
-     * Initialization of the algorithm. This method has to be called before the
-     * {@link #compute()} method to initialize or reset the algorithm according
-     * to the new given graph.
-     *
-     * @param graph The graph this algorithm is using.
-     */
-    public void init(Graph graph) throws IllegalArgumentException {
-        Preconditions.mustHaveWeights(graph);
-        Preconditions.mustHaveDirectedEdges(graph);
+    @Override
+    public void init(@NotNull Graph graph,
+                     @NotNull Node source,
+                     @NotNull Node target) throws IllegalArgumentException {
+        checkNotNull(graph, "graph has to be not null!");
+        checkNotNull(source, "source has to be not null!");
+        checkNotNull(target, "target has to be not null!");
+        mustHaveWeights(graph);
+        mustHaveDirectedEdges(graph);
 
         this.graph = graph;
-        nodes = ImmutableList.copyOf(graph.getEachNode());
-        n = nodes.size();
-        hits = n * n; // Zugriffe auf den Graphen TODO stimmt das noch?
+        this.source = source;
+        this.target = target;
+        this.nodes = ImmutableList.copyOf(graph.getEachNode());
+
+        this.n = nodes.size();
+        this.hits = n * n; // Zugriffe auf den Graphen TODO stimmt das noch?
+
         int n = graph.getNodeCount();
-        distances = new Double[n][n];
-        transits = new Integer[n][n];
+        this.distances = new Double[n][n];
+        this.transits = new Integer[n][n];
     }
 
-    /**
-     * Run the algorithm. The {@link #init(Graph)} method has to be called
-     * before computing.
-     *
-     * @see #init(Graph)
-     */
+    @Override
     public void compute() {
-        // Preconditions
+        // GraphPreconditions
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException("Attributes are missing");
         // Implementation
@@ -103,26 +104,11 @@ public class FloydWarshall implements Algorithm {
         distance = distances[getIndex(source)][getIndex(target)];
     }
 
-    /**
-     * Sets source and target before compute()
-     *
-     * @param source source node
-     * @param target target node
-     */
-    void setSourceAndTarget(@NotNull Node source,
-                            @NotNull Node target) {
-        this.source = source;
-        this.target = target;
-    }
-
-    /**
-     * @return shortestWay
-     */
-    List<Node> getShortestPath() {
+    public List<Node> getShortestPath() {
         if (hits == 0)
             throw new IllegalArgumentException("do compute before this method");
 
-        LinkedList<Node> shortestPath = new LinkedList<Node>();
+        LinkedList<Node> shortestPath = new LinkedList<>();
 
         shortestPath.add(target);
         Node current = target;
@@ -134,8 +120,17 @@ public class FloydWarshall implements Algorithm {
         return Lists.reverse(shortestPath);
     }
 
+    @Nullable
+    public Double getDistance() {
+        return distance;
+    }
+
+    Integer getHits() {
+        return hits;
+    }
+
     /**
-     * initialises arrays for Floyd and Warshall
+     * initialises arrays for FloydWarshall
      */
     private void setUp() {
         Iterator<Node> nodesForI = graph.getNodeIterator();
@@ -157,10 +152,12 @@ public class FloydWarshall implements Algorithm {
                 }
             }
         }
-        if (preview) System.out.println("================== Start ======================");
-        if (preview) GraphUtil.printMatrix(graph, distances);
-        if (preview) GraphUtil.printMatrix(graph, transits);
-        if (preview) System.out.println();
+        if (preview) {
+            System.out.println("================== Start ======================");
+            GraphUtil.printMatrix(graph, distances);
+            GraphUtil.printMatrix(graph, transits);
+            System.out.println();
+        }
     }
 
     /**
@@ -208,43 +205,6 @@ public class FloydWarshall implements Algorithm {
 
     // === MAIN ===
     public static void main(String[] args) throws Exception {
-        // Graph aus den Folien
-        // 02_GKA-Optimale Wege.pdf Folie 2 und 6
-//        Graph bspPadberg = new SingleGraph("bspPadberg");
-//        bspPadberg.addNode("A");
-//        bspPadberg.addNode("B");
-//        bspPadberg.addNode("C");
-//        bspPadberg.addNode("D");
-//        bspPadberg.addNode("E");
-//        bspPadberg.addEdge("AB", "A", "B", true).addAttribute("weight", 2.0);
-//        bspPadberg.addEdge("AC", "A", "C", true).addAttribute("weight", 3.0);
-//        bspPadberg.addEdge("BD", "B", "D", true).addAttribute("weight", 9.0);
-//        bspPadberg.addEdge("CB", "C", "B", true).addAttribute("weight", 7.0);
-//        bspPadberg.addEdge("CE", "C", "E", true).addAttribute("weight", 5.0);
-//        bspPadberg.addEdge("ED", "E", "D", true).addAttribute("weight", 1.0);
-//
-//        FloydWarshall floydBspPadberg = new FloydWarshall();
-//        floydBspPadberg.setSourceAndTarget(bspPadberg.getNode("A"), bspPadberg.getNode("E"));
-//        floydBspPadberg.init(bspPadberg);
-//        floydBspPadberg.compute();
-
-        // Graph from https://www-m9.ma.tum.de/graph-algorithms/spp-floyd-warshall/index_de.html
-//        Graph m9 = new SingleGraph("m9");
-//        m9.addNode("A");
-//        m9.addNode("B");
-//        m9.addNode("C");
-//        m9.addNode("D");
-//        m9.addEdge("AB","A","B",true).addAttribute("weight",3);
-//        m9.addEdge("AC","A","C",true).addAttribute("weight",4);
-//        m9.addEdge("AD","A","D",true).addAttribute("weight",9);
-//        m9.addEdge("BD","B","D",true).addAttribute("weight",5);
-//        m9.addEdge("CD","C","D",true).addAttribute("weight",3);
-//
-//        FloydWarshall floydM9 = new FloydWarshall();
-//        floydM9.setSourceAndTarget(m9.getNode("A"), m9.getNode("D"));
-//        floydM9.init(m9);
-//        floydM9.compute();
-
         Graph test = new SingleGraph("test");
         test.addNode("0");
         test.addNode("1");
@@ -266,20 +226,10 @@ public class FloydWarshall implements Algorithm {
         test.addEdge("56", "5", "6", true).addAttribute("weight", 2);
         test.addEdge("67", "6", "7", true).addAttribute("weight", 1);
 
-//        GraphUtil.buildForDisplay(test).display();
         FloydWarshall floydTest = new FloydWarshall();
-        floydTest.setSourceAndTarget(test.getNode("0"), test.getNode("7"));
-        floydTest.init(test);
+        floydTest.init(test, test.getNode("0"), test.getNode("7"));
         floydTest.compute();
 
 
-    }
-
-    public Double getDistance() {
-        return distance;
-    }
-
-    public Integer getHits() {
-        return hits;
     }
 }

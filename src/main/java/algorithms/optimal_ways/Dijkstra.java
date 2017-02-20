@@ -1,30 +1,32 @@
 package algorithms.optimal_ways;
 
-import algorithms.Preconditions;
+import algorithms.utility.GraphUtil;
 import com.google.common.collect.Lists;
-import helper.GraphUtil;
 import org.apache.log4j.Logger;
-import org.graphstream.algorithm.Algorithm;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import static algorithms.utility.GraphPreconditions.mustHavePositiveWeights;
+import static algorithms.utility.GraphPreconditions.mustHaveWeights;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * Created by MattX7 on 20.11.2016.
- *
+ * Dijkstra algorithm for shortest way in a graph with weights.
  */
-public class Dijkstra implements Algorithm {
-    private static Logger logger = Logger.getLogger(Dijkstra.class);
-    static boolean preview = true;
+public class Dijkstra implements ShortestWayStrategy {
+    private static final Logger LOG = Logger.getLogger(Dijkstra.class);
+    static boolean preview = false;
 
     Double distance;
-    Integer hits = 0;
+    Integer hits;
 
     private Node[] nodes;
     private Double[] entf;
@@ -34,35 +36,31 @@ public class Dijkstra implements Algorithm {
     private Node source;
     private Node target;
 
-    /**
-     * Initialization of the algorithm. This method has to be called before the
-     * {@link #compute()} method to initialize or reset the algorithm according
-     * to the new given graph.
-     *
-     * @param graph The graph this algorithm is using.
-     */
-    public void init(Graph graph) throws IllegalArgumentException {
-        Preconditions.mustHaveWeights(graph);
-        Preconditions.mustHavePositiveWeights(graph);
+    @Override
+    public void init(@NotNull Graph graph,
+                     @NotNull Node source,
+                     @NotNull Node target) throws IllegalArgumentException {
+        checkNotNull(graph, "graph has to be not null!");
+        checkNotNull(source, "source has to be not null!");
+        checkNotNull(target, "target has to be not null!");
+        mustHaveWeights(graph);
+        mustHavePositiveWeights(graph);
 
         this.graph = graph;
+        this.source = source;
+        this.target = target;
+        this.hits = 0;
         int size = graph.getNodeCount();
-        nodes = new Node[size];
-        entf = new Double[size];
-        vorg = new Node[size];
-        ok = new Boolean[size];
-        setSourceAndTarget(graph.getNode(0), graph.getNode(size - 1));
+        this.nodes = new Node[size];
+        this.entf = new Double[size];
+        this.vorg = new Node[size];
+        this.ok = new Boolean[size];
     }
 
-    /**
-     * Run the algorithm. The {@link #init(Graph)} method has to be called
-     * before computing.
-     *
-     * @see #init(Graph)
-     */
+    @Override
     public void compute() {
-        logger.debug("Starting Dijkstra with " + GraphUtil.graphToString(graph, false, false));
-        // Preconditions
+        LOG.debug("Starting Dijkstra with " + GraphUtil.graphToString(graph, false, false));
+        // GraphPreconditions
         if (graph == null || source == null || target == null) // have to be set
             throw new IllegalArgumentException("Attributes are missing");
 
@@ -94,12 +92,13 @@ public class Dijkstra implements Algorithm {
      *
      * @return the shortest Path from the Source to the Target
      */
-    List<Node> getShortestPath() {
+    @Override
+    public List<Node> getShortestPath() {
         if (hits == 0)
             throw new IllegalArgumentException("do compute before this method");
 
-        List<Node> shortestPath = new LinkedList<Node>();
-
+        List<Node> shortestPath = new LinkedList<>();
+        // TODO was wenn kein kürzester Weg gefunden wurde?
         shortestPath.add(target);
         Node current = target;
         while (hasPred(current)) {
@@ -109,16 +108,13 @@ public class Dijkstra implements Algorithm {
         return Lists.reverse(shortestPath);
     }
 
-    /**
-     * Sets source and target before compute()
-     *
-     * @param source source node
-     * @param target target node
-     */
-    void setSourceAndTarget(@NotNull Node source,
-                            @NotNull Node target) {
-        this.source = source;
-        this.target = target;
+    @Nullable
+    public Double getDistance() {
+        return distance;
+    }
+
+    Integer getHits() {
+        return hits;
     }
 
     /**
@@ -181,7 +177,7 @@ public class Dijkstra implements Algorithm {
             if (!ok[getIndex(leavingNode)]) {
                 Double entfCurr = entf[getIndex(currNode)]; // entf von aktuellen Knoten aus der Matrix holen
                 Double entfLeaving = entf[getIndex(leavingNode)]; // entf vom neuten Knoten holen
-                Double weightLeavingEdge = Double.parseDouble(leavingEdge.getAttribute("weight").toString());
+                Double weightLeavingEdge = leavingEdge.getAttribute("weight");
                 hits++;
 
                 if (entfLeaving > entfCurr + weightLeavingEdge) {
@@ -192,6 +188,7 @@ public class Dijkstra implements Algorithm {
             }
         }
     }
+
 
     /**
      * Returns index of a Node
@@ -217,7 +214,6 @@ public class Dijkstra implements Algorithm {
             node = leavingEdge.getNode1();
         return node;
     }
-
 
     @NotNull
     private Node withMinDistance() {
@@ -298,16 +294,7 @@ public class Dijkstra implements Algorithm {
         graph.addEdge("v5v6", "v5", "v6", true).addAttribute("weight", 1.0);
 
         Dijkstra dijk = new Dijkstra();
-        dijk.init(graph);
-        dijk.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
+        dijk.init(graph, graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
         dijk.compute();
-    }
-
-    public Double getDistance() {
-        return distance;
-    }
-
-    public Integer getHits() {
-        return hits;
     }
 }
