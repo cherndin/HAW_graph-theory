@@ -1,6 +1,6 @@
-# Graphentheorie
 
-## Algorithms
+
+# Algorithms
 #### Shortest Path
 - Breathe-First Search
 - Dijkstra
@@ -10,5 +10,5 @@
 - Edmonds–Karp
 - Ford–Fulkerson
 
-## Utility
+# Utility
 - Input/Output with gka-files
