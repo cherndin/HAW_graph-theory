@@ -14,7 +14,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 import java.util.Random;
 
 /**
- * Created by Neak on 22.11.2016.
+ * Generates graphs.
  */
 public class GraphGenerator {
     private static final Logger LOG = Logger.getLogger(GraphGenerator.class);

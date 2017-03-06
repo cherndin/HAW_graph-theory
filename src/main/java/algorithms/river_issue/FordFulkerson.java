@@ -1,7 +1,7 @@
 package algorithms.river_issue;
 
 import algorithms.utility.GraphPreconditions;
-import algorithms.utility.StopWatch;
+import algorithms.utility.Stopwatch;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.apache.log4j.Logger;
@@ -21,7 +21,7 @@ import java.util.*;
 public class FordFulkerson implements MaxFlowStrategy {
     private static final Logger LOG = Logger.getLogger(FordFulkerson.class);
     public static boolean preview = false;
-    StopWatch stopWatch;
+    Stopwatch stopwatch;
     boolean computable = false;
 
     Graph graph;
@@ -82,7 +82,7 @@ public class FordFulkerson implements MaxFlowStrategy {
     }
 
     public void compute() {
-        stopWatch = new StopWatch();
+        stopwatch = new Stopwatch();
         if (preview) LOG.debug("==== (2) compute ====");
         if (!computable)
             throw new IllegalStateException("Do init(Graph) before compute()");
@@ -174,8 +174,8 @@ public class FordFulkerson implements MaxFlowStrategy {
         computable = false;
         final Graph residualGraph = residualNetwork(); // Residualnetzwerk(G)
 
-        Set<Node> nodesS = new HashSet<>();
-        Set<Node> nodesT = new HashSet<>();
+        final Set<Node> nodesS = new HashSet<>();
+        final Set<Node> nodesT = new HashSet<>();
         for (final Node v : residualGraph.getEachNode()) {
             if (hasPath(residualGraph.getNode(source.getId()), v)) { // Wenn ein Pfad(s,v) in G existiert...
                 nodesS.add(v);
@@ -198,10 +198,10 @@ public class FordFulkerson implements MaxFlowStrategy {
 
         }
 
-        stopWatch.stop();
+        stopwatch.stop();
         if (preview) LOG.debug("Cut[" + cut + "]");
         if (preview) LOG.debug("==== compute_Cut done ====");
-        if (preview) LOG.debug("Algorithms finished in " + stopWatch.getEndTimeString());
+        if (preview) LOG.debug("Algorithms finished in " + stopwatch.getEndTimeString());
     }
 
 
@@ -369,7 +369,7 @@ public class FordFulkerson implements MaxFlowStrategy {
     }
 
     // === MAIN ===
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // https://de.wikipedia.org/wiki/Max-Flow-Min-Cut-Theorem
         final Graph maxFminCGraph = new SingleGraph("maxFminCGraph");
         maxFminCGraph.addNode("O");

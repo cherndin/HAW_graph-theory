@@ -1,23 +1,25 @@
-package algorithms;
+package algorithms.optimal_ways;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
- * Created by Neak on 23.10.2016.
+ * Tests for {@link BreadthFirstSearch}
  */
-public class BreadthFirstSearchPresentationTest {
+public class BreadthFirstSearchTest {
     @Before
     public void setUp() throws Exception {
-        BreadthFirstSearchPresentation.preview = false;
+        BreadthFirstSearch.preview = false;
     }
 
     @Test
     public void computeTest() throws Exception {
         //Ein Kreis Graph
-        Graph circle = new SingleGraph("circle");
+        final Graph circle = new SingleGraph("circle");
         circle.addNode("a");
         circle.addNode("b");
         circle.addNode("c");
@@ -29,7 +31,7 @@ public class BreadthFirstSearchPresentationTest {
         circle.addEdge("da", "d", "a");
 
         //Ein Pentagram with Circle Graph
-        Graph pentaCircle = new SingleGraph("pentaCircle");
+        final Graph pentaCircle = new SingleGraph("pentaCircle");
         pentaCircle.addNode("a");
         pentaCircle.addNode("b");
         pentaCircle.addNode("c");
@@ -48,7 +50,7 @@ public class BreadthFirstSearchPresentationTest {
         pentaCircle.addEdge("cd", "c", "d");
 
         //Ein Pentagram Graph
-        Graph penta = new SingleGraph("pentaCircle");
+        final Graph penta = new SingleGraph("pentaCircle");
         penta.addNode("a");
         penta.addNode("b");
         penta.addNode("c");
@@ -61,29 +63,26 @@ public class BreadthFirstSearchPresentationTest {
         penta.addEdge("ec", "e", "c");
         penta.addEdge("bd", "b", "d");
 
-        BreadthFirstSearchPresentation.preview = false;
+        BreadthFirstSearch.preview = false;
 
-        BreadthFirstSearchPresentation bfs = new BreadthFirstSearchPresentation();
-        bfs.init(circle);
-        bfs.setSourceAndTarget(circle.getNode("a"), circle.getNode("c"));
+        final BreadthFirstSearch bfs = new BreadthFirstSearch();
+        bfs.init(circle, circle.getNode("a"), circle.getNode("c"));
         bfs.compute();
 
-        BreadthFirstSearchPresentation bfs2 = new BreadthFirstSearchPresentation();
-        bfs2.init(pentaCircle);
-        bfs2.setSourceAndTarget(pentaCircle.getNode("a"), pentaCircle.getNode("c"));
+        final BreadthFirstSearch bfs2 = new BreadthFirstSearch();
+        bfs2.init(pentaCircle, pentaCircle.getNode("a"), pentaCircle.getNode("c"));
         bfs2.compute();
 
-        BreadthFirstSearchPresentation bfs3 = new BreadthFirstSearchPresentation();
-        bfs3.init(penta);
-        bfs3.setSourceAndTarget(penta.getNode("a"), penta.getNode("e"));
+        final BreadthFirstSearch bfs3 = new BreadthFirstSearch();
+        bfs3.init(penta, penta.getNode("a"), penta.getNode("e"));
         bfs3.compute();
 
         assertEquals(2, bfs.steps);
-        assertEquals("[c, d, a]", bfs.getShortestPath().toString());
+        assertEquals("[a, d, c]", bfs.getShortestPath().toString());
         assertEquals(1, bfs2.steps);
-        assertEquals("[c, a]", bfs2.getShortestPath().toString());
+        assertEquals("[a, c]", bfs2.getShortestPath().toString());
         assertEquals(2, bfs3.steps);
-        assertEquals("[e, c, a]", bfs3.getShortestPath().toString());
+        assertEquals("[a, c, e]", bfs3.getShortestPath().toString());
 
         //assertEquals(bfs.sumWeight, 3); // {shortestWay, anzKanten}
         //Graph graph1 = IOGraph.fromFile("MyGraph", new File("src/main/resources/input/BspGraph/graph05.gka"));
@@ -95,17 +94,16 @@ public class BreadthFirstSearchPresentationTest {
 
     @Test
     public void bigGraphTest() throws Exception {
-        int edges = 1000;
-        Graph bigGraph = new SingleGraph("bigGraph");
+        final int edges = 1000;
+        final Graph bigGraph = new SingleGraph("bigGraph");
         bigGraph.addNode("0");
         for (int i = 1; i <= edges; i++) {
             bigGraph.addNode("" + i);
             bigGraph.addEdge("" + (i - 1) + i, "" + (i - 1), "" + i);
         }
-        BreadthFirstSearchPresentation.preview = false;
-        BreadthFirstSearchPresentation bfs = new BreadthFirstSearchPresentation();
-        bfs.init(bigGraph);
-        bfs.setSourceAndTarget(bigGraph.getNode("0"), bigGraph.getNode("" + edges));
+        BreadthFirstSearch.preview = false;
+        final BreadthFirstSearch bfs = new BreadthFirstSearch();
+        bfs.init(bigGraph, bigGraph.getNode("0"), bigGraph.getNode("" + edges));
         bfs.compute();
         assertEquals(edges, bfs.steps);
     }

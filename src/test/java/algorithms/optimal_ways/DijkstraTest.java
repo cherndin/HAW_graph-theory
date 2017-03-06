@@ -1,33 +1,25 @@
 package algorithms.optimal_ways;
 
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import static algorithms.utility.IOGraph.fromFile;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by MattX7 on 20.11.2016.
+ * Tests for {@link org.graphstream.algorithm.Dijkstra}
  */
 public class DijkstraTest {
     private Graph graph;
-    private Graph graph3;
-    private Graph test;
-    private List<Node> list = new ArrayList<Node>();
-
-    // TODO Testen Sie für graph3 in graph3.gka dabei Floyd-Warshall gegen Dijkstra und geben Sie den k¨urzesten Weg, sowie die Anzahl der Zugriffe auf den Graphen an
 
     @Before
     public void setUp() throws Exception {
 
-        test = new SingleGraph("test");
+        final Graph test = new SingleGraph("test");
         test.addNode("0");
         test.addNode("1");
         test.addNode("2");
@@ -48,14 +40,8 @@ public class DijkstraTest {
         test.addEdge("56", "5", "6", true).addAttribute("weight", 2);
         test.addEdge("67", "6", "7", true).addAttribute("weight", 1);
 
-        list.add(test.getNode(0));
-        list.add(test.getNode(1));
-        list.add(test.getNode(5));
-        list.add(test.getNode(6));
-        list.add(test.getNode(7));
-
         // Graph aus den Folien
-        // 02_GKA-Optimale Wege.pdf Folie 2 und 6 // TODO gerichtet und mit negativen
+        // 02_GKA-Optimale Wege.pdf Folie 2 und 6
         graph = new SingleGraph("graph");
         graph.addNode("v1");
         graph.addNode("v2");
@@ -74,12 +60,12 @@ public class DijkstraTest {
         graph.addEdge("v5v6", "v5", "v6", true);
         graph.addEdge("v6v3", "v6", "v3", true);
 
-        graph3 = fromFile("graph3", new File("src/main/resources/input/BspGraph/graph03.gka"));
+        final Graph graph3 = fromFile("graph3", new File("src/main/resources/input/BspGraph/graph03.gka"));
     }
 
     @Test
     public void computeSimpleGraphTest() throws Exception {
-        Dijkstra dijk = new Dijkstra();
+        final Dijkstra dijk = new Dijkstra();
         Dijkstra.preview = false;
         graph.getEdge("v1v2").addAttribute("weight", 1.0);
         graph.getEdge("v1v6").addAttribute("weight", 3.0);

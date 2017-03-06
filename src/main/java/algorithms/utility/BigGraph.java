@@ -7,16 +7,13 @@ import org.graphstream.graph.implementations.SingleGraph;
 import java.util.Random;
 
 /**
- * Created by Neak on 22.11.2016.
+ * Class for creating big graphs.
  */
 public class BigGraph {
     public int nodes;
     private int edges;
     public int edgeCount = 1;
     private Random random = new Random();
-
-    public BigGraph() {
-    }
 
     public BigGraph(final int nodes, final int edges) {
         this.nodes = nodes;

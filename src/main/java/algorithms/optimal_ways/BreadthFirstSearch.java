@@ -21,7 +21,7 @@ public class BreadthFirstSearch implements ShortestWayStrategy {
     private static final Logger LOG = Logger.getLogger(BreadthFirstSearch.class);
     public static boolean preview = false;
 
-    private int steps = -1;
+    int steps = -1;
     private Graph graph;
     private Node source;
     private Node target;

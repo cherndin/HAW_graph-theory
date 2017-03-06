@@ -90,19 +90,17 @@ public class FloydWarshallTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void negCircleTest() throws Exception {
-        FloydWarshall floyd = new FloydWarshall();
+        final FloydWarshall floyd = new FloydWarshall();
         FloydWarshall.preview = true;
-        floyd.init(negGraph);
-        floyd.setSourceAndTarget(negGraph.getNode("v1"), negGraph.getNode("v5"));
+        floyd.init(negGraph, negGraph.getNode("v1"), negGraph.getNode("v5"));
         floyd.compute();
     }
 
     @Test
     public void computeSimpleGraphTest() throws Exception {
-        FloydWarshall floyd = new FloydWarshall();
+        final FloydWarshall floyd = new FloydWarshall();
         FloydWarshall.preview = true;
-        floyd.init(graph);
-        floyd.setSourceAndTarget(graph.getNode("v1"), graph.getNode("v4"));
+        floyd.init(graph, graph.getNode("v1"), graph.getNode("v4"));
         floyd.compute();
         assertEquals(Double.valueOf(6), floyd.distance);
         System.out.println("Hits: " + floyd.hits);

@@ -15,16 +15,16 @@ import java.util.List;
 import static junit.framework.TestCase.assertTrue;
 
 /**
- * Created by MattX7 on 25.11.2016.
+ * Tests for {@link EdmondsKarp}
  */
 public class EdmondsKarpTest {
     private Graph graphFromYouTube, graphFromWiki, negGraph, triangleGraph;
 
     @BeforeClass
     public static void closeLogger() throws Exception {
-        List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
+        final List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
         loggers.add(LogManager.getRootLogger());
-        for (Logger logger : loggers) {
+        for (final Logger logger : loggers) {
             logger.setLevel(Level.OFF);
         }
         Logger.getLogger(EdmondsKarp.class).setLevel(Level.DEBUG);
@@ -125,9 +125,8 @@ public class EdmondsKarpTest {
 
     @Test
     public void testWithSmallGraph() throws Exception {
-        EdmondsKarp edmondsWiki = new EdmondsKarp();
-        edmondsWiki.init(graphFromWiki);
-        edmondsWiki.setSourceAndTarget(graphFromWiki.getNode("S"), graphFromWiki.getNode("T"));
+        final EdmondsKarp edmondsWiki = new EdmondsKarp();
+        edmondsWiki.init(graphFromWiki, graphFromWiki.getNode("S"), graphFromWiki.getNode("T"));
         edmondsWiki.compute();
 
         assertTrue(edmondsWiki.maxFlow == 5);
@@ -136,9 +135,8 @@ public class EdmondsKarpTest {
 
     @Test
     public void testWithMediumGraph() throws Exception {
-        EdmondsKarp edmondsYT = new EdmondsKarp();
-        edmondsYT.init(graphFromYouTube);
-        edmondsYT.setSourceAndTarget(graphFromYouTube.getNode("S"), graphFromYouTube.getNode("T"));
+        final EdmondsKarp edmondsYT = new EdmondsKarp();
+        edmondsYT.init(graphFromYouTube, graphFromYouTube.getNode("S"), graphFromYouTube.getNode("T"));
         edmondsYT.compute();
 
         assertTrue(edmondsYT.maxFlow == 28);
@@ -146,18 +144,16 @@ public class EdmondsKarpTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNegGraph() throws Exception {
-        EdmondsKarp edmonds = new EdmondsKarp();
-        edmonds.init(negGraph);
-        edmonds.setSourceAndTarget(negGraph.getNode("S"), negGraph.getNode("T"));
+        final EdmondsKarp edmonds = new EdmondsKarp();
+        edmonds.init(negGraph, negGraph.getNode("S"), negGraph.getNode("T"));
         edmonds.compute();
 
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testTriangleGraph() throws Exception {
-        EdmondsKarp edmonds = new EdmondsKarp();
-        edmonds.init(triangleGraph);
-        edmonds.setSourceAndTarget(triangleGraph.getNode("S"), triangleGraph.getNode("T"));
+        final EdmondsKarp edmonds = new EdmondsKarp();
+        edmonds.init(triangleGraph, triangleGraph.getNode("S"), triangleGraph.getNode("T"));
         edmonds.compute();
 
     }

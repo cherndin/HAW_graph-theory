@@ -2,7 +2,7 @@ package algorithms.river_issue;
 
 import algorithms.utility.GraphGenerator;
 import algorithms.utility.IOGraph;
-import algorithms.utility.StopWatch;
+import algorithms.utility.Stopwatch;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -53,21 +53,21 @@ public class MaxFlowTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void graph4Test() throws Exception {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopwatch = new Stopwatch();
         FordFulkerson ford = new FordFulkerson();
         ford.init(graph4, graph4.getNode("q"), graph4.getNode("s"));
         ford.compute();
-        stopWatch.stop();
-        System.out.println(stopWatch.getActualTimeString());
-        System.out.println(stopWatch.getEndTimeString());
+        stopwatch.stop();
+        System.out.println(stopwatch.getActualTimeString());
+        System.out.println(stopwatch.getEndTimeString());
 
-        StopWatch stopWatch2 = new StopWatch();
+        Stopwatch stopwatch2 = new Stopwatch();
         EdmondsKarp edmond = new EdmondsKarp();
         edmond.init(graph4, graph4.getNode("q"), graph4.getNode("s"));
         edmond.compute();
-        stopWatch2.stop();
-        System.out.println(stopWatch2.getActualTimeString());
-        System.out.println(stopWatch2.getEndTimeString());
+        stopwatch2.stop();
+        System.out.println(stopwatch2.getActualTimeString());
+        System.out.println(stopwatch2.getEndTimeString());
 
     }
 
@@ -88,8 +88,8 @@ public class MaxFlowTest {
 
         assertEquals(edmond.maxFlow, 2.0, 0.001);
         assertEquals(ford.maxFlow, 2.0, 0.001);
-//        long endTime = edmond.stopWatch.getEndTime();
-//        long actualTime = ford.stopWatch.getEndTime();
+//        long endTime = edmond.stopwatch.getEndTime();
+//        long actualTime = ford.stopwatch.getEndTime();
 //        assertTrue(endTime < actualTime);
     }
 
@@ -109,9 +109,9 @@ public class MaxFlowTest {
             ford.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
             edmond.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
             ford.compute();
-            fordRuntimes.add(ford.stopWatch.getEndTime());
+            fordRuntimes.add(ford.stopwatch.getEndTime());
             edmond.compute();
-            edmondRuntimes.add(edmond.stopWatch.getEndTime());
+            edmondRuntimes.add(edmond.stopwatch.getEndTime());
         }
 
         LOG.debug(String.format("Min: %s/%s (FordFulkerson/EdmondsKarp)", Collections.min(fordRuntimes), Collections.min(edmondRuntimes)));
@@ -139,9 +139,9 @@ public class MaxFlowTest {
             ford.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
             edmond.init(big, big.getNode(0), big.getNode(big.getNodeCount() - 1));
             ford.compute();
-            fordRuntimes.add(ford.stopWatch.getEndTime());
+            fordRuntimes.add(ford.stopwatch.getEndTime());
             edmond.compute();
-            edmondRuntimes.add(edmond.stopWatch.getEndTime());
+            edmondRuntimes.add(edmond.stopwatch.getEndTime());
         }
 
         LOG.debug(String.format("Min: %s/%s (FordFulkerson/EdmondsKarp)", Collections.min(fordRuntimes), Collections.min(edmondRuntimes)));

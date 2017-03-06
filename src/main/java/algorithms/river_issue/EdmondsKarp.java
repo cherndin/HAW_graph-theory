@@ -1,7 +1,7 @@
 package algorithms.river_issue;
 
 import algorithms.optimal_ways.BreadthFirstSearch;
-import algorithms.utility.StopWatch;
+import algorithms.utility.Stopwatch;
 import org.apache.log4j.Logger;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
@@ -20,7 +20,7 @@ public class EdmondsKarp extends FordFulkerson implements MaxFlowStrategy {
     private static final Logger LOG = Logger.getLogger(EdmondsKarp.class);
 
     public void compute() {
-        stopWatch = new StopWatch();
+        stopwatch = new Stopwatch();
         LOG.debug("==== (2) compute ====");
         if (!computable)
             throw new IllegalStateException("Do init(Graph) before compute()");
